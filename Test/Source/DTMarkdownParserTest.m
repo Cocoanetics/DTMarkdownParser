@@ -7,6 +7,8 @@
 //
 
 #import "DTMarkdownParser.h"
+#import "DTMarkdownParserDelegateLogger.h"
+
 
 @interface DTMarkdownParserTest : SenTestCase
 
@@ -40,24 +42,47 @@
 
 - (void)testStartDocument
 {
-	id <DTMarkdownParserDelegate> delegate = mockProtocol(@protocol(DTMarkdownParserDelegate));
-	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown" delegate:delegate];
+	DTMarkdownParserDelegateLogger *logger = [[DTMarkdownParserDelegateLogger alloc] init];
+	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown" delegate:logger];
 	
 	BOOL result = [parser parse];
+
 	assertThatBool(result, is(equalToBool(YES)));
 	
-	[verifyCount(delegate, times(1)) parserDidStartDocument:(id)parser];
+	assertThatInteger([logger.log count], is(equalToInt(3)));
+	
+	NSInvocation *firstCall = logger.log[0];
+	STAssertTrue(firstCall.selector == @selector(parserDidStartDocument:), nil);
 }
 
-- (void)testEndDocument
-{
-	id <DTMarkdownParserDelegate> delegate = mockProtocol(@protocol(DTMarkdownParserDelegate));
-	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown" delegate:delegate];
-	
-	BOOL result = [parser parse];
-	assertThatBool(result, is(equalToBool(YES)));
-	
-	[verifyCount(delegate, times(1)) parserDidEndDocument:(id)parser];
-}
+//- (void)testEndDocument
+//{
+//	id <DTMarkdownParserDelegate> delegate = mockProtocol(@protocol(DTMarkdownParserDelegate));
+//	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown" delegate:delegate];
+//	
+//	BOOL result = [parser parse];
+//	assertThatBool(result, is(equalToBool(YES)));
+//	
+//	[verifyCount(delegate, times(1)) parserDidEndDocument:(id)parser];
+//}
 
+//- (void)testSimpleLine
+//{
+//	id <DTMarkdownParserDelegate> delegate = mockProtocol(@protocol(DTMarkdownParserDelegate));
+//	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown" delegate:delegate];
+//	
+//	BOOL result = [parser parse];
+//	assertThatBool(result, is(equalToBool(YES)));
+//	
+//	[verifyCount(delegate, times(1)) parser:(id)parser foundCharacters:@"Hello Markdown"];
+//}
+
+//- (void)testTwoLines
+//{
+//	id <DTMarkdownParserDelegate> logger = [[DTMarkdownParserDelegateLogger alloc] init];
+//	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown\nLine 2" delegate:logger];
+//	
+//	BOOL result = [parser parse];
+//	assertThatBool(result, is(equalToBool(YES)));
+//}
 @end

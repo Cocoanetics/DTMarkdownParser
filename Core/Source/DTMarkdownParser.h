@@ -24,6 +24,11 @@
  */
 - (void)parserDidEndDocument:(DTMarkdownParser *)parser;
 
+/*
+ Sent by a parser object to provide its delegate with a string representing all or part of the characters of the current element.
+ */
+- (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
+
 @end
 
 
