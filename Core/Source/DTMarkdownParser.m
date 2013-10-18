@@ -21,6 +21,9 @@
 		unsigned int supportsStartTag:1;
 		unsigned int supportsEndTag:1;
 	} _delegateFlags;
+	
+	// parsing state
+	NSMutableArray *_tagStack;
 }
 
 - (instancetype)initWithString:(NSString *)string
@@ -35,7 +38,7 @@
 	return self;
 }
 
-#pragma mark - Parsing
+#pragma mark - Parsing Helpers
 
 - (void)_reportBeginOfTag:(NSString *)tag attributes:(NSDictionary *)attributes
 {
@@ -53,12 +56,36 @@
 	}
 }
 
+- (void)_pushTag:(NSString *)tag attributes:(NSDictionary *)attributes
+{
+	[_tagStack addObject:tag];
+	[self _reportBeginOfTag:tag attributes:attributes];
+}
+
+- (void)_popTag
+{
+	NSString *tag = [self _currentTag];
+	
+	[self _reportEndOfTag:tag];
+	[_tagStack removeLastObject];
+}
+
+- (NSString *)_currentTag
+{
+	return [_tagStack lastObject];
+}
+
+
+#pragma mark - Parsing
+
 - (BOOL)parse
 {
 	if (!_string)
 	{
 		return NO;
 	}
+	
+	_tagStack = [NSMutableArray new];
 	
 	if (_delegateFlags.supportsStartDocument)
 	{
@@ -82,7 +109,7 @@
 					line = [line stringByAppendingString:@"\n"];
 				}
 
-				[self _reportBeginOfTag:@"p" attributes:nil];
+				[self _pushTag:@"p" attributes:nil];
 				
 				if (line)
 				{
@@ -93,7 +120,7 @@
 					NSLog(@"empty line");
 				}
 				
-				[self _reportEndOfTag:@"p"];
+				[self _popTag];
 			}
 		}
 	}
