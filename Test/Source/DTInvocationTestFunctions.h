@@ -11,7 +11,7 @@
 BOOL DTInvocationRecorderContainsCallWithParameter(DTInvocationRecorder *recorder, SEL selector, id parameter);
 
 
-#define DTAssertRecorderContainsCallWithParameter(recorder, selector, parameter) \
+#define DTAssertInvocationRecorderContainsCallWithParameter(recorder, selector, parameter) \
 do { \
 BOOL _evaluatedExpression = !!(DTInvocationRecorderContainsCallWithParameter(recorder, selector, parameter));\
 if (!_evaluatedExpression) {\

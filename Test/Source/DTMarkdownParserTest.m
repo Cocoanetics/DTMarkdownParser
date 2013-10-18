@@ -65,7 +65,7 @@
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
 
-	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parserDidStartDocument:), nil);
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parserDidStartDocument:), nil);
 }
 
 - (void)testEndDocument
@@ -76,7 +76,7 @@
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
 	
-	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parserDidEndDocument:), nil);
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parserDidEndDocument:), nil);
 }
 
 - (void)testSimpleLine
@@ -87,7 +87,7 @@
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
 
-	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown");
 }
 
 - (void)testMultipleLines
@@ -98,9 +98,9 @@
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
 	
-	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown\n");
-	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A second line\n");
-	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A third line");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown\n");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A second line\n");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A third line");
 }
 
 @end
