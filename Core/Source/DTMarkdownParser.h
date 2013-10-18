@@ -47,7 +47,7 @@
  @param parser A parser object.
  @param elementName A string that is the name of an element (in its end tag).
  */
-- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName;
+- (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
 
 @end
 
