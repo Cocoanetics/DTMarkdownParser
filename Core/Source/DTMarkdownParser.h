@@ -18,6 +18,12 @@
  */
 - (void)parserDidStartDocument:(DTMarkdownParser *)parser;
 
+/*
+ Sent by the parser object to the delegate when it has successfully completed parsing.
+ @param A parser object
+ */
+- (void)parserDidEndDocument:(DTMarkdownParser *)parser;
+
 @end
 
 

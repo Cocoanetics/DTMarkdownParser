@@ -8,10 +8,6 @@
 
 #import "DTMarkdownParser.h"
 
-#import <SenTestingKit/SenTestingKit.h>
-#import <OCHamcrest/OCHamcrest.h>
-#import <OCMockito/OCMockito.h>
-
 @interface DTMarkdownParserTest : SenTestCase
 
 @end
@@ -30,31 +26,38 @@
     [super tearDown];
 }
 
-- (void)testCreateParser
+- (DTMarkdownParser *)_parserForString:(NSString *)string delegate:(id<DTMarkdownParserDelegate>)delegate
 {
-	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:@"Hello Markdown"];
-	
+	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:string];
 	STAssertNotNil(parser, @"Should be able to create parser");
 	
-	BOOL result = [parser parse];
-
-	STAssertTrue(result, @"Parsing should work");
+	assertThat(parser, is(notNilValue()));
+	
+	parser.delegate = delegate;
+	
+	return parser;
 }
 
 - (void)testStartDocument
 {
-	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:@"Hello Markdown"];
-	
-	STAssertNotNil(parser, @"Should be able to create parser");
-
 	id <DTMarkdownParserDelegate> delegate = mockProtocol(@protocol(DTMarkdownParserDelegate));
-	parser.delegate = delegate;
+	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown" delegate:delegate];
 	
 	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
 	
-	[verify(delegate) parserDidStartDocument:(id)parser];
+	[verifyCount(delegate, times(1)) parserDidStartDocument:(id)parser];
+}
+
+- (void)testEndDocument
+{
+	id <DTMarkdownParserDelegate> delegate = mockProtocol(@protocol(DTMarkdownParserDelegate));
+	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown" delegate:delegate];
 	
-	STAssertTrue(result, @"Parsing should work");
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	[verifyCount(delegate, times(1)) parserDidEndDocument:(id)parser];
 }
 
 @end

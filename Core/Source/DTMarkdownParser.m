@@ -46,6 +46,12 @@
 		[_delegate parserDidStartDocument:self];
 	}
 
+	
+	if (_delegateFlags.supportsEndDocument)
+	{
+		[_delegate parserDidEndDocument:self];
+	}
+	
 	return YES;
 }
 

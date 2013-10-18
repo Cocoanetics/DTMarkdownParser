@@ -5,9 +5,16 @@
 //
 
 #ifdef __OBJC__
+
 	#import <Cocoa/Cocoa.h>
 
 	// for shorthands like mock()
 	#define  MOCKITO_SHORTHAND 1
+
+	#define HC_SHORTHAND 1
+
+	#import <SenTestingKit/SenTestingKit.h>
+	#import <OCHamcrest/OCHamcrest.h>
+	#import <OCMockito/OCMockito.h>
 
 #endif
