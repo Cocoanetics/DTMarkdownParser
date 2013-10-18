@@ -1,0 +1,3 @@
+[submodule "Externals/OCMockito"]
+	path = Externals/OCMockito
+	url = https://github.com/jonreid/OCMockito.git
