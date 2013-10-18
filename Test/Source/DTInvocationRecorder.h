@@ -14,6 +14,8 @@
 
 - (NSArray *)invocationsMatchingSelector:(SEL)selector;
 
+- (void)clearLog;
+
 @property (nonatomic, readonly) NSArray *invocations;
 
 @end

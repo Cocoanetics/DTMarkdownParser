@@ -11,17 +11,24 @@
 #import "DTInvocationRecorder.h"
 #import "NSInvocation+DTFoundation.h"
 
+#import "DTInvocationTestFunctions.h"
+
 
 @interface DTMarkdownParserTest : SenTestCase
 
 @end
 
 @implementation DTMarkdownParserTest
+{
+	DTInvocationRecorder *_recorder;
+}
 
 - (void)setUp
 {
     [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+	
+	_recorder = [[DTInvocationRecorder alloc] init];
+	[_recorder addProtocol:@protocol(DTMarkdownParserDelegate)];
 }
 
 - (void)tearDown
@@ -30,113 +37,73 @@
     [super tearDown];
 }
 
-- (DTMarkdownParser *)_parserForString:(NSString *)string delegate:(id<DTMarkdownParserDelegate>)delegate
+- (void)performTest:(SenTestRun *)aRun
+{
+	// clear recorder before each test
+	[_recorder clearLog];
+	
+	[super performTest:aRun];
+}
+
+- (DTMarkdownParser *)_parserForString:(NSString *)string
 {
 	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:string];
 	STAssertNotNil(parser, @"Should be able to create parser");
 	
 	assertThat(parser, is(notNilValue()));
 	
-	parser.delegate = delegate;
+	if (_recorder)
+	{
+		parser.delegate = (id<DTMarkdownParserDelegate>)_recorder;
+	}
 	
 	return parser;
 }
 
-- (BOOL)_invocationsRecorder:(DTInvocationRecorder *)recorder containsCallToSelector:(SEL)selector andParameter:(id)parameter
-{
-	NSArray *invocations = [recorder invocationsMatchingSelector:selector];
-	
-	if (![invocations count])
-	{
-		return NO;
-	}
-	
-	NSInvocation *firstInvocation = invocations[0];
-	
-	if (firstInvocation.selector != selector)
-	{
-		return NO;
-	}
-	
-	NSUInteger numberOfArguments = [firstInvocation.methodSignature numberOfArguments];
-	
-	for (NSUInteger i=2; i<numberOfArguments; i++)
-	{
-		const char *type = [firstInvocation.methodSignature getArgumentTypeAtIndex:i];
-		
-		if (type[0] == '@')
-		{
-			id arg;
-			[firstInvocation getArgument:&arg atIndex:i];
-			
-			if ([arg isEqual:parameter])
-			{
-				return YES;
-			}
-		}
-	}
-	
-	return NO;
-}
-
-
 - (void)testStartDocument
 {
-	//DTMarkdownParserDelegateLogger *logger = [[DTMarkdownParserDelegateLogger alloc] init];
-	
-	DTInvocationRecorder *recorder = [[DTInvocationRecorder alloc] init];
-	[recorder addProtocol:@protocol(DTMarkdownParserDelegate)];
-	
 	NSString *string = @"Hello Markdown";
-	DTMarkdownParser *parser = [self _parserForString:string delegate:(id)recorder];
+	DTMarkdownParser *parser = [self _parserForString:string];
 	
 	BOOL result = [parser parse];
-
 	assertThatBool(result, is(equalToBool(YES)));
-	
-	assertThatBool([self _invocationsRecorder:recorder containsCallToSelector:@selector(parser:foundCharacters:) andParameter:string], is(equalToBool(YES)));
 
-//	NSInvocation *line = [lines lastObject];
-//	NSString *argument = [line getArgumentAtIndexAsObject:3];
-//	
-//	assertThat(argument, is(equalTo(string)));
-//	
-//	assertThatBool(result, is(equalToBool(YES)));
-//	
-//	assertThatInteger([recorder.invocations count], is(equalToInt(3)));
-//
-//	NSInvocation *firstCall = logger.log[0];
-//	STAssertTrue(firstCall.selector == @selector(parserDidStartDocument:), nil);
+	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parserDidStartDocument:), nil);
 }
 
-//- (void)testEndDocument
-//{
-//	id <DTMarkdownParserDelegate> delegate = mockProtocol(@protocol(DTMarkdownParserDelegate));
-//	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown" delegate:delegate];
-//	
-//	BOOL result = [parser parse];
-//	assertThatBool(result, is(equalToBool(YES)));
-//	
-//	[verifyCount(delegate, times(1)) parserDidEndDocument:(id)parser];
-//}
+- (void)testEndDocument
+{
+	NSString *string = @"Hello Markdown";
+	DTMarkdownParser *parser = [self _parserForString:string];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parserDidEndDocument:), nil);
+}
 
-//- (void)testSimpleLine
-//{
-//	id <DTMarkdownParserDelegate> delegate = mockProtocol(@protocol(DTMarkdownParserDelegate));
-//	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown" delegate:delegate];
-//	
-//	BOOL result = [parser parse];
-//	assertThatBool(result, is(equalToBool(YES)));
-//	
-//	[verifyCount(delegate, times(1)) parser:(id)parser foundCharacters:@"Hello Markdown"];
-//}
+- (void)testSimpleLine
+{
+	NSString *string = @"Hello Markdown";
+	DTMarkdownParser *parser = [self _parserForString:string];
 
-//- (void)testTwoLines
-//{
-//	id <DTMarkdownParserDelegate> logger = [[DTMarkdownParserDelegateLogger alloc] init];
-//	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown\nLine 2" delegate:logger];
-//	
-//	BOOL result = [parser parse];
-//	assertThatBool(result, is(equalToBool(YES)));
-//}
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+
+	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown");
+}
+
+- (void)testMultipleLines
+{
+	NSString *string = @"Hello Markdown\nA second line\nA third line";
+	DTMarkdownParser *parser = [self _parserForString:string];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown\n");
+	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A second line\n");
+	DTAssertRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A third line");
+}
+
 @end

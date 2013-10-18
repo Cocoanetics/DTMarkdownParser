@@ -16,6 +16,7 @@
 		A765C45C181164E8006B252A /* DTMarkdownParserDelegateLogMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45B181164E8006B252A /* DTMarkdownParserDelegateLogMessage.m */; };
 		A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */; };
 		A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C46218117EE5006B252A /* DTInvocationRecorder.m */; };
+		A765C4691811906B006B252A /* DTInvocationTestFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C4681811906B006B252A /* DTInvocationTestFunctions.m */; };
 		A7BF250C18112A3B0013D8D7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF250B18112A3B0013D8D7 /* Foundation.framework */; };
 		A7BF253D181131A70013D8D7 /* DTMarkdownParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */; };
 		A7BF25C8181136530013D8D7 /* DTMarkdownParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */; };
@@ -110,6 +111,8 @@
 		A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+DTFoundation.m"; sourceTree = "<group>"; };
 		A765C46118117EE5006B252A /* DTInvocationRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTInvocationRecorder.h; sourceTree = "<group>"; };
 		A765C46218117EE5006B252A /* DTInvocationRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTInvocationRecorder.m; sourceTree = "<group>"; };
+		A765C4671811906B006B252A /* DTInvocationTestFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTInvocationTestFunctions.h; sourceTree = "<group>"; };
+		A765C4681811906B006B252A /* DTInvocationTestFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTInvocationTestFunctions.m; sourceTree = "<group>"; };
 		A7BF250818112A3B0013D8D7 /* DTMarkdownParser */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DTMarkdownParser; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7BF250B18112A3B0013D8D7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A7BF251D18112A8F0013D8D7 /* UnitTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -250,6 +253,8 @@
 				A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */,
 				A765C46118117EE5006B252A /* DTInvocationRecorder.h */,
 				A765C46218117EE5006B252A /* DTInvocationRecorder.m */,
+				A765C4671811906B006B252A /* DTInvocationTestFunctions.h */,
+				A765C4681811906B006B252A /* DTInvocationTestFunctions.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -470,6 +475,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A765C45918116383006B252A /* DTMarkdownParserDelegateLogger.m in Sources */,
+				A765C4691811906B006B252A /* DTInvocationTestFunctions.m in Sources */,
 				A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */,
 				A7BF25C8181136530013D8D7 /* DTMarkdownParserTest.m in Sources */,
 				A765C45C181164E8006B252A /* DTMarkdownParserDelegateLogMessage.m in Sources */,

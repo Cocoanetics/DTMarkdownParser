@@ -36,6 +36,10 @@
 	return [_invocations filteredArrayUsingPredicate:predicate];
 }
 
+- (void)clearLog
+{
+	_invocations = nil;
+}
 
 #pragma mark - Magic
 
