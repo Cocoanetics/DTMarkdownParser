@@ -15,12 +15,8 @@
 		A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */; };
 		A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C46218117EE5006B252A /* DTInvocationRecorder.m */; };
 		A765C4691811906B006B252A /* DTInvocationTestFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C4681811906B006B252A /* DTInvocationTestFunctions.m */; };
-		A7BF250C18112A3B0013D8D7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF250B18112A3B0013D8D7 /* Foundation.framework */; };
-		A7BF253D181131A70013D8D7 /* DTMarkdownParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */; };
 		A7BF25C8181136530013D8D7 /* DTMarkdownParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */; };
 		A7BF25D6181138320013D8D7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
-		A7BF25EC181138320013D8D7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
-		A7BF25EF181138320013D8D7 /* DTMarkdownParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
 		A7BF26001811385A0013D8D7 /* DTMarkdownParser.h in Headers */ = {isa = PBXBuildFile; fileRef = A7BF25FE1811385A0013D8D7 /* DTMarkdownParser.h */; };
 		A7BF26011811385A0013D8D7 /* DTMarkdownParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */; };
 		A7BF2608181151450013D8D7 /* DTMarkdownParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
@@ -62,13 +58,6 @@
 			remoteGlobalIDString = 08BDD5A81350C59C00E5A443;
 			remoteInfo = OCMockito;
 		};
-		A7BF25ED181138320013D8D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7BF250018112A3B0013D8D7 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A7BF25D3181138320013D8D7;
-			remoteInfo = "Mac Framework";
-		};
 		A7BF2605181150FC0013D8D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7BF250018112A3B0013D8D7 /* Project object */;
@@ -79,15 +68,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		A7BF250618112A3B0013D8D7 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 		A7BF25C9181137670013D8D7 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -107,7 +87,6 @@
 		A765C46218117EE5006B252A /* DTInvocationRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTInvocationRecorder.m; sourceTree = "<group>"; };
 		A765C4671811906B006B252A /* DTInvocationTestFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTInvocationTestFunctions.h; sourceTree = "<group>"; };
 		A765C4681811906B006B252A /* DTInvocationTestFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTInvocationTestFunctions.m; sourceTree = "<group>"; };
-		A7BF250818112A3B0013D8D7 /* DTMarkdownParser */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DTMarkdownParser; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7BF250B18112A3B0013D8D7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A7BF251D18112A8F0013D8D7 /* UnitTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -118,7 +97,6 @@
 		A7BF25CB181137CF0013D8D7 /* OCHamcrest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OCHamcrest.framework; path = "OCMockito/Frameworks/OCHamcrest-3.0.0/OCHamcrest.framework"; sourceTree = "<group>"; };
 		A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DTMarkdownParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7BF25D5181138320013D8D7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		A7BF25E9181138320013D8D7 /* Mac FrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Mac FrameworkTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7BF25FE1811385A0013D8D7 /* DTMarkdownParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTMarkdownParser.h; sourceTree = "<group>"; };
 		A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMarkdownParser.m; sourceTree = "<group>"; };
 		A7BF2602181138B50013D8D7 /* Framework-Mac-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Framework-Mac-Info.plist"; sourceTree = "<group>"; };
@@ -126,14 +104,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A7BF250518112A3B0013D8D7 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A7BF250C18112A3B0013D8D7 /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A7BF251A18112A8F0013D8D7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -154,15 +124,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A7BF25E6181138320013D8D7 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A7BF25EF181138320013D8D7 /* DTMarkdownParser.framework in Frameworks */,
-				A7BF25EC181138320013D8D7 /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -180,10 +141,8 @@
 		A7BF250918112A3B0013D8D7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A7BF250818112A3B0013D8D7 /* DTMarkdownParser */,
 				A7BF251D18112A8F0013D8D7 /* UnitTests.octest */,
 				A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */,
-				A7BF25E9181138320013D8D7 /* Mac FrameworkTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -283,23 +242,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		A7BF250718112A3B0013D8D7 /* DTMarkdownParser */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A7BF251618112A3B0013D8D7 /* Build configuration list for PBXNativeTarget "DTMarkdownParser" */;
-			buildPhases = (
-				A7BF250418112A3B0013D8D7 /* Sources */,
-				A7BF250518112A3B0013D8D7 /* Frameworks */,
-				A7BF250618112A3B0013D8D7 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = DTMarkdownParser;
-			productName = "Demo (Mac)";
-			productReference = A7BF250818112A3B0013D8D7 /* DTMarkdownParser */;
-			productType = "com.apple.product-type.tool";
-		};
 		A7BF251C18112A8F0013D8D7 /* UnitTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A7BF252918112A8F0013D8D7 /* Build configuration list for PBXNativeTarget "UnitTests" */;
@@ -338,24 +280,6 @@
 			productReference = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		A7BF25E8181138320013D8D7 /* Mac FrameworkTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A7BF25FB181138320013D8D7 /* Build configuration list for PBXNativeTarget "Mac FrameworkTests" */;
-			buildPhases = (
-				A7BF25E5181138320013D8D7 /* Sources */,
-				A7BF25E6181138320013D8D7 /* Frameworks */,
-				A7BF25E7181138320013D8D7 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A7BF25EE181138320013D8D7 /* PBXTargetDependency */,
-			);
-			name = "Mac FrameworkTests";
-			productName = "Mac FrameworkTests";
-			productReference = A7BF25E9181138320013D8D7 /* Mac FrameworkTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -364,11 +288,6 @@
 			attributes = {
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = Cocoanetics;
-				TargetAttributes = {
-					A7BF25E8181138320013D8D7 = {
-						TestTargetID = A7BF25D3181138320013D8D7;
-					};
-				};
 			};
 			buildConfigurationList = A7BF250318112A3B0013D8D7 /* Build configuration list for PBXProject "DTMarkdownParser" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -388,10 +307,8 @@
 			);
 			projectRoot = "";
 			targets = (
-				A7BF250718112A3B0013D8D7 /* DTMarkdownParser */,
 				A7BF251C18112A8F0013D8D7 /* UnitTests */,
 				A7BF25D3181138320013D8D7 /* Mac Framework */,
-				A7BF25E8181138320013D8D7 /* Mac FrameworkTests */,
 			);
 		};
 /* End PBXProject section */
@@ -442,24 +359,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A7BF25E7181138320013D8D7 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A7BF250418112A3B0013D8D7 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A7BF253D181131A70013D8D7 /* DTMarkdownParserTest.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A7BF251918112A8F0013D8D7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -479,13 +381,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A7BF25E5181138320013D8D7 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -493,11 +388,6 @@
 			isa = PBXTargetDependency;
 			name = OCMockito;
 			targetProxy = A7BF25C5181135590013D8D7 /* PBXContainerItemProxy */;
-		};
-		A7BF25EE181138320013D8D7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A7BF25D3181138320013D8D7 /* Mac Framework */;
-			targetProxy = A7BF25ED181138320013D8D7 /* PBXContainerItemProxy */;
 		};
 		A7BF2606181150FC0013D8D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -575,32 +465,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				SDKROOT = macosx;
-			};
-			name = Release;
-		};
-		A7BF251718112A3B0013D8D7 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/oliver/Desktop/DTMarkdownParser/Externals/OCMockito/Frameworks/OCHamcrest-3.0.0",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Demo (Mac)/DTMarkdownParser-Prefix.pch";
-				PRODUCT_NAME = DTMarkdownParser;
-			};
-			name = Debug;
-		};
-		A7BF251818112A3B0013D8D7 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/oliver/Desktop/DTMarkdownParser/Externals/OCMockito/Frameworks/OCHamcrest-3.0.0",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Demo (Mac)/DTMarkdownParser-Prefix.pch";
-				PRODUCT_NAME = DTMarkdownParser;
 			};
 			name = Release;
 		};
@@ -696,46 +560,6 @@
 			};
 			name = Release;
 		};
-		A7BF25FC181138320013D8D7 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Mac Framework.framework/Versions/A/Mac Framework";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Mac Framework/Mac Framework-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "Mac FrameworkTests/Mac FrameworkTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
-			};
-			name = Debug;
-		};
-		A7BF25FD181138320013D8D7 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Mac Framework.framework/Versions/A/Mac Framework";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Mac Framework/Mac Framework-Prefix.pch";
-				INFOPLIST_FILE = "Mac FrameworkTests/Mac FrameworkTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -744,15 +568,6 @@
 			buildConfigurations = (
 				A7BF251418112A3B0013D8D7 /* Debug */,
 				A7BF251518112A3B0013D8D7 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A7BF251618112A3B0013D8D7 /* Build configuration list for PBXNativeTarget "DTMarkdownParser" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A7BF251718112A3B0013D8D7 /* Debug */,
-				A7BF251818112A3B0013D8D7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -771,15 +586,6 @@
 			buildConfigurations = (
 				A7BF25F9181138320013D8D7 /* Debug */,
 				A7BF25FA181138320013D8D7 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A7BF25FB181138320013D8D7 /* Build configuration list for PBXNativeTarget "Mac FrameworkTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A7BF25FC181138320013D8D7 /* Debug */,
-				A7BF25FD181138320013D8D7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
