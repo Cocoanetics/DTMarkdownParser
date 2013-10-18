@@ -10,7 +10,7 @@
 
 @implementation NSInvocation (DTFoundation)
 
-- (id)getArgumentAtIndexAsObject:(NSUInteger)argIndex
+- (id)argumentAtIndexAsObject:(NSUInteger)argIndex
 {
 	const char* argType;
 	
@@ -26,7 +26,7 @@
 		case '#':
 		case '@':
 		{
-			id value;
+			__unsafe_unretained id value;
 			[self getArgument:&value atIndex:argIndex];
 			return value;
 		}

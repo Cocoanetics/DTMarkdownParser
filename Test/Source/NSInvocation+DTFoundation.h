@@ -8,6 +8,6 @@
 
 @interface NSInvocation (DTFoundation)
 
-- (id)getArgumentAtIndexAsObject:(NSUInteger)argIndex;
+- (id)argumentAtIndexAsObject:(NSUInteger)argIndex;
 
 @end

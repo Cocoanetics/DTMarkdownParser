@@ -7,10 +7,7 @@
 //
 
 #import "DTMarkdownParser.h"
-#import "DTMarkdownParserDelegateLogger.h"
 #import "DTInvocationRecorder.h"
-#import "NSInvocation+DTFoundation.h"
-
 #import "DTInvocationTestFunctions.h"
 
 

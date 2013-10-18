@@ -7,6 +7,7 @@
 //
 
 #import "DTInvocationTestFunctions.h"
+#import "NSInvocation+DTFoundation.h"
 
 BOOL DTInvocationRecorderContainsCallWithParameter(DTInvocationRecorder *recorder, SEL selector, id parameter)
 {
@@ -36,17 +37,11 @@ BOOL DTInvocationRecorderContainsCallWithParameter(DTInvocationRecorder *recorde
 		
 		for (NSUInteger i=2; i<numberOfArguments; i++)
 		{
-			const char *type = [invocation.methodSignature getArgumentTypeAtIndex:i];
+			id argument = [invocation argumentAtIndexAsObject:i];
 			
-			if (type[0] == '@')
+			if ([argument isEqual:parameter])
 			{
-				__unsafe_unretained id arg;
-				[invocation getArgument:&arg atIndex:i];
-				
-				if ([arg isEqual:parameter])
-				{
-					return YES;
-				}
+				return YES;
 			}
 		}
 	}

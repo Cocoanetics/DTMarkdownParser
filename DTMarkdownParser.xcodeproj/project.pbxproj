@@ -12,8 +12,6 @@
 		A765C44D181158C9006B252A /* OCHamcrest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A7BF25CB181137CF0013D8D7 /* OCHamcrest.framework */; };
 		A765C455181159ED006B252A /* OCMockito.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25BE1811354B0013D8D7 /* OCMockito.framework */; };
 		A765C456181159F1006B252A /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25CB181137CF0013D8D7 /* OCHamcrest.framework */; };
-		A765C45918116383006B252A /* DTMarkdownParserDelegateLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45818116383006B252A /* DTMarkdownParserDelegateLogger.m */; };
-		A765C45C181164E8006B252A /* DTMarkdownParserDelegateLogMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45B181164E8006B252A /* DTMarkdownParserDelegateLogMessage.m */; };
 		A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */; };
 		A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C46218117EE5006B252A /* DTInvocationRecorder.m */; };
 		A765C4691811906B006B252A /* DTInvocationTestFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C4681811906B006B252A /* DTInvocationTestFunctions.m */; };
@@ -103,10 +101,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A765C45718116383006B252A /* DTMarkdownParserDelegateLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTMarkdownParserDelegateLogger.h; sourceTree = "<group>"; };
-		A765C45818116383006B252A /* DTMarkdownParserDelegateLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMarkdownParserDelegateLogger.m; sourceTree = "<group>"; };
-		A765C45A181164E8006B252A /* DTMarkdownParserDelegateLogMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTMarkdownParserDelegateLogMessage.h; sourceTree = "<group>"; };
-		A765C45B181164E8006B252A /* DTMarkdownParserDelegateLogMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMarkdownParserDelegateLogMessage.m; sourceTree = "<group>"; };
 		A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+DTFoundation.h"; sourceTree = "<group>"; };
 		A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+DTFoundation.m"; sourceTree = "<group>"; };
 		A765C46118117EE5006B252A /* DTInvocationRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTInvocationRecorder.h; sourceTree = "<group>"; };
@@ -245,10 +239,6 @@
 			isa = PBXGroup;
 			children = (
 				A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */,
-				A765C45718116383006B252A /* DTMarkdownParserDelegateLogger.h */,
-				A765C45818116383006B252A /* DTMarkdownParserDelegateLogger.m */,
-				A765C45A181164E8006B252A /* DTMarkdownParserDelegateLogMessage.h */,
-				A765C45B181164E8006B252A /* DTMarkdownParserDelegateLogMessage.m */,
 				A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */,
 				A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */,
 				A765C46118117EE5006B252A /* DTInvocationRecorder.h */,
@@ -474,11 +464,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A765C45918116383006B252A /* DTMarkdownParserDelegateLogger.m in Sources */,
 				A765C4691811906B006B252A /* DTInvocationTestFunctions.m in Sources */,
 				A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */,
 				A7BF25C8181136530013D8D7 /* DTMarkdownParserTest.m in Sources */,
-				A765C45C181164E8006B252A /* DTMarkdownParserDelegateLogMessage.m in Sources */,
 				A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
