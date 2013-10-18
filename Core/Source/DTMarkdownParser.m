@@ -109,10 +109,46 @@
 					line = [line stringByAppendingString:@"\n"];
 				}
 
-				[self _pushTag:@"p" attributes:nil];
+				BOOL needsPushTag = NO;
+				BOOL needsPopTag = NO;
+				NSString *tag = nil;
+				
+				if ([line hasPrefix:@">"])
+				{
+					tag = @"blockquote";
+					
+					if (![[self _currentTag] isEqualToString:@"blockquote"])
+					{
+						needsPushTag = YES;
+					}
+				}
+				else
+				{
+					needsPushTag = YES;
+					needsPopTag = YES;
+					tag = @"p";
+				}
+				
+				if (needsPushTag)
+				{
+					[self _pushTag:tag attributes:nil];
+				}
 				
 				if (line)
 				{
+					if ([tag isEqualToString:@"blockquote"])
+					{
+						if ([line hasPrefix:@">"])
+						{
+							line = [line substringFromIndex:1];
+						}
+						
+						if ([line hasPrefix:@" "])
+						{
+							line = [line substringFromIndex:1];
+						}
+					}
+					
 					[_delegate parser:self foundCharacters:line];
 				}
 				else
@@ -120,9 +156,18 @@
 					NSLog(@"empty line");
 				}
 				
-				[self _popTag];
+				if (needsPopTag)
+				{
+					[self _popTag];
+				}
 			}
 		}
+	}
+	
+	// pop all remaining open tags
+	while ([_tagStack count])
+	{
+		[self _popTag];
 	}
 	
 	if (_delegateFlags.supportsEndDocument)
