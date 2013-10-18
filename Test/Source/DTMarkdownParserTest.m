@@ -103,4 +103,16 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A third line");
 }
 
+- (void)testParagraphBeginEnd
+{
+	NSString *string = @"Hello Markdown";
+	DTMarkdownParser *parser = [self _parserForString:string];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didStartElement:attributes:), @"p");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didEndElement:), @"p");
+}
+
 @end

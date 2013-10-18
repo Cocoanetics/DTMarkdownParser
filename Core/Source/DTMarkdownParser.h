@@ -8,26 +8,46 @@
 
 @class DTMarkdownParser;
 
+/**
+ The DTMarkdownParserDelegate protocol defines the optional methods implemented by delegates of DTMarkdownParser objects.
+ */
 
 @protocol DTMarkdownParserDelegate <NSObject>
 
 @optional
 /*
  Sent by the parser object to the delegate when it begins parsing a document.
- @param A parser object
+ @param A parser object.
  */
 - (void)parserDidStartDocument:(DTMarkdownParser *)parser;
 
 /*
  Sent by the parser object to the delegate when it has successfully completed parsing.
- @param A parser object
+ @param A parser object.
  */
 - (void)parserDidEndDocument:(DTMarkdownParser *)parser;
 
 /*
  Sent by a parser object to provide its delegate with a string representing all or part of the characters of the current element.
+ @param parser A parser object.
+ @param string Found string content
  */
 - (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
+
+/*
+ Sent by a parser object to its delegate when it encounters a start tag for a given element.
+ @param parser A parser object.
+ @param elementName A string that is the name of an element (in its start tag).
+ @param attributeDict A dictionary that contains any attributes associated with the element. Keys are the names of attributes, and values are attribute values.
+ */
+- (void)parser:(DTMarkdownParser *)parser didStartElement:(NSString *)elementName attributes:(NSDictionary *)attributeDict;
+
+/*
+ Sent by a parser object to its delegate when it encounters a start tag for a given element.
+ @param parser A parser object.
+ @param elementName A string that is the name of an element (in its end tag).
+ */
+- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName;
 
 @end
 

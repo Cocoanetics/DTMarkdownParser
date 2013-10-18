@@ -18,6 +18,8 @@
 		unsigned int supportsStartDocument:1;
 		unsigned int supportsEndDocument:1;
 		unsigned int supportsFoundCharacters:1;
+		unsigned int supportsStartTag:1;
+		unsigned int supportsEndTag:1;
 	} _delegateFlags;
 }
 
@@ -34,6 +36,22 @@
 }
 
 #pragma mark - Parsing
+
+- (void)_reportBeginOfTag:(NSString *)tag attributes:(NSDictionary *)attributes
+{
+	if (_delegateFlags.supportsStartTag)
+	{
+		[_delegate parser:self didStartElement:tag attributes:attributes];
+	}
+}
+
+- (void)_reportEndOfTag:(NSString *)tag
+{
+	if (_delegateFlags.supportsStartTag)
+	{
+		[_delegate parser:self didEndElement:tag];
+	}
+}
 
 - (BOOL)parse
 {
@@ -63,6 +81,8 @@
 				{
 					line = [line stringByAppendingString:@"\n"];
 				}
+
+				[self _reportBeginOfTag:@"p" attributes:nil];
 				
 				if (line)
 				{
@@ -72,6 +92,8 @@
 				{
 					NSLog(@"empty line");
 				}
+				
+				[self _reportEndOfTag:@"p"];
 			}
 		}
 	}
@@ -100,6 +122,8 @@
 	_delegateFlags.supportsStartDocument = ([_delegate respondsToSelector:@selector(parserDidStartDocument:)]);
 	_delegateFlags.supportsEndDocument = ([_delegate respondsToSelector:@selector(parserDidEndDocument:)]);
 	_delegateFlags.supportsFoundCharacters = ([_delegate respondsToSelector:@selector(parser:foundCharacters:)]);
+	_delegateFlags.supportsStartTag = ([_delegate respondsToSelector:@selector(parser:didStartElement:attributes:)]);
+	_delegateFlags.supportsEndTag = ([_delegate respondsToSelector:@selector(parser:didEndElement:)]);
 }
 
 @end
