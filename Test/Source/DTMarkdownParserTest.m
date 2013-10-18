@@ -8,6 +8,8 @@
 
 #import "DTMarkdownParser.h"
 #import "DTMarkdownParserDelegateLogger.h"
+#import "DTInvocationRecorder.h"
+#import "NSInvocation+DTFoundation.h"
 
 
 @interface DTMarkdownParserTest : SenTestCase
@@ -40,19 +42,71 @@
 	return parser;
 }
 
+- (BOOL)_invocationsRecorder:(DTInvocationRecorder *)recorder containsCallToSelector:(SEL)selector andParameter:(id)parameter
+{
+	NSArray *invocations = [recorder invocationsMatchingSelector:selector];
+	
+	if (![invocations count])
+	{
+		return NO;
+	}
+	
+	NSInvocation *firstInvocation = invocations[0];
+	
+	if (firstInvocation.selector != selector)
+	{
+		return NO;
+	}
+	
+	NSUInteger numberOfArguments = [firstInvocation.methodSignature numberOfArguments];
+	
+	for (NSUInteger i=2; i<numberOfArguments; i++)
+	{
+		const char *type = [firstInvocation.methodSignature getArgumentTypeAtIndex:i];
+		
+		if (type[0] == '@')
+		{
+			id arg;
+			[firstInvocation getArgument:&arg atIndex:i];
+			
+			if ([arg isEqual:parameter])
+			{
+				return YES;
+			}
+		}
+	}
+	
+	return NO;
+}
+
+
 - (void)testStartDocument
 {
-	DTMarkdownParserDelegateLogger *logger = [[DTMarkdownParserDelegateLogger alloc] init];
-	DTMarkdownParser *parser = [self _parserForString:@"Hello Markdown" delegate:logger];
+	//DTMarkdownParserDelegateLogger *logger = [[DTMarkdownParserDelegateLogger alloc] init];
+	
+	DTInvocationRecorder *recorder = [[DTInvocationRecorder alloc] init];
+	[recorder addProtocol:@protocol(DTMarkdownParserDelegate)];
+	
+	NSString *string = @"Hello Markdown";
+	DTMarkdownParser *parser = [self _parserForString:string delegate:(id)recorder];
 	
 	BOOL result = [parser parse];
 
 	assertThatBool(result, is(equalToBool(YES)));
 	
-	assertThatInteger([logger.log count], is(equalToInt(3)));
-	
-	NSInvocation *firstCall = logger.log[0];
-	STAssertTrue(firstCall.selector == @selector(parserDidStartDocument:), nil);
+	assertThatBool([self _invocationsRecorder:recorder containsCallToSelector:@selector(parser:foundCharacters:) andParameter:string], is(equalToBool(YES)));
+
+//	NSInvocation *line = [lines lastObject];
+//	NSString *argument = [line getArgumentAtIndexAsObject:3];
+//	
+//	assertThat(argument, is(equalTo(string)));
+//	
+//	assertThatBool(result, is(equalToBool(YES)));
+//	
+//	assertThatInteger([recorder.invocations count], is(equalToInt(3)));
+//
+//	NSInvocation *firstCall = logger.log[0];
+//	STAssertTrue(firstCall.selector == @selector(parserDidStartDocument:), nil);
 }
 
 //- (void)testEndDocument
