@@ -52,6 +52,12 @@
 						i++;
 						
 						[tmpString appendFormat:@"<%@ />", tag];
+						
+						if ([tag isEqualToString:@"hr"])
+						{
+							[tmpString appendString:@"\n"];
+						}
+						
 						continue;
 					}
 				}
@@ -65,7 +71,7 @@
 			
 			[tmpString appendFormat:@"</%@>", tag];
 			
-			if ([tag isEqualToString:@"p"] || [tag hasPrefix:@"h"])
+			if ([tag isEqualToString:@"p"] || [tag isEqualToString:@"hr"] ||[tag hasPrefix:@"h"])
 			{
 				[tmpString appendString:@"\n"];
 			}
@@ -433,6 +439,20 @@
 	assertThatBool(result, is(equalToBool(YES)));
 	
 	NSString *expected = @"<p>Line1<br />Line2</p>\n<p>Line3</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testHorizontalRule
+{
+	NSString *string = @"Line1\n\n * * *\n\n - - -\n\nLine2";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>Line1</p>\n<hr />\n<hr />\n<p>Line2</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	assertThat(actual, is(equalTo(expected)));

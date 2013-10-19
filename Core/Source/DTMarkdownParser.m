@@ -223,6 +223,21 @@
 				}
 			}
 			
+			NSCharacterSet *ruleCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@" -*\n"];
+			
+			if ([[line stringByTrimmingCharactersInSet:ruleCharacterSet] length]==0)
+			{
+				if ([self _currentTagIsBlock])
+				{
+					[self _popTag];
+				}
+				
+				[self _pushTag:@"hr" attributes:nil];
+				[self _popTag];
+				
+				continue;
+			}
+			
 			BOOL needsPushTag = NO;
 			NSString *tag = nil;
 			

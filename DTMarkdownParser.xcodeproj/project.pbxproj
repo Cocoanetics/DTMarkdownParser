@@ -1540,7 +1540,6 @@
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
 					"${PROJECT_DIR}/**",
-					"/Users/oliver/Desktop/DTMarkdownParser/Externals/OCMockito/Frameworks/OCHamcrest-3.0.0",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Test/UnitTests-Prefix.pch";
@@ -1569,7 +1568,6 @@
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
 					"${PROJECT_DIR}/**",
-					"/Users/oliver/Desktop/DTMarkdownParser/Externals/OCMockito/Frameworks/OCHamcrest-3.0.0",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Test/UnitTests-Prefix.pch";
