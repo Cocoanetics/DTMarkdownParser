@@ -424,6 +424,19 @@
 	assertThat(actual, is(equalTo(expected)));
 }
 
+- (void)testGruberLineBreaks
+{
+	NSString *string = @"Line1  \nLine2\n\nLine3";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>Line1<br />Line2</p>\n<p>Line3</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
 
 #pragma mark - Test Files
 

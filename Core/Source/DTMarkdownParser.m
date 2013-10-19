@@ -204,7 +204,21 @@
 					}
 					else
 					{
-						line = [line stringByAppendingString:@"\n"];
+						if ([line hasSuffix:@"  "])
+						{
+							// two spaces at end of line are "Gruber-style BR"
+							needsBR = YES;
+							
+							// trim off trailing spaces
+							while ([line hasSuffix:@" "])
+							{
+								line = [line substringToIndex:[line length]-1];
+							}
+						}
+						else
+						{
+							line = [line stringByAppendingString:@"\n"];
+						}
 					}
 				}
 			}
