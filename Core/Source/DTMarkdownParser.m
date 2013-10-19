@@ -170,21 +170,34 @@
 		NSString *line;
 		if ([scanner scanUpToString:@"\n" intoString:&line])
 		{
+			if ([line hasSuffix:@"\r"])
+			{
+				// cut off Windows \r
+				line = [line substringWithRange:NSMakeRange(0, [line length]-1)];
+			}
+			
 			BOOL hasNL = [scanner scanString:@"\n" intoString:NULL];
 			BOOL hasTwoNL = NO;
 			
 			if (hasNL)
 			{
-				hasTwoNL = [scanner scanString:@"\n" intoString:NULL];
-			}
-			
-			if (hasNL)
-			{
-				line = [line stringByAppendingString:@"\n"];
+				// Windows-style NL
+				hasTwoNL = [scanner scanString:@"\r\n" intoString:NULL];
+				
+				if (!hasTwoNL)
+				{
+					// Unix-style NL
+					hasTwoNL = [scanner scanString:@"\n" intoString:NULL];
+				}
+				
+				if (!hasTwoNL && ![scanner isAtEnd])
+				{
+					// not a paragraph break
+					line = [line stringByAppendingString:@"\n"];
+				}
 			}
 			
 			BOOL needsPushTag = NO;
-			BOOL needsPopTag = NO;
 			NSString *tag = nil;
 			
 			if ([line hasPrefix:@">"])
@@ -198,8 +211,12 @@
 			}
 			else
 			{
-				needsPushTag = YES;
-				needsPopTag = YES;
+				if (![[self _currentTag] isEqualToString:@"p"])
+				{
+					// not a paragraph continuation
+					needsPushTag = YES;
+				}
+				
 				tag = @"p";
 			}
 			
@@ -230,8 +247,9 @@
 				NSLog(@"empty line");
 			}
 			
-			if (needsPopTag)
+			if (hasTwoNL)
 			{
+				// end of paragraph
 				[self _popTag];
 			}
 		}

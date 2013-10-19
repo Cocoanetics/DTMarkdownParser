@@ -21,7 +21,7 @@
 	DTInvocationRecorder *_recorder;
 }
 
-- (void)_logInvocations
+- (NSString *)_HTMLFromInvocations
 {
 	NSMutableString *tmpString = [NSMutableString string];
 	
@@ -52,7 +52,56 @@
 		}
 	}
 	
-	NSLog(@"%@", tmpString);
+	return [tmpString copy];
+}
+
+- (void)_logInvocations
+{
+	for (NSInvocation *invocation in _recorder.invocations)
+	{
+		NSMutableArray *params = [NSMutableArray array];
+		
+		for (NSUInteger i=2; i<invocation.methodSignature.numberOfArguments; i++)
+		{
+			id value = [invocation argumentAtIndexAsObject:i];
+			
+			if (value)
+			{
+				[params addObject:[NSString stringWithFormat:@"'%@'", value]];
+			}
+		}
+									
+		NSLog(@"%@ %@", NSStringFromSelector(invocation.selector), [params componentsJoinedByString:@", "]);
+	}
+}
+
+- (DTMarkdownParser *)_parserForString:(NSString *)string
+{
+	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:string];
+	STAssertNotNil(parser, @"Should be able to create parser");
+	
+	assertThat(parser, is(notNilValue()));
+	
+	if (_recorder)
+	{
+		parser.delegate = (id<DTMarkdownParserDelegate>)_recorder;
+	}
+	
+	return parser;
+}
+
+- (DTMarkdownParser *)_parserForFile:(NSString *)file
+{
+	NSString * filePath = [[NSBundle bundleForClass:[self class]] pathForResource:file ofType:@"text"];
+	NSString *string = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
+	
+	return [self _parserForString:string];
+}
+
+- (NSString *)_resultStringForFile:(NSString *)file
+{
+	NSString * filePath = [[NSBundle bundleForClass:[self class]] pathForResource:file ofType:@"html"];
+	return [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
 }
 
 - (NSPredicate *)_predicateForFindingOpeningTag:(NSString *)tag
@@ -106,21 +155,6 @@
 	[_recorder clearLog];
 	
 	[super performTest:aRun];
-}
-
-- (DTMarkdownParser *)_parserForString:(NSString *)string
-{
-	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:string];
-	STAssertNotNil(parser, @"Should be able to create parser");
-	
-	assertThat(parser, is(notNilValue()));
-	
-	if (_recorder)
-	{
-		parser.delegate = (id<DTMarkdownParserDelegate>)_recorder;
-	}
-	
-	return parser;
 }
 
 - (void)testStartDocument
@@ -195,8 +229,7 @@
 	
 	// test trimming off of blockquote prefix
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A Quote\n");
-	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"With multiple lines\n");
-
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"With multiple lines");
 	// there should be only a single tag even though there are two \n
 	NSArray *tagStarts = [_recorder invocationsMatchingSelector:@selector(parser:didStartElement:attributes:)];
 	assertThatInteger([tagStarts count], is(equalToInteger(1)));
@@ -300,5 +333,21 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Strong Words");
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"__Incomplete\n");
 }
+
+#pragma mark - Test Files
+
+- (void)testEmphasis
+{
+	DTMarkdownParser *parser = [self _parserForFile:@"emphasis"];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = [self _resultStringForFile:@"emphasis"];
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
 
 @end
