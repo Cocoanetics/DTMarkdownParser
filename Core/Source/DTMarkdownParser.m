@@ -209,15 +209,34 @@
 					needsPushTag = YES;
 				}
 			}
-			else
+			else if ([line hasPrefix:@"#"])
 			{
-				if (![[self _currentTag] isEqualToString:@"p"])
+				NSUInteger headerLevel = 0;
+				
+				while ([line hasPrefix:@"#"])
 				{
-					// not a paragraph continuation
-					needsPushTag = YES;
+					headerLevel++;
+					
+					line = [line substringFromIndex:1];
 				}
 				
+				tag = [NSString stringWithFormat:@"h%d", (int)headerLevel];
+				
+				// trim off leading spaces
+				while ([line hasPrefix:@" "])
+				{
+					line = [line substringFromIndex:1];
+				}
+			}
+			else
+			{
+				
 				tag = @"p";
+			}
+
+			if (![[self _currentTag] isEqualToString:tag])
+			{
+				needsPushTag = YES;
 			}
 			
 			if (needsPushTag)

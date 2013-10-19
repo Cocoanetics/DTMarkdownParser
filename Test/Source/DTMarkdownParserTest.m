@@ -33,7 +33,7 @@
 			
 			[tmpString appendFormat:@"</%@>", tag];
 			
-			if ([tag isEqualToString:@"p"])
+			if ([tag isEqualToString:@"p"] || [tag hasPrefix:@"h"])
 			{
 				[tmpString appendString:@"\n"];
 			}
@@ -332,6 +332,36 @@
 	// test trimming off of blockquote prefix
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Strong Words");
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"__Incomplete\n");
+}
+
+- (void)testHeadingWithHash
+{
+	NSString *string = @"Normal\n\n# Heading 1\n\n## Heading 2\n\n";
+	DTMarkdownParser *parser = [self _parserForString:string];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	// there should be only one h1 starting
+	NSArray *h1Starts = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingOpeningTag:@"h1"]];
+	assertThatInteger([h1Starts count], is(equalToInteger(1)));
+	
+	// there should be only one h1 closing
+	NSArray *h1Ends = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"h1"]];
+	assertThatInteger([h1Ends count], is(equalToInteger(1)));
+
+	// there should be only one h2 starting
+	NSArray *h2Starts = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingOpeningTag:@"h1"]];
+	assertThatInteger([h2Starts count], is(equalToInteger(1)));
+	
+	// there should be only one h2 closing
+	NSArray *h2Ends = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"h2"]];
+	assertThatInteger([h2Ends count], is(equalToInteger(1)));
+
+	// look for correct trims
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Normal");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Heading 1");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Heading 2");
 }
 
 #pragma mark - Test Files
