@@ -9,6 +9,7 @@
 #import "DTMarkdownParser.h"
 #import "DTInvocationRecorder.h"
 #import "DTInvocationTestFunctions.h"
+#import "NSInvocation+DTFoundation.h"
 
 
 @interface DTMarkdownParserTest : SenTestCase
@@ -19,6 +20,71 @@
 {
 	DTInvocationRecorder *_recorder;
 }
+
+- (void)_logInvocations
+{
+	NSMutableString *tmpString = [NSMutableString string];
+	
+	for (NSInvocation *invocation in _recorder.invocations)
+	{
+		if (invocation.selector == @selector(parser:didEndElement:))
+		{
+			NSString *tag = [invocation argumentAtIndexAsObject:3];
+			
+			[tmpString appendFormat:@"</%@>", tag];
+			
+			if ([tag isEqualToString:@"p"])
+			{
+				[tmpString appendString:@"\n"];
+			}
+		}
+		else if (invocation.selector == @selector(parser:didStartElement:attributes:))
+		{
+			NSString *tag = [invocation argumentAtIndexAsObject:3];
+			
+			[tmpString appendFormat:@"<%@>", tag];
+		}
+		else 	if (invocation.selector == @selector(parser:foundCharacters:))
+		{
+			NSString *string = [invocation argumentAtIndexAsObject:3];
+			
+			[tmpString appendFormat:@"%@", string];
+		}
+	}
+	
+	NSLog(@"%@", tmpString);
+}
+
+- (NSPredicate *)_predicateForFindingOpeningTag:(NSString *)tag
+{
+	return [NSPredicate predicateWithBlock:^BOOL(NSInvocation *invocation, NSDictionary *bindings) {
+		
+		if (invocation.selector != @selector(parser:didStartElement:attributes:))
+		{
+			return NO;
+		}
+		
+		NSString *invocationTag = [invocation argumentAtIndexAsObject:3];
+		
+		return [invocationTag isEqualToString:tag];
+	}];
+}
+
+- (NSPredicate *)_predicateForFindingClosingTag:(NSString *)tag
+{
+	return [NSPredicate predicateWithBlock:^BOOL(NSInvocation *invocation, NSDictionary *bindings) {
+		
+		if (invocation.selector != @selector(parser:didEndElement:))
+		{
+			return NO;
+		}
+		
+		NSString *invocationTag = [invocation argumentAtIndexAsObject:3];
+		
+		return [invocationTag isEqualToString:tag];
+	}];
+}
+
 
 - (void)setUp
 {
@@ -137,6 +203,102 @@
 
 	NSArray *tagEnds = [_recorder invocationsMatchingSelector:@selector(parser:didEndElement:)];
 	assertThatInteger([tagEnds count], is(equalToInteger(1)));
+}
+
+- (void)testEmphasisAsterisk
+{
+	NSString *string = @"Normal *Italic Words* *Incomplete\nand * on next line";
+	DTMarkdownParser *parser = [self _parserForString:string];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didStartElement:attributes:), @"em");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didEndElement:), @"em");
+	
+	// there should be only one em starting
+	NSArray *emStarts = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingOpeningTag:@"em"]];
+	assertThatInteger([emStarts count], is(equalToInteger(1)));
+
+	// there should be only one em closing
+	NSArray *emEnds = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"em"]];
+	assertThatInteger([emEnds count], is(equalToInteger(1)));
+	
+	// test trimming off of blockquote prefix
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Italic Words");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"*Incomplete\n");
+}
+
+- (void)testEmphasisUnderline
+{
+	NSString *string = @"Normal _Italic Words_ _Incomplete\nand _ on next line";
+	DTMarkdownParser *parser = [self _parserForString:string];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didStartElement:attributes:), @"em");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didEndElement:), @"em");
+	
+	// there should be only one em starting
+	NSArray *emStarts = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingOpeningTag:@"em"]];
+	assertThatInteger([emStarts count], is(equalToInteger(1)));
+	
+	// there should be only one em closing
+	NSArray *emEnds = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"em"]];
+	assertThatInteger([emEnds count], is(equalToInteger(1)));
+	
+	// test trimming off of blockquote prefix
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Italic Words");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"_Incomplete\n");
+}
+
+- (void)testStrongAsterisk
+{
+	NSString *string = @"Normal **Strong Words** **Incomplete\nand ** on next line";
+	DTMarkdownParser *parser = [self _parserForString:string];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didStartElement:attributes:), @"strong");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didEndElement:), @"strong");
+	
+	// there should be only one em starting
+	NSArray *emStarts = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingOpeningTag:@"strong"]];
+	assertThatInteger([emStarts count], is(equalToInteger(1)));
+	
+	// there should be only one em closing
+	NSArray *emEnds = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"strong"]];
+	assertThatInteger([emEnds count], is(equalToInteger(1)));
+	
+	// test trimming off of blockquote prefix
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Strong Words");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"**Incomplete\n");
+}
+
+- (void)testStrongUnderline
+{
+	NSString *string = @"Normal __Strong Words__ __Incomplete\nand __ on next line";
+	DTMarkdownParser *parser = [self _parserForString:string];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didStartElement:attributes:), @"strong");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didEndElement:), @"strong");
+	
+	// there should be only one em starting
+	NSArray *emStarts = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingOpeningTag:@"strong"]];
+	assertThatInteger([emStarts count], is(equalToInteger(1)));
+	
+	// there should be only one em closing
+	NSArray *emEnds = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"strong"]];
+	assertThatInteger([emEnds count], is(equalToInteger(1)));
+	
+	// test trimming off of blockquote prefix
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Strong Words");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"__Incomplete\n");
 }
 
 @end

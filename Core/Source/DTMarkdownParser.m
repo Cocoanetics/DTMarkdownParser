@@ -75,6 +75,59 @@
 	return [_tagStack lastObject];
 }
 
+- (void)_processLine:(NSString *)line
+{
+	NSScanner *scanner = [NSScanner scannerWithString:line];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_"];
+	
+	while (![scanner isAtEnd])
+	{
+		NSString *part;
+		
+		if ([scanner scanUpToCharactersFromSet:markerChars intoString:&part])
+		{
+			// output part before markers
+			[_delegate parser:self foundCharacters:part];
+			
+			NSString *openingMarkers;
+			
+			if ([scanner scanCharactersFromSet:markerChars intoString:&openingMarkers])
+			{
+				NSString *enclosedPart;
+				
+				// see if this encloses something
+				if ([scanner scanUpToString:openingMarkers intoString:&enclosedPart])
+				{
+					// there has to be a closing marker as well
+					if ([scanner scanString:openingMarkers intoString:NULL])
+					{
+						if ([openingMarkers isEqualToString:@"*"] || [openingMarkers isEqualToString:@"_"])
+						{
+							[self _pushTag:@"em" attributes:nil];
+						}
+						else if ([openingMarkers isEqualToString:@"**"] || [openingMarkers isEqualToString:@"__"])
+						{
+							[self _pushTag:@"strong" attributes:nil];
+						}
+						
+						[_delegate parser:self foundCharacters:enclosedPart];
+						
+						[self _popTag];
+					}
+					else
+					{
+						// output as is, not enclosed
+						NSString *joined = [openingMarkers stringByAppendingString:enclosedPart];
+						
+						[_delegate parser:self foundCharacters:joined];
+					}
+				}
+			}
+		}
+	}
+}
 
 #pragma mark - Parsing
 
@@ -149,7 +202,7 @@
 						}
 					}
 					
-					[_delegate parser:self foundCharacters:line];
+					[self _processLine:line];
 				}
 				else
 				{
