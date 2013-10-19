@@ -51,6 +51,13 @@
 
 @end
 
+typedef NS_ENUM(NSUInteger, DTMarkdownParserOptions)
+{
+	/**
+	 Use GitHub-style for line breaks, one is a BR, two is a P
+	 */
+	DTMarkdownParserOptionGitHubLineBreaks = 1<<0
+};
 
 
 @interface DTMarkdownParser : NSObject
@@ -59,7 +66,7 @@
  @name Creating a Parser
  */
 
-- (instancetype)initWithString:(NSString *)string;
+- (instancetype)initWithString:(NSString *)string options:(DTMarkdownParserOptions)options;
 
 /**
  @name Parsing

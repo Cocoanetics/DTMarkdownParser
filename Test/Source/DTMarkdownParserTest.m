@@ -25,9 +25,41 @@
 {
 	NSMutableString *tmpString = [NSMutableString string];
 	
-	for (NSInvocation *invocation in _recorder.invocations)
+	NSUInteger num = [_recorder.invocations count];
+	
+	
+	for (int i = 0; i<num; i++)
 	{
-		if (invocation.selector == @selector(parser:didEndElement:))
+		NSInvocation *invocation = _recorder.invocations[i];
+		
+		if (invocation.selector == @selector(parser:didStartElement:attributes:))
+		{
+			NSString *tag = [invocation argumentAtIndexAsObject:3];
+			
+			BOOL closedRightAway = NO;
+			
+			if (i<num)
+			{
+				NSInvocation *nextInvocation = _recorder.invocations[i+1];
+				
+				if (nextInvocation.selector == @selector(parser:didEndElement:))
+				{
+					NSString *closedTag = [nextInvocation argumentAtIndexAsObject:3];
+					
+					if ([tag isEqualToString:closedTag])
+					{
+						closedRightAway = YES;
+						i++;
+						
+						[tmpString appendFormat:@"<%@ />", tag];
+						continue;
+					}
+				}
+			}
+			
+			[tmpString appendFormat:@"<%@>", tag];
+		}
+		else if (invocation.selector == @selector(parser:didEndElement:))
 		{
 			NSString *tag = [invocation argumentAtIndexAsObject:3];
 			
@@ -37,12 +69,6 @@
 			{
 				[tmpString appendString:@"\n"];
 			}
-		}
-		else if (invocation.selector == @selector(parser:didStartElement:attributes:))
-		{
-			NSString *tag = [invocation argumentAtIndexAsObject:3];
-			
-			[tmpString appendFormat:@"<%@>", tag];
 		}
 		else 	if (invocation.selector == @selector(parser:foundCharacters:))
 		{
@@ -75,9 +101,9 @@
 	}
 }
 
-- (DTMarkdownParser *)_parserForString:(NSString *)string
+- (DTMarkdownParser *)_parserForString:(NSString *)string options:(DTMarkdownParserOptions)options
 {
-	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:string];
+	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:string options:options];
 	STAssertNotNil(parser, @"Should be able to create parser");
 	
 	assertThat(parser, is(notNilValue()));
@@ -90,12 +116,12 @@
 	return parser;
 }
 
-- (DTMarkdownParser *)_parserForFile:(NSString *)file
+- (DTMarkdownParser *)_parserForFile:(NSString *)file options:(DTMarkdownParserOptions)options
 {
 	NSString * filePath = [[NSBundle bundleForClass:[self class]] pathForResource:file ofType:@"text"];
 	NSString *string = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
 	
-	return [self _parserForString:string];
+	return [self _parserForString:string options:options];
 }
 
 - (NSString *)_resultStringForFile:(NSString *)file
@@ -160,7 +186,7 @@
 - (void)testStartDocument
 {
 	NSString *string = @"Hello Markdown";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -171,7 +197,7 @@
 - (void)testEndDocument
 {
 	NSString *string = @"Hello Markdown";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -182,7 +208,7 @@
 - (void)testSimpleLine
 {
 	NSString *string = @"Hello Markdown";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -193,7 +219,7 @@
 - (void)testMultipleLines
 {
 	NSString *string = @"Hello Markdown\nA second line\nA third line";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -206,7 +232,7 @@
 - (void)testParagraphBeginEnd
 {
 	NSString *string = @"Hello Markdown";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -218,7 +244,7 @@
 - (void)testBlockquote
 {
 	NSString *string = @"> A Quote\n> With multiple lines\n";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -241,7 +267,7 @@
 - (void)testEmphasisAsterisk
 {
 	NSString *string = @"Normal *Italic Words* *Incomplete\nand * on next line";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -265,7 +291,7 @@
 - (void)testEmphasisUnderline
 {
 	NSString *string = @"Normal _Italic Words_ _Incomplete\nand _ on next line";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -289,7 +315,7 @@
 - (void)testStrongAsterisk
 {
 	NSString *string = @"Normal **Strong Words** **Incomplete\nand ** on next line";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -313,7 +339,7 @@
 - (void)testStrongUnderline
 {
 	NSString *string = @"Normal __Strong Words__ __Incomplete\nand __ on next line";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -337,7 +363,7 @@
 - (void)testHeadingWithHash
 {
 	NSString *string = @"Normal\n\n# Heading 1\n\n## Heading 2\n\n";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -367,7 +393,7 @@
 - (void)testHeadingWithHashClosing
 {
 	NSString *string = @"# Heading 1 #####\n\n";
-	DTMarkdownParser *parser = [self _parserForString:string];
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));
@@ -384,12 +410,26 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Heading 1");
 }
 
+- (void)testGitHubLineBreaks
+{
+	NSString *string = @"Line1\nLine2\n\nLine3";
+	DTMarkdownParser *parser = [self _parserForString:string options:DTMarkdownParserOptionGitHubLineBreaks];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>Line1<br />Line2</p>\n<p>Line3</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
 
 #pragma mark - Test Files
 
 - (void)testEmphasis
 {
-	DTMarkdownParser *parser = [self _parserForFile:@"emphasis"];
+	DTMarkdownParser *parser = [self _parserForFile:@"emphasis" options:0];
 	
 	BOOL result = [parser parse];
 	assertThatBool(result, is(equalToBool(YES)));

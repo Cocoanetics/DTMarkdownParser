@@ -11,6 +11,7 @@
 @implementation DTMarkdownParser
 {
 	NSString *_string;
+	DTMarkdownParserOptions _options;
 	
 	// lookup bitmask what delegate methods are implemented
 	struct
@@ -26,13 +27,14 @@
 	NSMutableArray *_tagStack;
 }
 
-- (instancetype)initWithString:(NSString *)string
+- (instancetype)initWithString:(NSString *)string options:(DTMarkdownParserOptions)options
 {
 	self = [super init];
 	
 	if (self)
 	{
 		_string = [string copy];
+		_options = options;
 	}
 	
 	return self;
@@ -179,6 +181,8 @@
 			BOOL hasNL = [scanner scanString:@"\n" intoString:NULL];
 			BOOL hasTwoNL = NO;
 			
+			BOOL needsBR = NO;
+			
 			if (hasNL)
 			{
 				// Windows-style NL
@@ -193,7 +197,15 @@
 				if (!hasTwoNL && ![scanner isAtEnd])
 				{
 					// not a paragraph break
-					line = [line stringByAppendingString:@"\n"];
+					
+					if (_options & DTMarkdownParserOptionGitHubLineBreaks)
+					{
+						needsBR = YES;
+					}
+					else
+					{
+						line = [line stringByAppendingString:@"\n"];
+					}
 				}
 			}
 			
@@ -271,6 +283,12 @@
 				}
 				
 				[self _processLine:line];
+				
+				if (needsBR)
+				{
+					[self _pushTag:@"br" attributes:nil];
+					[self _popTag];
+				}
 			}
 			else
 			{
