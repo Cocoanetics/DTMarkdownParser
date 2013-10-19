@@ -75,6 +75,23 @@
 	return [_tagStack lastObject];
 }
 
+- (BOOL)_currentTagIsBlock
+{
+	NSString *tag = [_tagStack lastObject];
+	
+	if ([tag isEqualToString:@"p"])
+	{
+		return YES;
+	}
+
+	if ([tag isEqualToString:@"blockquote"])
+	{
+		return YES;
+	}
+
+	return NO;
+}
+
 - (void)_processLine:(NSString *)line
 {
 	NSScanner *scanner = [NSScanner scannerWithString:line];
@@ -154,65 +171,68 @@
 		if ([scanner scanUpToString:@"\n" intoString:&line])
 		{
 			BOOL hasNL = [scanner scanString:@"\n" intoString:NULL];
+			BOOL hasTwoNL = NO;
 			
-			if (_delegateFlags.supportsFoundCharacters)
+			if (hasNL)
 			{
-				if (hasNL)
-				{
-					line = [line stringByAppendingString:@"\n"];
-				}
-
-				BOOL needsPushTag = NO;
-				BOOL needsPopTag = NO;
-				NSString *tag = nil;
+				hasTwoNL = [scanner scanString:@"\n" intoString:NULL];
+			}
+			
+			if (hasNL)
+			{
+				line = [line stringByAppendingString:@"\n"];
+			}
+			
+			BOOL needsPushTag = NO;
+			BOOL needsPopTag = NO;
+			NSString *tag = nil;
+			
+			if ([line hasPrefix:@">"])
+			{
+				tag = @"blockquote";
 				
-				if ([line hasPrefix:@">"])
-				{
-					tag = @"blockquote";
-					
-					if (![[self _currentTag] isEqualToString:@"blockquote"])
-					{
-						needsPushTag = YES;
-					}
-				}
-				else
+				if (![[self _currentTag] isEqualToString:@"blockquote"])
 				{
 					needsPushTag = YES;
-					needsPopTag = YES;
-					tag = @"p";
 				}
-				
-				if (needsPushTag)
+			}
+			else
+			{
+				needsPushTag = YES;
+				needsPopTag = YES;
+				tag = @"p";
+			}
+			
+			if (needsPushTag)
+			{
+				[self _pushTag:tag attributes:nil];
+			}
+			
+			if (line)
+			{
+				if ([tag isEqualToString:@"blockquote"])
 				{
-					[self _pushTag:tag attributes:nil];
-				}
-				
-				if (line)
-				{
-					if ([tag isEqualToString:@"blockquote"])
+					if ([line hasPrefix:@">"])
 					{
-						if ([line hasPrefix:@">"])
-						{
-							line = [line substringFromIndex:1];
-						}
-						
-						if ([line hasPrefix:@" "])
-						{
-							line = [line substringFromIndex:1];
-						}
+						line = [line substringFromIndex:1];
 					}
 					
-					[self _processLine:line];
-				}
-				else
-				{
-					NSLog(@"empty line");
+					if ([line hasPrefix:@" "])
+					{
+						line = [line substringFromIndex:1];
+					}
 				}
 				
-				if (needsPopTag)
-				{
-					[self _popTag];
-				}
+				[self _processLine:line];
+			}
+			else
+			{
+				NSLog(@"empty line");
+			}
+			
+			if (needsPopTag)
+			{
+				[self _popTag];
 			}
 		}
 	}
