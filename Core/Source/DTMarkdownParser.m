@@ -227,10 +227,21 @@
 				{
 					line = [line substringFromIndex:1];
 				}
+
+				// trim off trailing hashes
+				while ([line hasSuffix:@"#"])
+				{
+					line = [line substringToIndex:[line length]-1];
+				}
+				
+				// trim off trailing spaces
+				while ([line hasSuffix:@" "])
+				{
+					line = [line substringToIndex:[line length]-1];
+				}
 			}
 			else
 			{
-				
 				tag = @"p";
 			}
 

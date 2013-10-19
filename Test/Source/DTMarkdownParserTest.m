@@ -364,6 +364,27 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Heading 2");
 }
 
+- (void)testHeadingWithHashClosing
+{
+	NSString *string = @"# Heading 1 #####\n\n";
+	DTMarkdownParser *parser = [self _parserForString:string];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	// there should be only one h1 starting
+	NSArray *h1Starts = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingOpeningTag:@"h1"]];
+	assertThatInteger([h1Starts count], is(equalToInteger(1)));
+	
+	// there should be only one h1 closing
+	NSArray *h1Ends = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"h1"]];
+	assertThatInteger([h1Ends count], is(equalToInteger(1)));
+	
+	// look for correct trims
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Heading 1");
+}
+
+
 #pragma mark - Test Files
 
 - (void)testEmphasis
