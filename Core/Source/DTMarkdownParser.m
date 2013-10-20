@@ -133,6 +133,10 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 	{
 		return @"_";
 	}
+	else if ([string hasPrefix:@"~~"])
+	{
+		return @"~~";
+	}
 	
 	return nil;
 }
@@ -156,7 +160,10 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 	{
 		[self _pushTag:@"strong" attributes:nil];
 	}
-	
+	else if ([marker isEqualToString:@"~~"])
+	{
+		[self _pushTag:@"del" attributes:nil];
+	}
 	// see if there is another marker
 	NSString *furtherMarker = [self _effectiveMarkerPrefixOfString:markedString];
 	
@@ -178,7 +185,7 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
 	
-	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_"];
+	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~"];
 	
 	while (![scanner isAtEnd])
 	{
