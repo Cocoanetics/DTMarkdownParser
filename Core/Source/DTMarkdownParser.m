@@ -413,13 +413,6 @@
 	return YES;
 }
 
-- (BOOL)_parseDocument
-{
-	BOOL result = YES;
-	
-	return result;
-}
-
 #pragma mark - Properties
 
 - (void)setDelegate:(id<DTMarkdownParserDelegate>)delegate
