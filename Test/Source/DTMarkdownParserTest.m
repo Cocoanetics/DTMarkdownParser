@@ -270,6 +270,8 @@
 	assertThatInteger([tagEnds count], is(equalToInteger(1)));
 }
 
+#pragma mark - Emphasis
+
 - (void)testEmphasisAsterisk
 {
 	NSString *string = @"Normal *Italic Words* *Incomplete\nand * on next line";
@@ -365,6 +367,23 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Strong Words");
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"__Incomplete\n");
 }
+
+- (void)testCombinedBoldAndItalics
+{
+	NSString *string = @"**_Strong Italic Words_**";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	
+	NSString *expected = @"<p><strong><em>Strong Italic Words</em></strong></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+
+	assertThat(actual, is(equalTo(expected)));
+}
+
+#pragma mark - Heading
 
 - (void)testHeadingWithHash
 {
