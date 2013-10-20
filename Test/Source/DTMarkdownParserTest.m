@@ -401,6 +401,20 @@
 	assertThat(actual, is(equalTo(expected)));
 }
 
+- (void)testStrikethrough
+{
+	NSString *string = @"~~deleted~~";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	
+	NSString *expected = @"<p><del>deleted</del></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
 
 #pragma mark - Heading
 
