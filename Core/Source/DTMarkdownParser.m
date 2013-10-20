@@ -211,6 +211,11 @@
 					[self _reportCharacters:joined];
 				}
 			}
+			else
+			{
+				// did not enclose anything
+				[self _reportCharacters:openingMarkers];
+			}
 		}
 	}
 }
