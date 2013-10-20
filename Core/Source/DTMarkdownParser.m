@@ -8,6 +8,13 @@
 
 #import "DTMarkdownParser.h"
 
+
+// constants for special lines
+NSString * const DTMarkdownParserSpecialTagH1 = @"H1";
+NSString * const DTMarkdownParserSpecialTagH2 = @"H2";
+NSString * const DTMarkdownParserSpecialTagHR = @"HR";
+
+
 @implementation DTMarkdownParser
 {
 	NSString *_string;
@@ -238,9 +245,6 @@
 		NSString *line;
 		if ([scanner scanUpToString:@"\n" intoString:&line])
 		{
-			NSLog(@"%lu: %@", (unsigned long)lineIndex, line);
-			
-			
 			BOOL didFindSpecial = NO;
 			
 			if (lineIndex)
@@ -265,12 +269,12 @@
 						
 						if (firstChar=='=')
 						{
-							_specialLines[@(lineIndex-1)] = @"H1";
+							_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH1;
 							didFindSpecial = YES;
 						}
 						else if (firstChar=='-')
 						{
-							_specialLines[@(lineIndex-1)] = @"H2";
+							_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH2;
 							didFindSpecial = YES;
 						}
 					}
@@ -283,7 +287,7 @@
 				
 				if ([[line stringByTrimmingCharactersInSet:ruleCharacterSet] length]==0)
 				{
-					_specialLines[@(lineIndex)] = @"HR";
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagHR;
 					didFindSpecial = YES;
 				}
 			}
@@ -399,15 +403,15 @@
 				NSString *specialLine = _specialLines[@(lineIndex)];
 				BOOL shouldOutputLineText = YES;
 				
-				if ([specialLine isEqualToString:@"H1"])
+				if (specialLine == DTMarkdownParserSpecialTagH1)
 				{
 					headerLevel = 1;
 				}
-				else if ([specialLine isEqualToString:@"H2"])
+				else if (specialLine == DTMarkdownParserSpecialTagH2)
 				{
 					headerLevel = 2;
 				}
-				else if ([specialLine isEqualToString:@"HR"])
+				else if (specialLine == DTMarkdownParserSpecialTagHR)
 				{
 					tag = @"hr";
 					shouldOutputLineText = NO;
