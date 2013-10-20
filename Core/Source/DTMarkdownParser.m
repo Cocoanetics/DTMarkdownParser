@@ -25,6 +25,10 @@
 	
 	// parsing state
 	NSMutableArray *_tagStack;
+	
+	// lookup dictionary for special lines
+	NSMutableDictionary *_specialLines;
+	NSMutableIndexSet *_ignoredLines;
 }
 
 - (instancetype)initWithString:(NSString *)string options:(DTMarkdownParserOptions)options
@@ -95,12 +99,12 @@
 	{
 		return YES;
 	}
-
+	
 	if ([tag isEqualToString:@"blockquote"])
 	{
 		return YES;
 	}
-
+	
 	return NO;
 }
 
@@ -148,7 +152,7 @@
 	
 	// see if there is another marker
 	NSString *furtherMarker = [self _effectiveMarkerPrefixOfString:markedString];
-
+	
 	if (furtherMarker && [markedString hasSuffix:furtherMarker])
 	{
 		[self _processMarkedString:markedString insideMarker:furtherMarker];
@@ -182,9 +186,9 @@
 		
 		// scan marker
 		NSString *openingMarkers;
-
+		
 		NSRange markedRange = NSMakeRange(scanner.scanLocation, 0);
-
+		
 		if ([scanner scanCharactersFromSet:markerChars intoString:&openingMarkers])
 		{
 			NSString *enclosedPart;
@@ -220,6 +224,78 @@
 	}
 }
 
+- (void)_findAndMarkSpecialLines
+{
+	_ignoredLines = [NSMutableIndexSet new];
+	_specialLines = [NSMutableDictionary new];
+	
+	NSScanner *scanner = [NSScanner scannerWithString:_string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSUInteger lineIndex = 0;
+	while (![scanner isAtEnd])
+	{
+		NSString *line;
+		if ([scanner scanUpToString:@"\n" intoString:&line])
+		{
+			NSLog(@"%lu: %@", (unsigned long)lineIndex, line);
+			
+			
+			BOOL didFindSpecial = NO;
+			
+			if (lineIndex)
+			{
+				unichar firstChar = [line characterAtIndex:0];
+				
+				if (firstChar=='-' || firstChar=='=')
+				{
+					line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+					NSUInteger lineLen = [line length];
+					
+					NSUInteger idx=0;
+					while (idx<lineLen && [line characterAtIndex:idx] == firstChar)
+					{
+						idx++;
+					}
+					
+					if (idx>=lineLen)
+					{
+						// full line is this character
+						[_ignoredLines addIndex:lineIndex];
+						
+						if (firstChar=='=')
+						{
+							_specialLines[@(lineIndex-1)] = @"H1";
+							didFindSpecial = YES;
+						}
+						else if (firstChar=='-')
+						{
+							_specialLines[@(lineIndex-1)] = @"H2";
+							didFindSpecial = YES;
+						}
+					}
+				}
+			}
+			
+			if (!didFindSpecial)
+			{
+				NSCharacterSet *ruleCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@" -*\n"];
+				
+				if ([[line stringByTrimmingCharactersInSet:ruleCharacterSet] length]==0)
+				{
+					_specialLines[@(lineIndex)] = @"HR";
+					didFindSpecial = YES;
+				}
+			}
+		}
+		
+		if ([scanner scanString:@"\n" intoString:NULL])
+		{
+			lineIndex++;
+		}
+	}
+}
+
 #pragma mark - Parsing
 
 - (BOOL)parse
@@ -236,8 +312,12 @@
 		[_delegate parserDidStartDocument:self];
 	}
 	
+	[self _findAndMarkSpecialLines];
+	
 	NSScanner *scanner = [NSScanner scannerWithString:_string];
 	scanner.charactersToBeSkipped = nil;
+	
+	NSUInteger lineIndex = 0;
 	
 	while (![scanner isAtEnd])
 	{
@@ -251,22 +331,95 @@
 			}
 			
 			BOOL hasNL = [scanner scanString:@"\n" intoString:NULL];
-			BOOL hasTwoNL = NO;
 			
-			BOOL needsBR = NO;
-			
-			if (hasNL)
+			if (![_ignoredLines containsIndex:lineIndex] && [line length])
 			{
-				// Windows-style NL
-				hasTwoNL = [scanner scanString:@"\r\n" intoString:NULL];
 				
-				if (!hasTwoNL)
+				BOOL hasTwoNL = NO;
+				
+				BOOL needsBR = NO;
+				
+				if (hasNL)
 				{
-					// Unix-style NL
-					hasTwoNL = [scanner scanString:@"\n" intoString:NULL];
+					// Windows-style NL
+					hasTwoNL = [scanner scanString:@"\r\n" intoString:NULL];
+					
+					if (!hasTwoNL)
+					{
+						// Unix-style NL
+						hasTwoNL = [scanner scanString:@"\n" intoString:NULL];
+					}
 				}
 				
-				if (!hasTwoNL && ![scanner isAtEnd])
+				BOOL needsPushTag = NO;
+				NSString *tag = nil;
+				NSUInteger headerLevel = 0;
+				
+				if ([line hasPrefix:@">"])
+				{
+					tag = @"blockquote";
+					
+					if (![[self _currentTag] isEqualToString:@"blockquote"])
+					{
+						needsPushTag = YES;
+					}
+				}
+				else if ([line hasPrefix:@"#"])
+				{
+					while ([line hasPrefix:@"#"])
+					{
+						headerLevel++;
+						
+						line = [line substringFromIndex:1];
+					}
+					
+					// trim off leading spaces
+					while ([line hasPrefix:@" "])
+					{
+						line = [line substringFromIndex:1];
+					}
+					
+					// trim off trailing hashes
+					while ([line hasSuffix:@"#"])
+					{
+						line = [line substringToIndex:[line length]-1];
+					}
+					
+					// trim off trailing spaces
+					while ([line hasSuffix:@" "])
+					{
+						line = [line substringToIndex:[line length]-1];
+					}
+				}
+				else
+				{
+					tag = @"p";
+				}
+				
+				NSString *specialLine = _specialLines[@(lineIndex)];
+				BOOL shouldOutputLineText = YES;
+				
+				if ([specialLine isEqualToString:@"H1"])
+				{
+					headerLevel = 1;
+				}
+				else if ([specialLine isEqualToString:@"H2"])
+				{
+					headerLevel = 2;
+				}
+				else if ([specialLine isEqualToString:@"HR"])
+				{
+					tag = @"hr";
+					shouldOutputLineText = NO;
+				}
+				
+				if (headerLevel)
+				{
+					tag = [NSString stringWithFormat:@"h%d", (int)headerLevel];
+				}
+				
+				// handle new lines
+				if (shouldOutputLineText && !hasTwoNL && ![scanner isAtEnd])
 				{
 					// not a paragraph break
 					
@@ -287,121 +440,72 @@
 								line = [line substringToIndex:[line length]-1];
 							}
 						}
-						else
+						else if (!headerLevel)
 						{
 							line = [line stringByAppendingString:@"\n"];
 						}
 					}
 				}
-			}
-			
-			NSCharacterSet *ruleCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@" -*\n"];
-			
-			if ([[line stringByTrimmingCharactersInSet:ruleCharacterSet] length]==0)
-			{
-				if ([self _currentTagIsBlock])
-				{
-					[self _popTag];
-				}
 				
-				[self _pushTag:@"hr" attributes:nil];
-				[self _popTag];
-				
-				continue;
-			}
-			
-			BOOL needsPushTag = NO;
-			NSString *tag = nil;
-			
-			if ([line hasPrefix:@">"])
-			{
-				tag = @"blockquote";
-				
-				if (![[self _currentTag] isEqualToString:@"blockquote"])
+				if (![[self _currentTag] isEqualToString:tag])
 				{
 					needsPushTag = YES;
 				}
-			}
-			else if ([line hasPrefix:@"#"])
-			{
-				NSUInteger headerLevel = 0;
 				
-				while ([line hasPrefix:@"#"])
+				if (needsPushTag)
 				{
-					headerLevel++;
-					
-					line = [line substringFromIndex:1];
+					[self _pushTag:tag attributes:nil];
 				}
 				
-				tag = [NSString stringWithFormat:@"h%d", (int)headerLevel];
-				
-				// trim off leading spaces
-				while ([line hasPrefix:@" "])
+				if (shouldOutputLineText)
 				{
-					line = [line substringFromIndex:1];
-				}
-
-				// trim off trailing hashes
-				while ([line hasSuffix:@"#"])
-				{
-					line = [line substringToIndex:[line length]-1];
-				}
-				
-				// trim off trailing spaces
-				while ([line hasSuffix:@" "])
-				{
-					line = [line substringToIndex:[line length]-1];
-				}
-			}
-			else
-			{
-				tag = @"p";
-			}
-
-			if (![[self _currentTag] isEqualToString:tag])
-			{
-				needsPushTag = YES;
-			}
-			
-			if (needsPushTag)
-			{
-				[self _pushTag:tag attributes:nil];
-			}
-			
-			if (line)
-			{
-				if ([tag isEqualToString:@"blockquote"])
-				{
-					if ([line hasPrefix:@">"])
+					if (line)
 					{
-						line = [line substringFromIndex:1];
+						if ([tag isEqualToString:@"blockquote"])
+						{
+							if ([line hasPrefix:@">"])
+							{
+								line = [line substringFromIndex:1];
+							}
+							
+							if ([line hasPrefix:@" "])
+							{
+								line = [line substringFromIndex:1];
+							}
+						}
+						
+						[self _processLine:line];
+						
+						if (needsBR)
+						{
+							[self _pushTag:@"br" attributes:nil];
+							[self _popTag];
+						}
 					}
-					
-					if ([line hasPrefix:@" "])
+					else
 					{
-						line = [line substringFromIndex:1];
+						NSLog(@"empty line");
 					}
 				}
 				
-				[self _processLine:line];
-				
-				if (needsBR)
+				if (hasTwoNL || headerLevel || !shouldOutputLineText)
 				{
-					[self _pushTag:@"br" attributes:nil];
+					// end of paragraph
 					[self _popTag];
 				}
-			}
-			else
-			{
-				NSLog(@"empty line");
-			}
-			
-			if (hasTwoNL)
-			{
-				// end of paragraph
-				[self _popTag];
+				
+				if (hasTwoNL)
+				{
+					lineIndex++;
+				}
 			}
 		}
+		else
+		{
+			[scanner scanString:@"\n" intoString:NULL];
+		}
+		
+		lineIndex++;
 	}
 	
 	// pop all remaining open tags

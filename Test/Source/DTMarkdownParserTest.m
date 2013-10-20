@@ -132,8 +132,11 @@
 
 - (NSString *)_resultStringForFile:(NSString *)file
 {
-	NSString * filePath = [[NSBundle bundleForClass:[self class]] pathForResource:file ofType:@"html"];
-	return [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
+	NSString *filePath = [[NSBundle bundleForClass:[self class]] pathForResource:file ofType:@"html"];
+	NSString *rawString = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
+	
+	rawString = [rawString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+	return [rawString stringByReplacingOccurrencesOfString:@"\n\n" withString:@"\n"];
 }
 
 - (NSPredicate *)_predicateForFindingOpeningTag:(NSString *)tag
@@ -451,6 +454,34 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Heading 1");
 }
 
+- (void)testHeadingWithFollowingEquals
+{
+	NSString *string = @"Heading 1\n=========\n\nNormal";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<h1>Heading 1</h1>\n<p>Normal</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+	
+	// there should be only one h1 starting
+	NSArray *h1Starts = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingOpeningTag:@"h1"]];
+	assertThatInteger([h1Starts count], is(equalToInteger(1)));
+	
+	// there should be only one h1 closing
+	NSArray *h1Ends = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"h1"]];
+	assertThatInteger([h1Ends count], is(equalToInteger(1)));
+	
+	// look for correct trims
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Heading 1");
+}
+
+
+#pragma mark - Line Break
+
 - (void)testGitHubLineBreaks
 {
 	NSString *string = @"Line1\nLine2\n\nLine3";
@@ -495,19 +526,6 @@
 
 #pragma mark - Test Files
 
-//- (void)testBla
-//{
-//	NSString *string = @"This is also _italic_ and this is __bold__.";
-//	
-//	DTMarkdownParser *parser = [self _parserForString:string options:0];
-//	
-//	BOOL result = [parser parse];
-//	assertThatBool(result, is(equalToBool(YES)));
-//	
-//	NSString *actual = [self _HTMLFromInvocations];
-//	NSString *expected = @"<p>Line1</p>\n<hr />\n<hr />\n<p>Line2</p>\n";
-//}
-
 - (void)testEmphasis
 {
 	DTMarkdownParser *parser = [self _parserForFile:@"emphasis" options:0];
@@ -516,6 +534,19 @@
 	assertThatBool(result, is(equalToBool(YES)));
 	
 	NSString *expected = [self _resultStringForFile:@"emphasis"];
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testHeader
+{
+	DTMarkdownParser *parser = [self _parserForFile:@"header" options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = [self _resultStringForFile:@"header"];
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	assertThat(actual, is(equalTo(expected)));
