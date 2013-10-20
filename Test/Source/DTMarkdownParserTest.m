@@ -479,6 +479,19 @@
 
 #pragma mark - Test Files
 
+//- (void)testBla
+//{
+//	NSString *string = @"This is also _italic_ and this is __bold__.";
+//	
+//	DTMarkdownParser *parser = [self _parserForString:string options:0];
+//	
+//	BOOL result = [parser parse];
+//	assertThatBool(result, is(equalToBool(YES)));
+//	
+//	NSString *actual = [self _HTMLFromInvocations];
+//	NSString *expected = @"<p>Line1</p>\n<hr />\n<hr />\n<p>Line2</p>\n";
+//}
+
 - (void)testEmphasis
 {
 	DTMarkdownParser *parser = [self _parserForFile:@"emphasis" options:0];

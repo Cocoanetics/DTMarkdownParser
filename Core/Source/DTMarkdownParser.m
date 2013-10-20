@@ -94,6 +94,67 @@
 	return NO;
 }
 
+- (NSString *)_effectiveMarkerPrefixOfString:(NSString *)string
+{
+	if ([string hasPrefix:@"**"])
+	{
+		return @"**";
+	}
+	else if ([string hasPrefix:@"*"])
+	{
+		return @"*";
+	}
+	else if ([string hasPrefix:@"__"])
+	{
+		return @"__";
+	}
+	else if ([string hasPrefix:@"_"])
+	{
+		return @"_";
+	}
+	
+	return nil;
+}
+
+- (void)_processMarkedString:(NSString *)markedString insideMarker:(NSString *)marker
+{
+	NSAssert([markedString hasPrefix:marker] && [markedString hasSuffix:marker], @"Processed string has to have the marker at beginning and end");
+	
+	NSUInteger markerLength = [marker length];
+	NSRange insideMarkedRange = NSMakeRange(markerLength, markedString.length - 2*markerLength);
+	
+	// trim off prefix and suffix marker
+	markedString = [markedString substringWithRange:insideMarkedRange];
+	
+	// open the tag for this marker
+	if ([marker isEqualToString:@"*"] || [marker isEqualToString:@"_"])
+	{
+		[self _pushTag:@"em" attributes:nil];
+	}
+	else if ([marker isEqualToString:@"**"] || [marker isEqualToString:@"__"])
+	{
+		[self _pushTag:@"strong" attributes:nil];
+	}
+	
+	// see if there is another marker
+	NSString *furtherMarker = [self _effectiveMarkerPrefixOfString:markedString];
+
+	if (furtherMarker && [markedString hasSuffix:furtherMarker])
+	{
+		[self _processMarkedString:markedString insideMarker:furtherMarker];
+	}
+	else
+	{
+		if (_delegateFlags.supportsFoundCharacters)
+		{
+			[_delegate parser:self foundCharacters:markedString];
+		}
+	}
+	
+	// close the tag for this marker
+	[self _popTag];
+}
+
 - (void)_processLine:(NSString *)line
 {
 	NSScanner *scanner = [NSScanner scannerWithString:line];
@@ -105,43 +166,42 @@
 	{
 		NSString *part;
 		
+		// scan part before first marker
 		if ([scanner scanUpToCharactersFromSet:markerChars intoString:&part])
 		{
 			// output part before markers
 			[_delegate parser:self foundCharacters:part];
+		}
+		
+		// scan marker
+		NSString *openingMarkers;
+
+		NSRange markedRange = NSMakeRange(scanner.scanLocation, 0);
+
+		if ([scanner scanCharactersFromSet:markerChars intoString:&openingMarkers])
+		{
+			NSString *enclosedPart;
+			NSString *closingMarkersToLookFor = [self _effectiveMarkerPrefixOfString:openingMarkers];
 			
-			NSString *openingMarkers;
+			NSAssert(closingMarkersToLookFor, @"There should be a closing marker to look for because we only get here from having scanned for marker characters");
 			
-			if ([scanner scanCharactersFromSet:markerChars intoString:&openingMarkers])
+			// see if this encloses something
+			if ([scanner scanUpToString:closingMarkersToLookFor intoString:&enclosedPart])
 			{
-				NSString *enclosedPart;
-				
-				// see if this encloses something
-				if ([scanner scanUpToString:openingMarkers intoString:&enclosedPart])
+				// there has to be a closing marker as well
+				if ([scanner scanString:closingMarkersToLookFor intoString:NULL])
 				{
-					// there has to be a closing marker as well
-					if ([scanner scanString:openingMarkers intoString:NULL])
-					{
-						if ([openingMarkers isEqualToString:@"*"] || [openingMarkers isEqualToString:@"_"])
-						{
-							[self _pushTag:@"em" attributes:nil];
-						}
-						else if ([openingMarkers isEqualToString:@"**"] || [openingMarkers isEqualToString:@"__"])
-						{
-							[self _pushTag:@"strong" attributes:nil];
-						}
-						
-						[_delegate parser:self foundCharacters:enclosedPart];
-						
-						[self _popTag];
-					}
-					else
-					{
-						// output as is, not enclosed
-						NSString *joined = [openingMarkers stringByAppendingString:enclosedPart];
-						
-						[_delegate parser:self foundCharacters:joined];
-					}
+					markedRange.length = scanner.scanLocation - markedRange.location;
+					NSString *markedString = [line substringWithRange:markedRange];
+					
+					[self _processMarkedString:markedString insideMarker:closingMarkersToLookFor];
+				}
+				else
+				{
+					// output as is, not enclosed
+					NSString *joined = [closingMarkersToLookFor stringByAppendingString:enclosedPart];
+					
+					[_delegate parser:self foundCharacters:joined];
 				}
 			}
 		}
