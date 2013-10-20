@@ -40,7 +40,7 @@
 	return self;
 }
 
-#pragma mark - Parsing Helpers
+#pragma mark - Communication with Delegate
 
 - (void)_reportBeginOfTag:(NSString *)tag attributes:(NSDictionary *)attributes
 {
@@ -57,6 +57,16 @@
 		[_delegate parser:self didEndElement:tag];
 	}
 }
+
+- (void)_reportCharacters:(NSString *)string
+{
+	if (_delegateFlags.supportsFoundCharacters)
+	{
+		[_delegate parser:self foundCharacters:string];
+	}
+}
+
+#pragma mark - Parsing Helpers
 
 - (void)_pushTag:(NSString *)tag attributes:(NSDictionary *)attributes
 {
@@ -145,10 +155,7 @@
 	}
 	else
 	{
-		if (_delegateFlags.supportsFoundCharacters)
-		{
-			[_delegate parser:self foundCharacters:markedString];
-		}
+		[self _reportCharacters:markedString];
 	}
 	
 	// close the tag for this marker
@@ -170,7 +177,7 @@
 		if ([scanner scanUpToCharactersFromSet:markerChars intoString:&part])
 		{
 			// output part before markers
-			[_delegate parser:self foundCharacters:part];
+			[self _reportCharacters:part];
 		}
 		
 		// scan marker
@@ -201,7 +208,7 @@
 					// output as is, not enclosed
 					NSString *joined = [closingMarkersToLookFor stringByAppendingString:enclosedPart];
 					
-					[_delegate parser:self foundCharacters:joined];
+					[self _reportCharacters:joined];
 				}
 			}
 		}
