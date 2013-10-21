@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A7139CDD18153E8500277E90 /* OCMockito.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A7BF25BE1811354B0013D8D7 /* OCMockito.framework */; };
 		A765C44A18115855006B252A /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */; };
 		A765C44B1811589D006B252A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
 		A765C44D181158C9006B252A /* OCHamcrest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A7BF25CB181137CF0013D8D7 /* OCHamcrest.framework */; };
@@ -341,7 +340,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
-				A7139CDD18153E8500277E90 /* OCMockito.framework in CopyFiles */,
 				A765C44D181158C9006B252A /* OCHamcrest.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
