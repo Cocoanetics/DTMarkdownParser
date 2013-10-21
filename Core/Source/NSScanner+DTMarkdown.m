@@ -10,6 +10,75 @@
 
 @implementation NSScanner (DTMarkdown)
 
+- (BOOL)scanMarkdownHyperlink:(NSString **)URLString title:(NSString **)title
+{
+	NSUInteger startPos = self.scanLocation;
+
+	NSString *hrefString;
+	
+	if (![self scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:&hrefString])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	NSUInteger posAfterHREF = self.scanLocation;
+	
+	NSCharacterSet *quoteChars = [NSCharacterSet characterSetWithCharactersInString:@"'\"("];
+	
+	NSString *quote;
+	NSString *quotedTitle;
+	
+	// optional spaces
+	[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
+	
+	if ([self scanCharactersFromSet:quoteChars intoString:&quote])
+	{
+		if ([quote hasPrefix:@"'"])
+		{
+			if ([self scanUpToString:@"'" intoString:&quotedTitle])
+			{
+				if (![self scanString:@"'" intoString:NULL])
+				{
+					self.scanLocation = posAfterHREF;
+				}
+			}
+		}
+		else if ([quote hasPrefix:@"\""])
+		{
+			if ([self scanUpToString:@"\"" intoString:&quotedTitle])
+			{
+				if (![self scanString:@"\"" intoString:NULL])
+				{
+					self.scanLocation = posAfterHREF;
+				}
+			}
+		}
+		else if ([quote hasPrefix:@"("])
+		{
+			if ([self scanUpToString:@")" intoString:&quotedTitle])
+			{
+				if (![self scanString:@")" intoString:NULL])
+				{
+					self.scanLocation = posAfterHREF;
+				}
+			}
+		}
+	}
+	
+	if (URLString)
+	{
+		*URLString = hrefString;
+	}
+	
+	if (title)
+	{
+		*title = quotedTitle;
+	}
+	
+	return YES;
+}
+
 - (BOOL)scanMarkdownHyperlinkReferenceLine:(NSString **)reference URLString:(NSString **)URLString title:(NSString **)title
 {
 	NSUInteger startPos = self.scanLocation;
@@ -56,57 +125,13 @@
 		return NO;
 	}
 	
-	NSString *hrefString;
+	NSString *scannedURLString;
+	NSString *scannedTitle;
 	
-	if (![self scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:&hrefString])
+	if (![self scanMarkdownHyperlink:&scannedURLString title:&scannedTitle])
 	{
 		self.scanLocation = startPos;
 		return NO;
-	}
-	
-	NSCharacterSet *quoteChars = [NSCharacterSet characterSetWithCharactersInString:@"'\"("];
-	
-	NSString *quote;
-	NSString *quotedTitle;
-	
-	// optional spaces
-	[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
-	
-	if ([self scanCharactersFromSet:quoteChars intoString:&quote])
-	{
-		if ([quote hasPrefix:@"'"])
-		{
-			if ([self scanUpToString:@"'" intoString:&quotedTitle])
-			{
-				if (![self scanString:@"'" intoString:NULL])
-				{
-					self.scanLocation = startPos;
-					return NO;
-				}
-			}
-		}
-		else if ([quote hasPrefix:@"\""])
-		{
-			if ([self scanUpToString:@"\"" intoString:&quotedTitle])
-			{
-				if (![self scanString:@"\"" intoString:NULL])
-				{
-					self.scanLocation = startPos;
-					return NO;
-				}
-			}
-		}
-		else if ([quote hasPrefix:@"("])
-		{
-			if ([self scanUpToString:@")" intoString:&quotedTitle])
-			{
-				if (![self scanString:@")" intoString:NULL])
-				{
-					self.scanLocation = startPos;
-					return NO;
-				}
-			}
-		}
 	}
 	
 	if (reference)
@@ -116,12 +141,12 @@
 	
 	if (URLString)
 	{
-		*URLString = hrefString;
+		*URLString = scannedURLString;
 	}
 	
 	if (title)
 	{
-		*title = quotedTitle;
+		*title = scannedTitle;
 	}
 	
 	return YES;

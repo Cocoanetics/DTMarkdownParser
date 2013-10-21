@@ -809,6 +809,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testInlineImageMissingCloseingSquareBracket
+{
+	NSString *string = @"![Alt text (/path/to/img.jpg)";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>![Alt text (/path/to/img.jpg)</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 - (void)testRefStyleImage
 {
 	NSString *string = @"![Alt text][id]\n\n[id]: /path/to/img.jpg  \"Optional title attribute\"";
@@ -819,6 +834,21 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p><img alt=\"Alt text\" src=\"/path/to/img.jpg\" title=\"Optional title attribute\" /></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testImageInlineTitle
+{
+	NSString *string = @"![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png \"Logo Title Text 1\")";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p><img alt=\"alt text\" src=\"https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png\" title=\"Logo Title Text 1\" /></p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");

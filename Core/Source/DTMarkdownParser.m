@@ -244,7 +244,31 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 								// see if it is closed too
 								if ([scanner scanString:@")" intoString:NULL])
 								{
-									attributes = @{@"href": hyperlink};
+									NSString *URLString;
+									NSString *title;
+									
+									NSScanner *urlScanner = [NSScanner scannerWithString:hyperlink];
+									urlScanner.charactersToBeSkipped = nil;
+									
+									if ([urlScanner scanMarkdownHyperlink:&URLString title:&title])
+									{
+										NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
+										
+										if ([URLString length])
+										{
+											tmpDict[@"href"] = URLString;
+										}
+										
+										if ([title length])
+										{
+											tmpDict[@"title"] = title;
+										}
+										
+										if ([tmpDict count])
+										{
+											attributes = [tmpDict copy];
+										}
+									}
 								}
 							}
 						}
@@ -300,8 +324,13 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 							tmpDict[@"alt"] = enclosedPart;
 						}
 						
-						// optional title
-						tmpDict[@"title"] = attributes[@"title"];
+						NSString *title = attributes[@"title"];
+						
+						if ([title length])
+						{
+							// optional title
+							tmpDict[@"title"] = title;
+						}
 						
 						[self _pushTag:@"img" attributes:tmpDict];
 						[self _popTag];

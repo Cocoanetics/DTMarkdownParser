@@ -10,6 +10,9 @@
 
 @interface NSScanner (DTMarkdown)
 
+// returns yes if there was a hyperlink followed by an optional title
+- (BOOL)scanMarkdownHyperlink:(NSString **)URLString title:(NSString **)title;
+
 // returns yes if the current line contained a valid markdown hyperlink reference
 - (BOOL)scanMarkdownHyperlinkReferenceLine:(NSString **)reference URLString:(NSString **)URLString title:(NSString **)title;
 
