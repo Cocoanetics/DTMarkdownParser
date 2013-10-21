@@ -173,4 +173,24 @@
 	STAssertNil(ref, @"href should be nil");
 }
 
+- (void)testRefWithInvalidHyperlink
+{
+	NSString *string = @"[foo]: ";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *href;
+	NSString *title;
+	NSString *ref;
+	
+	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
+	
+	STAssertFalse(b, @"Should not be able to scan hyperlink");
+	
+	STAssertNil(href, @"href should be nil");
+	STAssertNil(title, @"Title should be nil");
+	STAssertNil(ref, @"href should be nil");
+}
+
 @end
