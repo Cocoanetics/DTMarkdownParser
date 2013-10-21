@@ -149,6 +149,10 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 	{
 		return @"[";
 	}
+	else if ([string hasPrefix:@"`"])
+	{
+		return @"`";
+	}
 	
 	return nil;
 }
@@ -163,6 +167,8 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 	// trim off prefix and suffix marker
 	markedString = [markedString substringWithRange:insideMarkedRange];
 	
+	BOOL processFurtherMarkers = YES;
+	
 	// open the tag for this marker
 	if ([marker isEqualToString:@"*"] || [marker isEqualToString:@"_"])
 	{
@@ -176,12 +182,25 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 	{
 		[self _pushTag:@"del" attributes:nil];
 	}
-	// see if there is another marker
-	NSString *furtherMarker = [self _effectiveMarkerPrefixOfString:markedString];
-	
-	if (furtherMarker && [markedString hasSuffix:furtherMarker])
+	else if ([marker isEqualToString:@"`"])
 	{
-		[self _processMarkedString:markedString insideMarker:furtherMarker];
+		[self _pushTag:@"code" attributes:nil];
+		processFurtherMarkers = NO;
+	}
+	
+	if (processFurtherMarkers)
+	{
+		// see if there is another marker
+		NSString *furtherMarker = [self _effectiveMarkerPrefixOfString:markedString];
+	
+		if (furtherMarker && [markedString hasSuffix:furtherMarker])
+		{
+			[self _processMarkedString:markedString insideMarker:furtherMarker];
+		}
+		else
+		{
+			[self _reportCharacters:markedString];
+		}
 	}
 	else
 	{
@@ -197,7 +216,7 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
 	
-	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!"];
+	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`"];
 	
 	while (![scanner isAtEnd])
 	{
