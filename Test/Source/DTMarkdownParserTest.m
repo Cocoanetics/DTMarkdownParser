@@ -809,6 +809,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testRefStyleImage
+{
+	NSString *string = @"![Alt text][id]\n\n[id]: /path/to/img.jpg  \"Optional title attribute\"";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p><img alt=\"Alt text\" src=\"/path/to/img.jpg\" title=\"Optional title attribute\" /></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 #pragma mark - Test Files
 
 - (void)testEmphasis

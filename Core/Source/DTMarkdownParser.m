@@ -300,6 +300,9 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 							tmpDict[@"alt"] = enclosedPart;
 						}
 						
+						// optional title
+						tmpDict[@"title"] = attributes[@"title"];
+						
 						[self _pushTag:@"img" attributes:tmpDict];
 						[self _popTag];
 					}
