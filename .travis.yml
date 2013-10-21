@@ -6,7 +6,7 @@ before_script:
   - git submodule update --recursive --init
 
 script: 
- - xctool -project DTMarkdownParser.xcodeproj -scheme "Mac Framework" build test ONLY_ACTIVE_ARCH=NO -configuration Coverage
+ - xctool -project DTMarkdownParser.xcodeproj -scheme "Mac Framework" -configuration Coverage build test ONLY_ACTIVE_ARCH=NO
 
 after_success:
   - ./coveralls.rb --extension m --exclude-folder Demo --exclude-folder Test --exclude-folder Externals
