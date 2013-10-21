@@ -3,6 +3,7 @@ language: objective-c
 
 before_script:
   - sudo easy_install cpp-coveralls
+  - git submodule update --recursive --init
 
 script: 
  - xctool -project DTMarkdownParser.xcodeproj -scheme "Mac Framework" build test ONLY_ACTIVE_ARCH=NO
