@@ -775,5 +775,19 @@
 	assertThat(actual, is(equalTo(expected)));
 }
 
+- (void)testMissingLinkDefn
+{
+	DTMarkdownParser *parser = [self _parserForFile:@"missing_link_defn" options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = [self _resultStringForFile:@"missing_link_defn"];
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+
 
 @end
