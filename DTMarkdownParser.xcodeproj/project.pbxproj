@@ -9,9 +9,6 @@
 /* Begin PBXBuildFile section */
 		A765C44A18115855006B252A /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */; };
 		A765C44B1811589D006B252A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
-		A765C44D181158C9006B252A /* OCHamcrest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A7BF25CB181137CF0013D8D7 /* OCHamcrest.framework */; };
-		A765C455181159ED006B252A /* OCMockito.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25BE1811354B0013D8D7 /* OCMockito.framework */; };
-		A765C456181159F1006B252A /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25CB181137CF0013D8D7 /* OCHamcrest.framework */; };
 		A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */; };
 		A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C46218117EE5006B252A /* DTInvocationRecorder.m */; };
 		A765C4691811906B006B252A /* DTInvocationTestFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C4681811906B006B252A /* DTInvocationTestFunctions.m */; };
@@ -317,13 +314,6 @@
 			remoteGlobalIDString = 085D2FFF1351254000EBBE91;
 			remoteInfo = libocmockitoTests;
 		};
-		A7BF25C5181135590013D8D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7BF258C1811352D0013D8D7 /* OCMockito.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 08BDD5A81350C59C00E5A443;
-			remoteInfo = OCMockito;
-		};
 		A7BF2605181150FC0013D8D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7BF250018112A3B0013D8D7 /* Project object */;
@@ -332,19 +322,6 @@
 			remoteInfo = "Mac Framework";
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		A7BF25C9181137670013D8D7 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 16;
-			files = (
-				A765C44D181158C9006B252A /* OCHamcrest.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+DTFoundation.h"; sourceTree = "<group>"; };
@@ -642,8 +619,6 @@
 			files = (
 				A765C44B1811589D006B252A /* Cocoa.framework in Frameworks */,
 				A765C44A18115855006B252A /* SenTestingKit.framework in Frameworks */,
-				A765C455181159ED006B252A /* OCMockito.framework in Frameworks */,
-				A765C456181159F1006B252A /* OCHamcrest.framework in Frameworks */,
 				A7BF2608181151450013D8D7 /* DTMarkdownParser.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1056,13 +1031,11 @@
 				A7BF251918112A8F0013D8D7 /* Sources */,
 				A7BF251A18112A8F0013D8D7 /* Frameworks */,
 				A7BF251B18112A8F0013D8D7 /* Resources */,
-				A7BF25C9181137670013D8D7 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				A7BF2606181150FC0013D8D7 /* PBXTargetDependency */,
-				A7BF25C6181135590013D8D7 /* PBXTargetDependency */,
 			);
 			name = UnitTests;
 			productName = UnitTests;
@@ -1461,11 +1434,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A7BF25C6181135590013D8D7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = OCMockito;
-			targetProxy = A7BF25C5181135590013D8D7 /* PBXContainerItemProxy */;
-		};
 		A7BF2606181150FC0013D8D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A7BF25D3181138320013D8D7 /* Mac Framework */;
