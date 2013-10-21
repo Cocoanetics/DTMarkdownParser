@@ -14,6 +14,7 @@
 NSString * const DTMarkdownParserSpecialTagH1 = @"H1";
 NSString * const DTMarkdownParserSpecialTagH2 = @"H2";
 NSString * const DTMarkdownParserSpecialTagHR = @"HR";
+NSString * const DTMarkdownParserSpecialTagPre = @"PRE";
 
 
 @implementation DTMarkdownParser
@@ -464,6 +465,13 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 					didFindSpecial = YES;
 				}
 			}
+			
+			// look for indented pre lines
+			if ([line hasPrefix:@"\t" ] || [line hasPrefix:@"    "])
+			{
+				_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagPre;
+				didFindSpecial = YES;
+			}
 		}
 		
 		if ([scanner scanString:@"\n" intoString:NULL])
@@ -501,6 +509,9 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 		NSString *line;
 		if ([scanner scanUpToString:@"\n" intoString:&line])
 		{
+			NSString *specialLine = _specialLines[@(lineIndex)];
+			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
+
 			if ([line hasSuffix:@"\r"])
 			{
 				// cut off Windows \r
@@ -509,9 +520,15 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 			
 			BOOL hasNL = [scanner scanString:@"\n" intoString:NULL];
 			
-			if (![_ignoredLines containsIndex:lineIndex] && [line length])
+			lineIndex++;
+			
+			if (lineIsIgnored)
 			{
-				
+				continue;
+			}
+			
+			if ([line length])
+			{
 				BOOL hasTwoNL = NO;
 				
 				BOOL needsBR = NO;
@@ -573,7 +590,6 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 					tag = @"p";
 				}
 				
-				NSString *specialLine = _specialLines[@(lineIndex)];
 				BOOL shouldOutputLineText = YES;
 				
 				if (specialLine == DTMarkdownParserSpecialTagH1)
@@ -679,10 +695,10 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 		}
 		else
 		{
+			// empty line
 			[scanner scanString:@"\n" intoString:NULL];
+			lineIndex++;
 		}
-		
-		lineIndex++;
 	}
 	
 	// pop all remaining open tags
