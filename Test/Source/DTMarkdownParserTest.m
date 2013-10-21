@@ -10,6 +10,7 @@
 #import "DTInvocationRecorder.h"
 #import "DTInvocationTestFunctions.h"
 #import "NSInvocation+DTFoundation.h"
+#import "NSString+DTMarkdown.h"
 
 
 @interface DTMarkdownParserTest : SenTestCase
@@ -89,7 +90,7 @@
 			
 			[tmpString appendFormat:@"</%@>", tag];
 			
-			if ([tag isEqualToString:@"p"] || [tag isEqualToString:@"hr"] ||[tag hasPrefix:@"h"])
+			if ([tag isEqualToString:@"p"] || [tag isEqualToString:@"hr"] ||[tag hasPrefix:@"h"]||[tag hasPrefix:@"pre"])
 			{
 				[tmpString appendString:@"\n"];
 			}
@@ -98,7 +99,7 @@
 		{
 			NSString *string = [oneInvocation argumentAtIndexAsObject:3];
 			
-			[tmpString appendFormat:@"%@", string];
+			[tmpString appendFormat:@"%@", [string stringByAddingHTMLEntities]];
 		}
 	}
 	
@@ -849,6 +850,38 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p><img alt=\"alt text\" src=\"https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png\" title=\"Logo Title Text 1\" /></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+#pragma mark - Preformatted Text
+
+- (void)testIndentedCodeBlock
+{
+	NSString *string = @"Normal text\n\n    10 print \"Hello World\"\n    20 goto 10";
+
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal text</p>\n<pre><code>10 print &quot;Hello World&quot;\n20 goto 10</code></pre>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testIndentedCodeBlockMissingEmptyLineBefore
+{
+	NSString *string = @"Normal text\n    10 print \"Hello World\"\n    20 goto 10";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal text\n    10 print &quot;Hello World&quot;\n    20 goto 10</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");

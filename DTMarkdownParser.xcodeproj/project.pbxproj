@@ -283,6 +283,7 @@
 		A7BF26001811385A0013D8D7 /* DTMarkdownParser.h in Headers */ = {isa = PBXBuildFile; fileRef = A7BF25FE1811385A0013D8D7 /* DTMarkdownParser.h */; };
 		A7BF26011811385A0013D8D7 /* DTMarkdownParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */; };
 		A7BF2608181151450013D8D7 /* DTMarkdownParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
+		A7D7DF2318155ED300F4377D /* NSString+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -610,6 +611,8 @@
 		A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMarkdownParser.m; sourceTree = "<group>"; };
 		A7BF2602181138B50013D8D7 /* Framework-Mac-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Framework-Mac-Info.plist"; sourceTree = "<group>"; };
 		A7BF2604181138F50013D8D7 /* Framework-Mac-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Framework-Mac-Prefix.pch"; sourceTree = "<group>"; };
+		A7D7DF2118155ED300F4377D /* NSString+DTMarkdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+DTMarkdown.h"; sourceTree = "<group>"; };
+		A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+DTMarkdown.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -978,6 +981,8 @@
 		A7BF253418112C8B0013D8D7 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				A7D7DF2118155ED300F4377D /* NSString+DTMarkdown.h */,
+				A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */,
 				A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */,
 				A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */,
 				A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */,
@@ -1415,6 +1420,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7D7DF2318155ED300F4377D /* NSString+DTMarkdown.m in Sources */,
 				A765C4691811906B006B252A /* DTInvocationTestFunctions.m in Sources */,
 				A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */,
 				A7BF25C8181136530013D8D7 /* DTMarkdownParserTest.m in Sources */,
