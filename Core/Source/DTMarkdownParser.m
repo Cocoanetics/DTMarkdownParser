@@ -105,23 +105,6 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 	return [_tagStack lastObject];
 }
 
-- (BOOL)_currentTagIsBlock
-{
-	NSString *tag = [_tagStack lastObject];
-	
-	if ([tag isEqualToString:@"p"])
-	{
-		return YES;
-	}
-	
-	if ([tag isEqualToString:@"blockquote"])
-	{
-		return YES;
-	}
-	
-	return NO;
-}
-
 - (NSString *)_effectiveMarkerPrefixOfString:(NSString *)string
 {
 	if ([string hasPrefix:@"**"])
@@ -763,32 +746,25 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 			
 			if (shouldOutputLineText)
 			{
-				if (line)
+				if ([tag isEqualToString:@"blockquote"])
 				{
-					if ([tag isEqualToString:@"blockquote"])
+					if ([line hasPrefix:@">"])
 					{
-						if ([line hasPrefix:@">"])
-						{
-							line = [line substringFromIndex:1];
-						}
-						
-						if ([line hasPrefix:@" "])
-						{
-							line = [line substringFromIndex:1];
-						}
+						line = [line substringFromIndex:1];
 					}
 					
-					[self _processLine:line];
-					
-					if (needsBR)
+					if ([line hasPrefix:@" "])
 					{
-						[self _pushTag:@"br" attributes:nil];
-						[self _popTag];
+						line = [line substringFromIndex:1];
 					}
 				}
-				else
+				
+				[self _processLine:line];
+				
+				if (needsBR)
 				{
-					NSLog(@"empty line");
+					[self _pushTag:@"br" attributes:nil];
+					[self _popTag];
 				}
 			}
 			
