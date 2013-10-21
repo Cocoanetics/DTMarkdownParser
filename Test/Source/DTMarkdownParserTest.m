@@ -881,6 +881,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testIndentedCodeBlockWithTab
+{
+	NSString *string = @"Normal text\n\n\t10 print \"Hello World\"\n\t20 goto 10";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal text</p>\n<pre><code>10 print &quot;Hello World&quot;\n20 goto 10</code></pre>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 - (void)testIndentedCodeBlockMissingEmptyLineBefore
 {
 	NSString *string = @"Normal text\n    10 print \"Hello World\"\n    20 goto 10";
