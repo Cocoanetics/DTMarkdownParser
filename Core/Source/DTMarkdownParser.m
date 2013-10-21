@@ -139,6 +139,10 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 	{
 		return @"~~";
 	}
+	else if ([string hasPrefix:@"!["])
+	{
+		return @"![";
+	}
 	else if ([string hasPrefix:@"["])
 	{
 		return @"[";
@@ -191,7 +195,7 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
 	
-	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~["];
+	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!"];
 	
 	while (![scanner isAtEnd])
 	{
@@ -216,7 +220,8 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 			
 			NSAssert(effectiveOpeningMarker, @"There should be a closing marker to look for because we only get here from having scanned for marker characters");
 			
-			if ([effectiveOpeningMarker isEqualToString:@"["])
+			
+			if ([effectiveOpeningMarker isEqualToString:@"!["] || [effectiveOpeningMarker isEqualToString:@"["])
 			{
 				NSDictionary *attributes = nil;
 				
@@ -274,15 +279,36 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 				// only output hyperlink if all is ok
 				if (attributes)
 				{
-					[self _pushTag:@"a" attributes:attributes];
-					[self _reportCharacters:enclosedPart];
-					[self _popTag];
+					if ([effectiveOpeningMarker isEqualToString:@"["])
+					{
+						[self _pushTag:@"a" attributes:attributes];
+						[self _reportCharacters:enclosedPart];
+						[self _popTag];
+					}
+					else if ([effectiveOpeningMarker isEqualToString:@"!["])
+					{
+						NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
+						NSString *src = attributes[@"href"];
+						
+						if (src)
+						{
+							tmpDict[@"src"] = src;
+						}
+						
+						if ([enclosedPart length])
+						{
+							tmpDict[@"alt"] = enclosedPart;
+						}
+						
+						[self _pushTag:@"img" attributes:tmpDict];
+						[self _popTag];
+					}
 				}
 				else
 				{
 					// something wrong with this link, just output opening [ and scan after that
-					[self _reportCharacters:@"["];
-					scanner.scanLocation = markedRange.location + 1;
+					[self _reportCharacters:effectiveOpeningMarker];
+					scanner.scanLocation = markedRange.location + [effectiveOpeningMarker length];
 				}
 				
 				continue;

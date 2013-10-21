@@ -30,11 +30,11 @@
 	
 	for (int i = 0; i<num; i++)
 	{
-		NSInvocation *invocation = _recorder.invocations[i];
+		NSInvocation *oneInvocation = _recorder.invocations[i];
 		
-		if (invocation.selector == @selector(parser:didStartElement:attributes:))
+		if (oneInvocation.selector == @selector(parser:didStartElement:attributes:))
 		{
-			NSString *tag = [invocation argumentAtIndexAsObject:3];
+			NSString *tag = [oneInvocation argumentAtIndexAsObject:3];
 			
 			BOOL closedRightAway = NO;
 			
@@ -50,25 +50,15 @@
 					{
 						closedRightAway = YES;
 						i++;
-						
-						[tmpString appendFormat:@"<%@ />", tag];
-						
-						if ([tag isEqualToString:@"hr"])
-						{
-							[tmpString appendString:@"\n"];
-						}
-						
-						continue;
 					}
 				}
 			}
-			
-			NSDictionary *attributes = [invocation argumentAtIndexAsObject:4];
+
+			NSDictionary *attributes = [oneInvocation argumentAtIndexAsObject:4];
+			NSMutableString *attribStr = [NSMutableString string];
 			
 			if ([attributes count])
 			{
-				NSMutableString *attribStr = [NSMutableString string];
-				
 				NSArray *sortedKeys = [[attributes allKeys] sortedArrayUsingSelector:@selector(compare:)];
 				
 				for (NSString *oneKey in sortedKeys)
@@ -77,17 +67,25 @@
 					
 					[attribStr appendFormat:@" %@=\"%@\"", oneKey, value];
 				}
-				
-				[tmpString appendFormat:@"<%@%@>", tag, attribStr];
+			}
+			
+			if (closedRightAway)
+			{
+				[tmpString appendFormat:@"<%@%@ />", tag, attribStr];
 			}
 			else
 			{
-				[tmpString appendFormat:@"<%@>", tag];
+				[tmpString appendFormat:@"<%@%@>", tag, attribStr];
+			}
+
+			if ([tag isEqualToString:@"hr"])
+			{
+				[tmpString appendString:@"\n"];
 			}
 		}
-		else if (invocation.selector == @selector(parser:didEndElement:))
+		else if (oneInvocation.selector == @selector(parser:didEndElement:))
 		{
-			NSString *tag = [invocation argumentAtIndexAsObject:3];
+			NSString *tag = [oneInvocation argumentAtIndexAsObject:3];
 			
 			[tmpString appendFormat:@"</%@>", tag];
 			
@@ -96,9 +94,9 @@
 				[tmpString appendString:@"\n"];
 			}
 		}
-		else 	if (invocation.selector == @selector(parser:foundCharacters:))
+		else if (oneInvocation.selector == @selector(parser:foundCharacters:))
 		{
-			NSString *string = [invocation argumentAtIndexAsObject:3];
+			NSString *string = [oneInvocation argumentAtIndexAsObject:3];
 			
 			[tmpString appendFormat:@"%@", string];
 		}
@@ -402,7 +400,7 @@
 	NSString *expected = @"<p><strong><em>Strong Italic Words</em></strong></p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testMismatchedCombinedBoldAndItalics
@@ -417,7 +415,7 @@
 	NSString *expected = @"<p><strong>_Strong Italic Words</strong>_</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testStrikethrough
@@ -432,7 +430,7 @@
 	NSString *expected = @"<p><del>deleted</del></p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testMismatchedStrikethrough
@@ -447,7 +445,7 @@
 	NSString *expected = @"<p>~~deleted~</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 
@@ -514,7 +512,7 @@
 	NSString *expected = @"<h1>Heading 1</h1>\n<p>Normal</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 	
 	// there should be only one h1 starting
 	NSArray *h1Starts = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingOpeningTag:@"h1"]];
@@ -542,7 +540,7 @@
 	NSString *expected = @"<p>Line1<br />Line2</p>\n<p>Line3</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testGruberLineBreaks
@@ -556,7 +554,7 @@
 	NSString *expected = @"<p>Line1<br />Line2</p>\n<p>Line3</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testHorizontalRule
@@ -570,7 +568,7 @@
 	NSString *expected = @"<p>Line1</p>\n<hr />\n<hr />\n<p>Line2</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 #pragma mark - Links
@@ -586,7 +584,7 @@
 	NSString *expected = @"<p>Here is <a href=\"http://www.cocoanetics.com\">a hyperlink</a></p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testInlineLinkNoClosingSquareBracket
@@ -600,7 +598,7 @@
 	NSString *expected = @"<p>Here is [not a hyperlink</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testInlineLinkNoClosingRoundBracket
@@ -614,7 +612,7 @@
 	NSString *expected = @"<p>Not a [hyperlink](http://foo</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testInlineLinkNoRoundBrackets
@@ -628,7 +626,7 @@
 	NSString *expected = @"<p>Here is [not a hyperlink] and more text</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 - (void)testInlineLinkSpacesBetweenSquareAndRoundBracket
 {
@@ -641,7 +639,7 @@
 	NSString *expected = @"<p>Here is <a href=\"http://www.cocoanetics.com\">a hyperlink</a></p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testInlineLinkNoRoundBracketsButOtherMarkings
@@ -655,7 +653,7 @@
 	NSString *expected = @"<p>Here is [<strong><em>not a hyperlink</em></strong>] word</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testMultipleSimpleLinksOnMultipleLines
@@ -671,7 +669,7 @@
 	
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testDoubleSquareLink
@@ -686,7 +684,7 @@
 	NSString *expected = @"<p>This is a <a href=\"http://foo.com\">link with reference</a>.</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testDoubleSquareLinkTitleInSingleQuotes
@@ -701,7 +699,7 @@
 	NSString *expected = @"<p>This is a <a href=\"http://foo.com\" title=\"title\">link with reference</a>.</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testDoubleSquareLinkTitleInDoubleQuotes
@@ -716,7 +714,7 @@
 	NSString *expected = @"<p>This is a <a href=\"http://foo.com\" title=\"title\">link with reference</a>.</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testDoubleSquareLinkTitleInRoundBrackets
@@ -731,7 +729,7 @@
 	NSString *expected = @"<p>This is a <a href=\"http://foo.com\" title=\"title\">link with reference</a>.</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testDoubleSquareLinkNonClosed
@@ -746,7 +744,7 @@
 	NSString *expected = @"<p>This is a [link with reference][used.</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testDoubleSquareLinkUsingTitleAsRef
@@ -761,7 +759,7 @@
 	NSString *expected = @"<p>This is a <a href=\"http://foo.com\">Link</a>.</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testDoubleSquareLinkUsingTitleAsRefWithoutMatch
@@ -776,7 +774,7 @@
 	NSString *expected = @"<p>This is not a [Link][].</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testDoubleSquareLinkMissingClose
@@ -791,9 +789,25 @@
 	NSString *expected = @"<p>This is not a [Link][.</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+#pragma mark - Images
+
+- (void)testInlineImage
+{
+	NSString *string = @"![Alt text](/path/to/img.jpg)";
+
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p><img alt=\"Alt text\" src=\"/path/to/img.jpg\" /></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
 
 #pragma mark - Test Files
 
@@ -807,7 +821,7 @@
 	NSString *expected = [self _resultStringForFile:@"emphasis"];
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testHeader
@@ -820,7 +834,7 @@
 	NSString *expected = [self _resultStringForFile:@"header"];
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testMissingLinkDefn
@@ -833,7 +847,7 @@
 	NSString *expected = [self _resultStringForFile:@"missing_link_defn"];
 	NSString *actual = [self _HTMLFromInvocations];
 	
-	STAssertTrue([actual isEqualToString:expected], @"Expected result did not match");
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 
