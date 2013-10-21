@@ -554,6 +554,23 @@
 	assertThat(actual, is(equalTo(expected)));
 }
 
+#pragma mark - Links
+
+- (void)testInlineLink
+{
+	NSString *string = @"Here is [a hyperlink](http://www.cocoanetics.com)";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>Here is <a href=\"http://www.cocoanetics.com\">a hyperlink</a></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+
 #pragma mark - Test Files
 
 - (void)testEmphasis
