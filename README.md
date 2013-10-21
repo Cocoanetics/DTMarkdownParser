@@ -1,6 +1,8 @@
 DTMarkdownParser
 ================
 
+[![Build Status](https://travis-ci.org/Cocoanetics/DTMarkdownParser.png?branch=develop)](https://travis-ci.org/Cocoanetics/DTMarkdownParser) [![Coverage Status](https://coveralls.io/repos/Cocoanetics/DTMarkdownParser/badge.png?branch=develop)](https://coveralls.io/r/Cocoanetics/DTMarkdownParser?branch=develop) 
+
 This is a parser for markdown text that has the following design guidelines:
 
 - No C-library dependency
