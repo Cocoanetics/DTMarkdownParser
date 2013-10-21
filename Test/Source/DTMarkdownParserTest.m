@@ -231,6 +231,15 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parserDidEndDocument:), nil);
 }
 
+- (void)testEmptyString
+{
+	NSString *string = @"";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertFalse(result, @"Parser should return NO for empty string");
+}
+
 - (void)testSimpleLine
 {
 	NSString *string = @"Hello Markdown";

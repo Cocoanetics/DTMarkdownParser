@@ -529,7 +529,7 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 
 - (BOOL)parse
 {
-	if (!_string)
+	if (![_string length])
 	{
 		return NO;
 	}
