@@ -613,6 +613,7 @@
 		A7BF2604181138F50013D8D7 /* Framework-Mac-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Framework-Mac-Prefix.pch"; sourceTree = "<group>"; };
 		A7D7DF2118155ED300F4377D /* NSString+DTMarkdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+DTMarkdown.h"; sourceTree = "<group>"; };
 		A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+DTMarkdown.m"; sourceTree = "<group>"; };
+		A7D7DF2518156DF600F4377D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -911,6 +912,7 @@
 		A7BF24FF18112A3B0013D8D7 = {
 			isa = PBXGroup;
 			children = (
+				A7D7DF2418156DE700F4377D /* Documentation */,
 				A7BF253E1811352D0013D8D7 /* Externals */,
 				A7BF253018112C8B0013D8D7 /* Core */,
 				A7BF253318112C8B0013D8D7 /* Test */,
@@ -1012,6 +1014,14 @@
 				A7BF25C41811354B0013D8D7 /* libocmockitoTests.octest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A7D7DF2418156DE700F4377D /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				A7D7DF2518156DF600F4377D /* README.md */,
+			);
+			name = Documentation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
