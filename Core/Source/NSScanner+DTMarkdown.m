@@ -40,6 +40,7 @@
 			{
 				if (![self scanString:@"'" intoString:NULL])
 				{
+					quotedTitle = nil;
 					self.scanLocation = posAfterHREF;
 				}
 			}
@@ -50,6 +51,7 @@
 			{
 				if (![self scanString:@"\"" intoString:NULL])
 				{
+					quotedTitle = nil;
 					self.scanLocation = posAfterHREF;
 				}
 			}
@@ -60,6 +62,7 @@
 			{
 				if (![self scanString:@")" intoString:NULL])
 				{
+					quotedTitle = nil;
 					self.scanLocation = posAfterHREF;
 				}
 			}

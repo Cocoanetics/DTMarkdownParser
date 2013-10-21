@@ -284,6 +284,7 @@
 		A7BF26011811385A0013D8D7 /* DTMarkdownParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */; };
 		A7BF2608181151450013D8D7 /* DTMarkdownParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
 		A7D7DF2318155ED300F4377D /* NSString+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */; };
+		A7D7DF271815740000F4377D /* NSScannerDTMarkdownTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D7DF261815740000F4377D /* NSScannerDTMarkdownTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -614,6 +615,7 @@
 		A7D7DF2118155ED300F4377D /* NSString+DTMarkdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+DTMarkdown.h"; sourceTree = "<group>"; };
 		A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+DTMarkdown.m"; sourceTree = "<group>"; };
 		A7D7DF2518156DF600F4377D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		A7D7DF261815740000F4377D /* NSScannerDTMarkdownTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSScannerDTMarkdownTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -986,6 +988,7 @@
 				A7D7DF2118155ED300F4377D /* NSString+DTMarkdown.h */,
 				A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */,
 				A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */,
+				A7D7DF261815740000F4377D /* NSScannerDTMarkdownTest.m */,
 				A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */,
 				A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */,
 				A765C46118117EE5006B252A /* DTInvocationRecorder.h */,
@@ -1432,6 +1435,7 @@
 			files = (
 				A7D7DF2318155ED300F4377D /* NSString+DTMarkdown.m in Sources */,
 				A765C4691811906B006B252A /* DTInvocationTestFunctions.m in Sources */,
+				A7D7DF271815740000F4377D /* NSScannerDTMarkdownTest.m in Sources */,
 				A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */,
 				A7BF25C8181136530013D8D7 /* DTMarkdownParserTest.m in Sources */,
 				A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */,
