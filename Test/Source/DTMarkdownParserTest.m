@@ -917,6 +917,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testFencedCodeBlock
+{
+	NSString *string = @"Normal\n```\n10 print \"Hello World\"\n20 goto 10\n```\nNormal";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<pre><code>10 print &quot;Hello World&quot;\n20 goto 10\n</code></pre>\n<p>Normal</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 #pragma mark - Test Files
 
 - (void)testEmphasis

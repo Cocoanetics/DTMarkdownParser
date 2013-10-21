@@ -17,6 +17,9 @@ NSString * const DTMarkdownParserSpecialTagH2 = @"H2";
 NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 NSString * const DTMarkdownParserSpecialTagPre = @"PRE";
 NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
+NSString * const DTMarkdownParserSpecialFencedPreStart = @"<FENCED BEGIN>";
+NSString * const DTMarkdownParserSpecialFencedPreCode = @"<FENCED CODE>";
+NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 
 @implementation DTMarkdownParser
 {
@@ -409,9 +412,12 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 		if ([scanner scanUpToString:@"\n" intoString:&line])
 		{
 			BOOL didFindSpecial = NO;
+			NSString *specialOfLineBefore = nil;
 			
 			if (lineIndex)
 			{
+				specialOfLineBefore = _specialLines[@(lineIndex-1)];
+				
 				unichar firstChar = [line characterAtIndex:0];
 				
 				if (firstChar=='-' || firstChar=='=')
@@ -491,10 +497,34 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 			{
 				// PRE only possible if there is an empty line before it or already a PRE, or beginning doc
 				
-				if (!lineIndex || (lineIndex>0 && (_specialLines[@(lineIndex-1)] == DTMarkdownParserSpecialTagPre || _specialLines[@(lineIndex-1)] == DTMarkdownParserSpecialEmptyLine)))
+				if (!lineIndex || (lineIndex>0 && (specialOfLineBefore == DTMarkdownParserSpecialTagPre || specialOfLineBefore == DTMarkdownParserSpecialEmptyLine)))
 				{
 					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagPre;
 					didFindSpecial = YES;
+				}
+			}
+			
+			if (!didFindSpecial && [line hasPrefix:@"```"])
+			{
+				if (specialOfLineBefore == DTMarkdownParserSpecialFencedPreCode || specialOfLineBefore == DTMarkdownParserSpecialFencedPreStart)
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialFencedPreEnd;
+					[_ignoredLines addIndex:lineIndex];
+				}
+				else
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialFencedPreStart;
+					[_ignoredLines addIndex:lineIndex];
+				}
+				
+				didFindSpecial = YES;
+			}
+			
+			if (!didFindSpecial)
+			{
+				if (specialOfLineBefore == DTMarkdownParserSpecialFencedPreCode || specialOfLineBefore == DTMarkdownParserSpecialFencedPreStart)
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialFencedPreCode;
 				}
 			}
 		}
@@ -541,7 +571,10 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 		if ([scanner scanUpToString:@"\n" intoString:&line])
 		{
 			NSString *specialLine = _specialLines[@(lineIndex)];
+			NSString *specialFollowingLine = _specialLines[@(lineIndex+1)];
+			
 			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
+			BOOL followingLineIsIgnored = [_ignoredLines containsIndex:lineIndex+1];
 			
 			if ([line hasSuffix:@"\r"])
 			{
@@ -566,6 +599,7 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 				}
 			}
 			
+			
 			if (hasTwoNL)
 			{
 				lineIndex++;
@@ -582,17 +616,25 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 			NSString *tag = nil;
 			NSUInteger headerLevel = 0;
 			
-			if (specialLine == DTMarkdownParserSpecialTagPre)
+			if (specialLine == DTMarkdownParserSpecialTagPre || specialLine == DTMarkdownParserSpecialFencedPreCode)
 			{
 				NSString *codeLine;
 				
-				if ([line hasPrefix:@"\t"])
+				if (specialLine == DTMarkdownParserSpecialTagPre)
 				{
-					codeLine = [line substringFromIndex:1];
+					// trim off indenting
+					if ([line hasPrefix:@"\t"])
+					{
+						codeLine = [line substringFromIndex:1];
+					}
+					else if ([line hasPrefix:@"    "])
+					{
+						codeLine = [line substringFromIndex:4];
+					}
 				}
-				else if ([line hasPrefix:@"    "])
+				else
 				{
-					codeLine = [line substringFromIndex:4];
+					codeLine = line;
 				}
 				
 				if (![[self _currentTag] isEqualToString:@"code"])
@@ -608,7 +650,7 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 				
 				[self _reportCharacters:codeLine];
 				
-				if (hasTwoNL)
+				if (hasTwoNL || specialFollowingLine == DTMarkdownParserSpecialFencedPreEnd)
 				{
 					[self _popTag];
 					[self _popTag];
@@ -678,6 +720,8 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 				tag = [NSString stringWithFormat:@"h%d", (int)headerLevel];
 			}
 			
+			BOOL willCloseTag = (hasTwoNL || headerLevel || !shouldOutputLineText || followingLineIsIgnored);
+			
 			// handle new lines
 			if (shouldOutputLineText && !hasTwoNL && ![scanner isAtEnd])
 			{
@@ -700,7 +744,7 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 							line = [line substringToIndex:[line length]-1];
 						}
 					}
-					else if (!headerLevel)
+					else if (!willCloseTag)
 					{
 						line = [line stringByAppendingString:@"\n"];
 					}
@@ -748,7 +792,7 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 				}
 			}
 			
-			if (hasTwoNL || headerLevel || !shouldOutputLineText)
+			if (willCloseTag)
 			{
 				// end of paragraph
 				[self _popTag];
