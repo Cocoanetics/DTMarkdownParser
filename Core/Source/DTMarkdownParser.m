@@ -137,6 +137,10 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 	{
 		return @"~~";
 	}
+	else if ([string hasPrefix:@"["])
+	{
+		return @"[";
+	}
 	
 	return nil;
 }
@@ -185,7 +189,7 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
 	
-	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~"];
+	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~["];
 	
 	while (![scanner isAtEnd])
 	{
@@ -206,25 +210,79 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 		if ([scanner scanCharactersFromSet:markerChars intoString:&openingMarkers])
 		{
 			NSString *enclosedPart;
-			NSString *closingMarkersToLookFor = [self _effectiveMarkerPrefixOfString:openingMarkers];
+			NSString *effectiveOpeningMarker = [self _effectiveMarkerPrefixOfString:openingMarkers];
 			
-			NSAssert(closingMarkersToLookFor, @"There should be a closing marker to look for because we only get here from having scanned for marker characters");
+			NSAssert(effectiveOpeningMarker, @"There should be a closing marker to look for because we only get here from having scanned for marker characters");
 			
-			// see if this encloses something
-			if ([scanner scanUpToString:closingMarkersToLookFor intoString:&enclosedPart])
+			if ([effectiveOpeningMarker isEqualToString:@"["])
+			{
+				if ([scanner scanUpToString:@"]" intoString:&enclosedPart])
+				{
+					// scan closing part of link
+					if ([scanner scanString:@"]" intoString:NULL])
+					{
+						NSString *partAfterClose = nil;
+						
+						if ([scanner scanUpToString:@"("intoString:&partAfterClose])
+						{
+							
+						}
+						
+						if ([scanner scanString:@"(" intoString:NULL])
+						{
+							// has potentially inline address
+							
+							NSString *hyperlink;
+							
+							if ([scanner scanUpToString:@")" intoString:&hyperlink])
+							{
+								// see if it is closed too
+								if ([scanner scanString:@")" intoString:NULL])
+								{
+									NSDictionary *attributes = @{@"href": hyperlink};
+									[self _pushTag:@"a" attributes:attributes];
+									
+									[self _reportCharacters:enclosedPart];
+									
+									[self _popTag];
+								}
+							}
+						}
+						else
+						{
+							// no opening (,  only output the [ and return to character right of that
+							[self _reportCharacters:@"["];
+							
+							scanner.scanLocation = markedRange.location + 1;
+							
+							continue;
+						}
+					}
+					else
+					{
+						// ] missing
+						
+						// output as is, not enclosed
+						NSString *joined = [effectiveOpeningMarker stringByAppendingString:enclosedPart];
+						
+						[self _reportCharacters:joined];
+					}
+				}
+			}
+			else if ([scanner scanUpToString:effectiveOpeningMarker intoString:&enclosedPart])
 			{
 				// there has to be a closing marker as well
-				if ([scanner scanString:closingMarkersToLookFor intoString:NULL])
+				if ([scanner scanString:effectiveOpeningMarker intoString:NULL])
 				{
 					markedRange.length = scanner.scanLocation - markedRange.location;
 					NSString *markedString = [line substringWithRange:markedRange];
 					
-					[self _processMarkedString:markedString insideMarker:closingMarkersToLookFor];
+					[self _processMarkedString:markedString insideMarker:effectiveOpeningMarker];
 				}
 				else
 				{
 					// output as is, not enclosed
-					NSString *joined = [closingMarkersToLookFor stringByAppendingString:enclosedPart];
+					NSString *joined = [effectiveOpeningMarker stringByAppendingString:enclosedPart];
 					
 					[self _reportCharacters:joined];
 				}

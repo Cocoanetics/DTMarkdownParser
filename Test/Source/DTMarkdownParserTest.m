@@ -63,7 +63,23 @@
 				}
 			}
 			
-			[tmpString appendFormat:@"<%@>", tag];
+			NSDictionary *attributes = [invocation argumentAtIndexAsObject:4];
+			
+			if ([attributes count])
+			{
+				NSMutableString *attribStr = [NSMutableString string];
+				
+				[attributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *obj, BOOL *stop) {
+					
+					[attribStr appendFormat:@" %@=\"%@\"", key, obj];
+				}];
+				
+				[tmpString appendFormat:@"<%@%@>", tag, attribStr];
+			}
+			else
+			{
+				[tmpString appendFormat:@"<%@>", tag];
+			}
 		}
 		else if (invocation.selector == @selector(parser:didEndElement:))
 		{
@@ -570,6 +586,60 @@
 	assertThat(actual, is(equalTo(expected)));
 }
 
+- (void)testInlineLinkNoClosingSquareBracket
+{
+	NSString *string = @"Here is [not a hyperlink";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>Here is [not a hyperlink</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testInlineLinkNoRoundBrackets
+{
+	NSString *string = @"Here is [not a hyperlink] and more text";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>Here is [not a hyperlink] and more text</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+- (void)testInlineLinkSpacesBetweenSquareAndRoundBracket
+{
+	NSString *string = @"Here is [a hyperlink]     (http://www.cocoanetics.com)";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>Here is <a href=\"http://www.cocoanetics.com\">a hyperlink</a></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testInlineLinkNoRoundBracketsButOtherMarkings
+{
+	NSString *string = @"Here is [__*not a hyperlink*__] word";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>Here is [<strong><em>not a hyperlink</em></strong>] word</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
 
 #pragma mark - Test Files
 
