@@ -641,6 +641,22 @@
 	assertThat(actual, is(equalTo(expected)));
 }
 
+- (void)testMultipleSimpleLinksOnMultipleLines
+{
+	NSString *string = @"Here is [GitHub](http://www.github.com) and [Cocoanetics](http://www.cocoanetics.com).\n\nAnd on new line even [Wikipedia](http://www.wikipedia.org).";
+
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>Here is <a href=\"http://www.github.com\">GitHub</a> and <a href=\"http://www.cocoanetics.com\">Cocoanetics</a>.</p>\n<p>And on new line even <a href=\"http://www.wikipedia.org\">Wikipedia</a>.</p>\n";
+	
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
 #pragma mark - Test Files
 
 - (void)testEmphasis
