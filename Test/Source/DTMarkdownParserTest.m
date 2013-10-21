@@ -69,10 +69,14 @@
 			{
 				NSMutableString *attribStr = [NSMutableString string];
 				
-				[attributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *obj, BOOL *stop) {
+				NSArray *sortedKeys = [[attributes allKeys] sortedArrayUsingSelector:@selector(compare:)];
+				
+				for (NSString *oneKey in sortedKeys)
+				{
+					NSString *value = attributes[oneKey];
 					
-					[attribStr appendFormat:@" %@=\"%@\"", key, obj];
-				}];
+					[attribStr appendFormat:@" %@=\"%@\"", oneKey, value];
+				}
 				
 				[tmpString appendFormat:@"<%@%@>", tag, attribStr];
 			}
@@ -681,6 +685,51 @@
 	assertThatBool(result, is(equalToBool(YES)));
 	
 	NSString *expected = @"<p>This is a <a href=\"http://foo.com\">link with reference</a>.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testDoubleSquareLinkTitleInSingleQuotes
+{
+	NSString *string = @"This is a [link with reference][used].\n\n[used]: http://foo.com 'title'\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>This is a <a href=\"http://foo.com\" title=\"title\">link with reference</a>.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testDoubleSquareLinkTitleInDoubleQuotes
+{
+	NSString *string = @"This is a [link with reference][used].\n\n[used]: http://foo.com \"title\"\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>This is a <a href=\"http://foo.com\" title=\"title\">link with reference</a>.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testDoubleSquareLinkTitleInRoundBrackets
+{
+	NSString *string = @"This is a [link with reference][used].\n\n[used]: http://foo.com (title)\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>This is a <a href=\"http://foo.com\" title=\"title\">link with reference</a>.</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	assertThat(actual, is(equalTo(expected)));

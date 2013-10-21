@@ -70,9 +70,10 @@
 	NSString *quotedTitle;
 	
 	// optional spaces
-	if ([self scanUpToCharactersFromSet:quoteChars intoString:&quote])
+	[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
+	
+	if ([self scanCharactersFromSet:quoteChars intoString:&quote])
 	{
-		
 		if ([quote hasPrefix:@"'"])
 		{
 			if ([self scanUpToString:@"'" intoString:&quotedTitle])
@@ -107,7 +108,6 @@
 			}
 		}
 	}
-	
 	
 	if (reference)
 	{
