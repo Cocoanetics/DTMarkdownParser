@@ -600,6 +600,20 @@
 	assertThat(actual, is(equalTo(expected)));
 }
 
+- (void)testInlineLinkNoClosingRoundBracket
+{
+	NSString *string = @"Not a [hyperlink](http://foo";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>Not a [hyperlink](http://foo</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
 - (void)testInlineLinkNoRoundBrackets
 {
 	NSString *string = @"Here is [not a hyperlink] and more text";
@@ -686,6 +700,52 @@
 	
 	assertThat(actual, is(equalTo(expected)));
 }
+
+- (void)testDoubleSquareLinkUsingTitleAsRef
+{
+	NSString *string = @"This is a [Link][].\n\n[link]: http://foo.com\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>This is a <a href=\"http://foo.com\">Link</a>.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testDoubleSquareLinkUsingTitleAsRefWithoutMatch
+{
+	NSString *string = @"This is not a [Link][].\n\n[otherlink]: http://foo.com\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>This is not a [Link][].</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testDoubleSquareLinkMissingClose
+{
+	NSString *string = @"This is not a [Link][.\n\n[link]: http://foo.com\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>This is not a [Link][.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
 
 #pragma mark - Test Files
 

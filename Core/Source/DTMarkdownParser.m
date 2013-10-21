@@ -218,6 +218,8 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 			
 			if ([effectiveOpeningMarker isEqualToString:@"["])
 			{
+				NSDictionary *attributes = nil;
+				
 				if ([scanner scanUpToString:@"]" intoString:&enclosedPart])
 				{
 					// scan closing part of link
@@ -237,12 +239,7 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 								// see if it is closed too
 								if ([scanner scanString:@")" intoString:NULL])
 								{
-									NSDictionary *attributes = @{@"href": hyperlink};
-									[self _pushTag:@"a" attributes:attributes];
-									
-									[self _reportCharacters:enclosedPart];
-									
-									[self _popTag];
+									attributes = @{@"href": hyperlink};
 								}
 							}
 						}
@@ -257,45 +254,38 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 								// see if it is closed too
 								if ([scanner scanString:@"]" intoString:NULL])
 								{
-									NSDictionary *attributes = _references[reference];
-									
-									[self _pushTag:@"a" attributes:attributes];
-									
-									[self _reportCharacters:enclosedPart];
-									
-									[self _popTag];
+									attributes = _references[[reference lowercaseString]];
 								}
-								else
+							}
+							else
+							{
+								// could be []
+								
+								if ([scanner scanString:@"]" intoString:NULL])
 								{
-									// no opening (,  only output the [ and return to character right of that
-									[self _reportCharacters:@"["];
-									
-									scanner.scanLocation = markedRange.location + 1;
-									
-									continue;
+									reference = [enclosedPart lowercaseString];
+									attributes = _references[reference];
 								}
 							}
 						}
-						else
-						{
-							// no opening (,  only output the [ and return to character right of that
-							[self _reportCharacters:@"["];
-							
-							scanner.scanLocation = markedRange.location + 1;
-							
-							continue;
-						}
-					}
-					else
-					{
-						// ] missing
-						
-						// output as is, not enclosed
-						NSString *joined = [effectiveOpeningMarker stringByAppendingString:enclosedPart];
-						
-						[self _reportCharacters:joined];
 					}
 				}
+				
+				// only output hyperlink if all is ok
+				if (attributes)
+				{
+					[self _pushTag:@"a" attributes:attributes];
+					[self _reportCharacters:enclosedPart];
+					[self _popTag];
+				}
+				else
+				{
+					// something wrong with this link, just output opening [ and scan after that
+					[self _reportCharacters:@"["];
+					scanner.scanLocation = markedRange.location + 1;
+				}
+				
+				continue;
 			}
 			else if ([scanner scanUpToString:effectiveOpeningMarker intoString:&enclosedPart])
 			{
