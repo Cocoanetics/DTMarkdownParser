@@ -7,6 +7,7 @@
 //
 
 #import "DTMarkdownParser.h"
+#import "NSScanner+DTMarkdown.h"
 
 
 // constants for special lines
@@ -36,6 +37,7 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 	// lookup dictionary for special lines
 	NSMutableDictionary *_specialLines;
 	NSMutableIndexSet *_ignoredLines;
+	NSMutableDictionary *_references;
 }
 
 - (instancetype)initWithString:(NSString *)string options:(DTMarkdownParserOptions)options
@@ -221,12 +223,8 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 					// scan closing part of link
 					if ([scanner scanString:@"]" intoString:NULL])
 					{
-						NSString *partAfterClose = nil;
-						
-						if ([scanner scanUpToString:@"("intoString:&partAfterClose])
-						{
-							
-						}
+						// skip whitespace
+						[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
 						
 						if ([scanner scanString:@"(" intoString:NULL])
 						{
@@ -245,6 +243,36 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 									[self _reportCharacters:enclosedPart];
 									
 									[self _popTag];
+								}
+							}
+						}
+						else if ([scanner scanString:@"[" intoString:NULL])
+						{
+							// has potentially address via ref
+							
+							NSString *reference;
+							
+							if ([scanner scanUpToString:@"]" intoString:&reference])
+							{
+								// see if it is closed too
+								if ([scanner scanString:@"]" intoString:NULL])
+								{
+									NSDictionary *attributes = _references[reference];
+									
+									[self _pushTag:@"a" attributes:attributes];
+									
+									[self _reportCharacters:enclosedPart];
+									
+									[self _popTag];
+								}
+								else
+								{
+									// no opening (,  only output the [ and return to character right of that
+									[self _reportCharacters:@"["];
+									
+									scanner.scanLocation = markedRange.location + 1;
+									
+									continue;
 								}
 							}
 						}
@@ -300,6 +328,7 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 {
 	_ignoredLines = [NSMutableIndexSet new];
 	_specialLines = [NSMutableDictionary new];
+	_references = [NSMutableDictionary new];
 	
 	NSScanner *scanner = [NSScanner scannerWithString:_string];
 	scanner.charactersToBeSkipped = nil;
@@ -353,6 +382,37 @@ NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 				if ([[line stringByTrimmingCharactersInSet:ruleCharacterSet] length]==0)
 				{
 					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagHR;
+					didFindSpecial = YES;
+				}
+			}
+			
+			// look for lines with references
+			if (!didFindSpecial)
+			{
+				NSString *ref;
+				NSString *link;
+				NSString *title;
+				
+				NSScanner *lineScanner = [NSScanner scannerWithString:line];
+				lineScanner.charactersToBeSkipped = nil;
+				
+				if ([lineScanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&link title:&title])
+				{
+					NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
+					
+					if (link)
+					{
+						[tmpDict setObject:link forKey:@"href"];
+					}
+					
+					if (title)
+					{
+						[tmpDict setObject:title forKey:@"title"];
+					}
+					
+					[_references setObject:tmpDict forKey:ref];
+					
+					[_ignoredLines addIndex:lineIndex];
 					didFindSpecial = YES;
 				}
 			}

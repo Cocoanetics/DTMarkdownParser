@@ -15,6 +15,8 @@
 		A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */; };
 		A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C46218117EE5006B252A /* DTInvocationRecorder.m */; };
 		A765C4691811906B006B252A /* DTInvocationTestFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C4681811906B006B252A /* DTInvocationTestFunctions.m */; };
+		A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */ = {isa = PBXBuildFile; fileRef = A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */; };
+		A78EAACD18151EF800650426 /* NSScanner+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */; };
 		A7ABD3E41811BEEB00494DA5 /* auto_link.html in Resources */ = {isa = PBXBuildFile; fileRef = A7ABD2DC1811BEEB00494DA5 /* auto_link.html */; };
 		A7ABD3E51811BEEB00494DA5 /* auto_link.text in Resources */ = {isa = PBXBuildFile; fileRef = A7ABD2DD1811BEEB00494DA5 /* auto_link.text */; };
 		A7ABD3E61811BEEB00494DA5 /* auto_link_email_with_underscore.html in Resources */ = {isa = PBXBuildFile; fileRef = A7ABD2DE1811BEEB00494DA5 /* auto_link_email_with_underscore.html */; };
@@ -351,6 +353,8 @@
 		A765C46218117EE5006B252A /* DTInvocationRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTInvocationRecorder.m; sourceTree = "<group>"; };
 		A765C4671811906B006B252A /* DTInvocationTestFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTInvocationTestFunctions.h; sourceTree = "<group>"; };
 		A765C4681811906B006B252A /* DTInvocationTestFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTInvocationTestFunctions.m; sourceTree = "<group>"; };
+		A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSScanner+DTMarkdown.h"; sourceTree = "<group>"; };
+		A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSScanner+DTMarkdown.m"; sourceTree = "<group>"; };
 		A7ABD2DC1811BEEB00494DA5 /* auto_link.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = auto_link.html; sourceTree = "<group>"; };
 		A7ABD2DD1811BEEB00494DA5 /* auto_link.text */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = auto_link.text; sourceTree = "<group>"; };
 		A7ABD2DE1811BEEB00494DA5 /* auto_link_email_with_underscore.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = auto_link_email_with_underscore.html; sourceTree = "<group>"; };
@@ -979,6 +983,8 @@
 			children = (
 				A7BF25FE1811385A0013D8D7 /* DTMarkdownParser.h */,
 				A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */,
+				A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */,
+				A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1036,6 +1042,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7BF26001811385A0013D8D7 /* DTMarkdownParser.h in Headers */,
+				A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1441,6 +1448,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A78EAACD18151EF800650426 /* NSScanner+DTMarkdown.m in Sources */,
 				A7BF26011811385A0013D8D7 /* DTMarkdownParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

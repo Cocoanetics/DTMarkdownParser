@@ -657,6 +657,36 @@
 	assertThat(actual, is(equalTo(expected)));
 }
 
+- (void)testDoubleSquareLink
+{
+	NSString *string = @"This is a [link with reference][used].\n\n[used]: http://foo.com\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>This is a <a href=\"http://foo.com\">link with reference</a>.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testDoubleSquareLinkNonClosed
+{
+	NSString *string = @"This is a [link with reference][used.\n\n[used]: http://foo.com\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	assertThatBool(result, is(equalToBool(YES)));
+	
+	NSString *expected = @"<p>This is a [link with reference][used.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	assertThat(actual, is(equalTo(expected)));
+}
+
 #pragma mark - Test Files
 
 - (void)testEmphasis
