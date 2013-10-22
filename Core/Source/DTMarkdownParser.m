@@ -389,12 +389,8 @@ NSString * const DTMarkdownParserSpecialList = @"<LIST>";
 	
 	[scanner scanMarkdownLineListPrefix:&prefix];
 	NSAssert(prefix, @"Cannot process line, no list prefix");
-	
-	// need to close previous p if there was one
-	if ([[self _currentTag] isEqualToString:@"p"])
-	{
-		[self _popTag];
-	}
+
+	NSAssert(![[self _currentTag] isEqualToString:@"p"], @"There should never be an open P tag in %s", __PRETTY_FUNCTION__);
 	
 	// cut off prefix
 	line = [line substringFromIndex:scanner.scanLocation];
