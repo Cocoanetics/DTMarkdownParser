@@ -20,6 +20,7 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 NSString * const DTMarkdownParserSpecialFencedPreStart = @"<FENCED BEGIN>";
 NSString * const DTMarkdownParserSpecialFencedPreCode = @"<FENCED CODE>";
 NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
+NSString * const DTMarkdownParserSpecialList = @"<LIST>";
 
 @implementation DTMarkdownParser
 {
@@ -379,6 +380,44 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 	}
 }
 
+- (void)_processListLine:(NSString *)line lineIndex:(NSUInteger)lineIndex
+{
+	NSScanner *scanner = [NSScanner scannerWithString:line];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *prefix;
+	
+	[scanner scanListPrefix:&prefix];
+	NSAssert(prefix, @"Cannot process line, no list prefix");
+	
+	// need to close previous p if there was one
+	if ([[self _currentTag] isEqualToString:@"p"])
+	{
+		[self _popTag];
+	}
+	
+	// cut off prefix
+	line = [line substringFromIndex:scanner.scanLocation];
+
+	// open UL if necessary
+	if (![[self _currentTag] isEqualToString:@"ul"])
+	{
+		[self _pushTag:@"ul" attributes:nil];
+	}
+	
+	[self _pushTag:@"li" attributes:nil];
+	
+	// process line as normal without prefix
+	[self _processLine:line];
+	
+	[self _popTag]; // li
+	
+	if ([_ignoredLines containsIndex:lineIndex+1])
+	{
+		[self _popTag];
+	}
+}
+
 - (void)_findAndMarkSpecialLines
 {
 	_ignoredLines = [NSMutableIndexSet new];
@@ -510,6 +549,19 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialFencedPreCode;
 				}
 			}
+			
+			if (!didFindSpecial)
+			{
+				NSScanner *lineScanner = [NSScanner scannerWithString:line];
+				lineScanner.charactersToBeSkipped = nil;
+				
+				NSString *listPrefix;
+				if ([lineScanner scanListPrefix:&listPrefix])
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialList;
+					didFindSpecial = YES;
+				}
+			}
 		}
 		
 		// look for empty lines
@@ -550,6 +602,8 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 	
 	while (![scanner isAtEnd])
 	{
+		NSUInteger currentLineIndex = lineIndex;
+		
 		NSString *line;
 		if ([scanner scanUpToString:@"\n" intoString:&line])
 		{
@@ -599,7 +653,13 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 			NSString *tag = nil;
 			NSUInteger headerLevel = 0;
 			
-			if (specialLine == DTMarkdownParserSpecialTagPre || specialLine == DTMarkdownParserSpecialFencedPreCode)
+			if (specialLine == DTMarkdownParserSpecialList)
+			{
+				[self _processListLine:line lineIndex:currentLineIndex];
+				
+				continue;
+			}
+			else if (specialLine == DTMarkdownParserSpecialTagPre || specialLine == DTMarkdownParserSpecialFencedPreCode)
 			{
 				NSString *codeLine;
 				
@@ -703,7 +763,7 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 				tag = [NSString stringWithFormat:@"h%d", (int)headerLevel];
 			}
 			
-			BOOL willCloseTag = (hasTwoNL || headerLevel || !shouldOutputLineText || followingLineIsIgnored);
+			BOOL willCloseTag = (hasTwoNL || headerLevel || !shouldOutputLineText || followingLineIsIgnored || specialFollowingLine == DTMarkdownParserSpecialList);
 			
 			// handle new lines
 			if (shouldOutputLineText && !hasTwoNL && ![scanner isAtEnd])

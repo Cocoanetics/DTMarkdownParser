@@ -985,12 +985,12 @@
 		A7BF253418112C8B0013D8D7 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				A7D7DF2118155ED300F4377D /* NSString+DTMarkdown.h */,
-				A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */,
 				A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */,
 				A7D7DF261815740000F4377D /* NSScannerDTMarkdownTest.m */,
 				A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */,
 				A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */,
+				A7D7DF2118155ED300F4377D /* NSString+DTMarkdown.h */,
+				A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */,
 				A765C46118117EE5006B252A /* DTInvocationRecorder.h */,
 				A765C46218117EE5006B252A /* DTInvocationRecorder.m */,
 				A765C4671811906B006B252A /* DTInvocationTestFunctions.h */,

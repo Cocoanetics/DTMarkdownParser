@@ -155,4 +155,54 @@
 	return YES;
 }
 
+- (BOOL)scanListPrefix:(NSString **)prefix
+{
+	NSUInteger startPos = self.scanLocation;
+	
+	// up to 3 spaces
+	NSCharacterSet *space = [NSCharacterSet characterSetWithCharactersInString:@" "];
+	NSString *spaces;
+	
+	if ([self scanCharactersFromSet:space intoString:&spaces])
+	{
+		if ([spaces length]>3)
+		{
+			self.scanLocation = startPos;
+			return NO;
+		}
+	}
+	
+	// scan prefix
+	NSString *foundPrefix;
+	
+	if (![self scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:&foundPrefix])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	
+	// whitespace
+	if (![self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// check if it is a valid prefix
+	
+	if (![foundPrefix isEqualToString:@"*"])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	if (prefix)
+	{
+		*prefix = foundPrefix;
+	}
+	
+	return YES;
+}
+
 @end
