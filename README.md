@@ -46,11 +46,11 @@ Implemented
 - Hyperlinks (inline and reference)
 - Images (inline and reference)
 - Linebreaks Handling (GitHub versus Gruber)
+- lists (ordered or unordered)
 
 To Do
 -----
 
-- lists (ordered or unordered)
 - lists (stacked)
 - inline HTML (? should we ever do this ?)
 - character escaping
