@@ -399,10 +399,19 @@ NSString * const DTMarkdownParserSpecialList = @"<LIST>";
 	// cut off prefix
 	line = [line substringFromIndex:scanner.scanLocation];
 
-	// open UL if necessary
-	if (![[self _currentTag] isEqualToString:@"ul"])
+	if (![[self _currentTag] isEqualToString:@"ul"] && ![[self _currentTag] isEqualToString:@"ol"])
 	{
-		[self _pushTag:@"ul" attributes:nil];
+		// need to open list
+		if ([prefix hasSuffix:@"."])
+		{
+			// ordered list
+			[self _pushTag:@"ol" attributes:nil];
+		}
+		else
+		{
+			// unordered list
+			[self _pushTag:@"ul" attributes:nil];
+		}
 	}
 	
 	[self _pushTag:@"li" attributes:nil];

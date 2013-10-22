@@ -973,6 +973,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testSimpleListWithMixedPrefixes
+{
+	NSString *string = @"Normal\n   * one\n   1. two\n   2. three";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<ul><li>one</li><li>two</li><li>three</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 - (void)testSimpleListWithEmptyLinesBefore
 {
 	NSString *string = @"Normal\n\n\n   * one\n   * two\n   * three";
@@ -983,6 +998,36 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p>Normal</p>\n<ul><li>one</li><li>two</li><li>three</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testSimpleOrderedList
+{
+	NSString *string = @"Normal\n   1. one\n   2. two\n   3. three";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<ol><li>one</li><li>two</li><li>three</li></ol>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testSimpleOrderedListWithMixedPrefixes
+{
+	NSString *string = @"Normal\n   1. one\n   * two\n   * three";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<ol><li>one</li><li>two</li><li>three</li></ol>";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
