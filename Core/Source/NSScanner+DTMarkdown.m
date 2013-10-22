@@ -155,7 +155,7 @@
 	return YES;
 }
 
-- (BOOL)scanListPrefix:(NSString **)prefix
+- (BOOL)scanMarkdownLineListPrefix:(NSString **)prefix
 {
 	NSUInteger startPos = self.scanLocation;
 	
@@ -191,7 +191,7 @@
 	
 	// check if it is a valid prefix
 	
-	if (![foundPrefix isEqualToString:@"*"])
+	if (![foundPrefix isEqualToString:@"*"] && ![foundPrefix isEqualToString:@"+"] && ![foundPrefix isEqualToString:@"-"])
 	{
 		self.scanLocation = startPos;
 		return NO;

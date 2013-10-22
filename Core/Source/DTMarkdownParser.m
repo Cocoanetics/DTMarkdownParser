@@ -387,7 +387,7 @@ NSString * const DTMarkdownParserSpecialList = @"<LIST>";
 	
 	NSString *prefix;
 	
-	[scanner scanListPrefix:&prefix];
+	[scanner scanMarkdownLineListPrefix:&prefix];
 	NSAssert(prefix, @"Cannot process line, no list prefix");
 	
 	// need to close previous p if there was one
@@ -556,7 +556,7 @@ NSString * const DTMarkdownParserSpecialList = @"<LIST>";
 				lineScanner.charactersToBeSkipped = nil;
 				
 				NSString *listPrefix;
-				if ([lineScanner scanListPrefix:&listPrefix])
+				if ([lineScanner scanMarkdownLineListPrefix:&listPrefix])
 				{
 					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialList;
 					didFindSpecial = YES;

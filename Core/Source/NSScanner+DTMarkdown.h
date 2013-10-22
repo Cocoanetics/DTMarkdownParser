@@ -17,6 +17,6 @@
 - (BOOL)scanMarkdownHyperlinkReferenceLine:(NSString **)reference URLString:(NSString **)URLString title:(NSString **)title;
 
 // returns `YES` if a valid list prefix was scanned
-- (BOOL)scanListPrefix:(NSString **)prefix;
+- (BOOL)scanMarkdownLineListPrefix:(NSString **)prefix;
 
 @end
