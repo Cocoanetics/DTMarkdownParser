@@ -314,4 +314,20 @@
 	STAssertFalse(b, @"Should not be able to scan list prefix");
 	STAssertNil(prefix, @"prefix should be nil");
 }
+
+- (void)testScanListPrefixOnlySpaces
+{
+	NSString *string = @"  ";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *prefix;
+	
+	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
+	
+	STAssertFalse(b, @"Should not be able to scan list prefix");
+	STAssertNil(prefix, @"prefix should be nil");
+}
+
 @end
