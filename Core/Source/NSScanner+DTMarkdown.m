@@ -191,7 +191,18 @@
 	
 	// check if it is a valid prefix
 	
-	if (![foundPrefix isEqualToString:@"*"] && ![foundPrefix isEqualToString:@"+"] && ![foundPrefix isEqualToString:@"-"])
+	if ([foundPrefix hasSuffix:@"."])
+	{
+		NSString *numberPart = [foundPrefix substringToIndex:[foundPrefix length]-1];
+
+		// can only be digits before the period
+		if ([[numberPart stringByTrimmingCharactersInSet:[NSCharacterSet decimalDigitCharacterSet]] length])
+		{
+			self.scanLocation = startPos;
+			return NO;
+		}
+	}
+	else if (![foundPrefix isEqualToString:@"*"] && ![foundPrefix isEqualToString:@"+"] && ![foundPrefix isEqualToString:@"-"])
 	{
 		self.scanLocation = startPos;
 		return NO;

@@ -285,4 +285,33 @@
 	STAssertNil(prefix, @"prefix should be nil");
 }
 
+- (void)testScanListPrefixNumber
+{
+	NSString *string = @"  1. one";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *prefix;
+	
+	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
+	
+	STAssertTrue(b, @"Should be able to scan list prefix");
+	STAssertEqualObjects(prefix, @"1.", @"prefix incorrect");
+}
+
+- (void)testScanListPrefixInvalidNumber
+{
+	NSString *string = @"  a1. one";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *prefix;
+	
+	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
+	
+	STAssertFalse(b, @"Should not be able to scan list prefix");
+	STAssertNil(prefix, @"prefix should be nil");
+}
 @end
