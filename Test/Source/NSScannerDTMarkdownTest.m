@@ -193,4 +193,96 @@
 	STAssertNil(ref, @"href should be nil");
 }
 
+#pragma mark - List Prefix
+
+- (void)testScanListPrefixTooManySpaces
+{
+	NSString *string = @"       * one";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *prefix;
+	
+	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
+	
+	STAssertFalse(b, @"Should not be able to scan list prefix");
+	STAssertNil(prefix, @"prefix should be nil");
+}
+
+- (void)testScanListPrefixMissingWhitespace
+{
+	NSString *string = @"*one";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *prefix;
+	
+	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
+	
+	STAssertFalse(b, @"Should not be able to scan list prefix");
+	STAssertNil(prefix, @"prefix should be nil");
+}
+
+- (void)testScanListPrefixAsterisk
+{
+	NSString *string = @"  * one";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *prefix;
+	
+	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
+	
+	STAssertTrue(b, @"Should be able to scan list prefix");
+	STAssertEqualObjects(prefix, @"*", @"prefix incorrect");
+}
+
+- (void)testScanListPrefixPlus
+{
+	NSString *string = @"  + one";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *prefix;
+	
+	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
+	
+	STAssertTrue(b, @"Should be able to scan list prefix");
+	STAssertEqualObjects(prefix, @"+", @"prefix incorrect");
+}
+
+- (void)testScanListPrefixMinus
+{
+	NSString *string = @"  + one";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *prefix;
+	
+	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
+	
+	STAssertTrue(b, @"Should be able to scan list prefix");
+	STAssertEqualObjects(prefix, @"+", @"prefix incorrect");
+}
+
+- (void)testScanListPrefixInvalid
+{
+	NSString *string = @"  _ one";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *prefix;
+	
+	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
+	
+	STAssertFalse(b, @"Should not be able to scan list prefix");
+	STAssertNil(prefix, @"prefix should be nil");
+}
+
 @end
