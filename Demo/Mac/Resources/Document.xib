@@ -8,6 +8,8 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="Document">
             <connections>
+                <outlet property="_markdownTextView" destination="den-qh-lzN" id="B6r-z8-VTg"/>
+                <outlet property="_previewWebView" destination="90u-VV-TXQ" id="2C6-OD-hs1"/>
                 <outlet property="window" destination="5" id="18"/>
             </connections>
         </customObject>
