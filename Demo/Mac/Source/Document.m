@@ -16,6 +16,7 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	IBOutlet NSTextView *	_markdownTextView;
 	IBOutlet WebView *		_previewWebView;
 	
+	NSFont *				_defaultFont;
 	NSTextStorage *			_markdownText;
 }
 
@@ -24,6 +25,9 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
     self = [super init];
 	
     if (self) {
+		_defaultFont = [NSFont fontWithName:@"Menlo"
+									   size:18.0];
+
 		_markdownText = [[NSTextStorage alloc] init];
     }
 	
@@ -40,6 +44,7 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	[super windowControllerDidLoadNib:aController];
 	
 	[[_markdownTextView layoutManager] replaceTextStorage:_markdownText];
+	[_markdownTextView setFont:_defaultFont];
 }
 
 + (BOOL)autosavesInPlace
