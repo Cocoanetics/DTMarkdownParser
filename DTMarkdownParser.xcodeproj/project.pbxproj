@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3DD93598181805DA0010AA87 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DD93597181805DA0010AA87 /* WebKit.framework */; };
 		A765C44A18115855006B252A /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */; };
 		A765C44B1811589D006B252A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
 		A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */; };
@@ -646,6 +647,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3DD93597181805DA0010AA87 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+DTFoundation.h"; sourceTree = "<group>"; };
 		A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+DTFoundation.m"; sourceTree = "<group>"; };
 		A765C46118117EE5006B252A /* DTInvocationRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTInvocationRecorder.h; sourceTree = "<group>"; };
@@ -979,6 +981,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DD93598181805DA0010AA87 /* WebKit.framework in Frameworks */,
 				A7870D8A1817FDEC00E39311 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1004,6 +1007,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3DD93599181805F70010AA87 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3DD93597181805DA0010AA87 /* WebKit.framework */,
+			);
+			name = Frameworks;
+			path = ../..;
+			sourceTree = "<group>";
+		};
 		A7870D8B1817FDEC00E39311 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1029,6 +1041,7 @@
 				A7870DC71817FEC900E39311 /* Demo-Prefix.pch */,
 				A7870DC11817FE7F00E39311 /* Resources */,
 				A7870DC21817FE7F00E39311 /* Source */,
+				3DD93599181805F70010AA87 /* Frameworks */,
 			);
 			path = Mac;
 			sourceTree = "<group>";
