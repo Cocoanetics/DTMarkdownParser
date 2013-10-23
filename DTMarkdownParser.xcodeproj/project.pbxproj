@@ -289,6 +289,12 @@
 		A7870D821817F8E500E39311 /* xss_quotes.html in Resources */ = {isa = PBXBuildFile; fileRef = A7ABD3E11811BEEB00494DA5 /* xss_quotes.html */; };
 		A7870D831817F8E500E39311 /* xss_quotes.tags in Resources */ = {isa = PBXBuildFile; fileRef = A7ABD3E21811BEEB00494DA5 /* xss_quotes.tags */; };
 		A7870D841817F8E500E39311 /* xss_quotes.text in Resources */ = {isa = PBXBuildFile; fileRef = A7ABD3E31811BEEB00494DA5 /* xss_quotes.text */; };
+		A7870D8A1817FDEC00E39311 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
+		A7870DC51817FE8D00E39311 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = A7870DC41817FE8D00E39311 /* Document.m */; };
+		A7870DC91817FED400E39311 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A7870DC81817FED400E39311 /* main.m */; };
+		A7870DCD1817FF3800E39311 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7870DCA1817FF3800E39311 /* Document.xib */; };
+		A7870DCE1817FF3800E39311 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7870DCB1817FF3800E39311 /* MainMenu.xib */; };
+		A7870DCF1817FF3800E39311 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = A7870DCC1817FF3800E39311 /* Credits.rtf */; };
 		A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */ = {isa = PBXBuildFile; fileRef = A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */; };
 		A78EAACD18151EF800650426 /* NSScanner+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */; };
 		A7ABD3E41811BEEB00494DA5 /* auto_link.html in Resources */ = {isa = PBXBuildFile; fileRef = A7ABD2DC1811BEEB00494DA5 /* auto_link.html */; };
@@ -633,6 +639,18 @@
 		A7870C401817F6C000E39311 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		A7870C5B1817F73900E39311 /* DTMarkdownParser-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DTMarkdownParser-Prefix.pch"; sourceTree = "<group>"; };
 		A7870C601817F7BB00E39311 /* UnitTests_iOS.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests_iOS.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7870D891817FDEC00E39311 /* Demo (Mac).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Demo (Mac).app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7870D8C1817FDEC00E39311 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		A7870D8D1817FDEC00E39311 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		A7870D8E1817FDEC00E39311 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A7870DC31817FE8D00E39311 /* Document.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Document.h; sourceTree = "<group>"; };
+		A7870DC41817FE8D00E39311 /* Document.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Document.m; sourceTree = "<group>"; };
+		A7870DC61817FEC900E39311 /* Demo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Demo-Info.plist"; sourceTree = "<group>"; };
+		A7870DC71817FEC900E39311 /* Demo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Demo-Prefix.pch"; sourceTree = "<group>"; };
+		A7870DC81817FED400E39311 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A7870DCA1817FF3800E39311 /* Document.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Document.xib; sourceTree = "<group>"; };
+		A7870DCB1817FF3800E39311 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		A7870DCC1817FF3800E39311 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSScanner+DTMarkdown.h"; sourceTree = "<group>"; };
 		A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSScanner+DTMarkdown.m"; sourceTree = "<group>"; };
 		A7ABD2DC1811BEEB00494DA5 /* auto_link.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = auto_link.html; sourceTree = "<group>"; };
@@ -939,6 +957,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A7870D861817FDEC00E39311 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7870D8A1817FDEC00E39311 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7BF251A18112A8F0013D8D7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -960,6 +986,55 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A7870D8B1817FDEC00E39311 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A7870D8C1817FDEC00E39311 /* AppKit.framework */,
+				A7870D8D1817FDEC00E39311 /* CoreData.framework */,
+				A7870D8E1817FDEC00E39311 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		A7870DBF1817FE4900E39311 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				A7870DC01817FE4900E39311 /* Mac */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
+		A7870DC01817FE4900E39311 /* Mac */ = {
+			isa = PBXGroup;
+			children = (
+				A7870DC61817FEC900E39311 /* Demo-Info.plist */,
+				A7870DC71817FEC900E39311 /* Demo-Prefix.pch */,
+				A7870DC11817FE7F00E39311 /* Resources */,
+				A7870DC21817FE7F00E39311 /* Source */,
+			);
+			path = Mac;
+			sourceTree = "<group>";
+		};
+		A7870DC11817FE7F00E39311 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A7870DCC1817FF3800E39311 /* Credits.rtf */,
+				A7870DCA1817FF3800E39311 /* Document.xib */,
+				A7870DCB1817FF3800E39311 /* MainMenu.xib */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A7870DC21817FE7F00E39311 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				A7870DC31817FE8D00E39311 /* Document.h */,
+				A7870DC41817FE8D00E39311 /* Document.m */,
+				A7870DC81817FED400E39311 /* main.m */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
 		A7A244CE1817BE5C00FDB3FC /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -1249,9 +1324,10 @@
 		A7BF24FF18112A3B0013D8D7 = {
 			isa = PBXGroup;
 			children = (
+				A7BF253018112C8B0013D8D7 /* Core */,
+				A7870DBF1817FE4900E39311 /* Demo */,
 				A7D7DF2418156DE700F4377D /* Documentation */,
 				A7BF253E1811352D0013D8D7 /* Externals */,
-				A7BF253018112C8B0013D8D7 /* Core */,
 				A7BF253318112C8B0013D8D7 /* Test */,
 				A7BF250A18112A3B0013D8D7 /* Frameworks */,
 				A7BF250918112A3B0013D8D7 /* Products */,
@@ -1265,6 +1341,7 @@
 				A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */,
 				A7870C2F1817F6C000E39311 /* libDTMarkdownParser_iOS.a */,
 				A7870C601817F7BB00E39311 /* UnitTests_iOS.octest */,
+				A7870D891817FDEC00E39311 /* Demo (Mac).app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1277,6 +1354,7 @@
 				A7BF25D5181138320013D8D7 /* Cocoa.framework */,
 				A7870C3D1817F6C000E39311 /* XCTest.framework */,
 				A7870C401817F6C000E39311 /* UIKit.framework */,
+				A7870D8B1817FDEC00E39311 /* Other Frameworks */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1410,6 +1488,23 @@
 			productReference = A7870C601817F7BB00E39311 /* UnitTests_iOS.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
+		A7870D881817FDEC00E39311 /* Demo (Mac) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7870DB71817FDED00E39311 /* Build configuration list for PBXNativeTarget "Demo (Mac)" */;
+			buildPhases = (
+				A7870D851817FDEC00E39311 /* Sources */,
+				A7870D861817FDEC00E39311 /* Frameworks */,
+				A7870D871817FDEC00E39311 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Demo (Mac)";
+			productName = "Demo (Mac)";
+			productReference = A7870D891817FDEC00E39311 /* Demo (Mac).app */;
+			productType = "com.apple.product-type.application";
+		};
 		A7BF251C18112A8F0013D8D7 /* UnitTests (Mac) */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A7BF252918112A8F0013D8D7 /* Build configuration list for PBXNativeTarget "UnitTests (Mac)" */;
@@ -1469,6 +1564,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = A7BF24FF18112A3B0013D8D7;
 			productRefGroup = A7BF250918112A3B0013D8D7 /* Products */;
@@ -1485,6 +1581,7 @@
 				A7870C2E1817F6C000E39311 /* DTMarkdownParser (iOS) */,
 				A7870C5F1817F7BB00E39311 /* UnitTests (iOS) */,
 				A7BF251C18112A8F0013D8D7 /* UnitTests (Mac) */,
+				A7870D881817FDEC00E39311 /* Demo (Mac) */,
 			);
 		};
 /* End PBXProject section */
@@ -1792,6 +1889,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A7870D871817FDEC00E39311 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7870DCD1817FF3800E39311 /* Document.xib in Resources */,
+				A7870DCF1817FF3800E39311 /* Credits.rtf in Resources */,
+				A7870DCE1817FF3800E39311 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7BF251B18112A8F0013D8D7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2095,6 +2202,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A7870D851817FDEC00E39311 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7870DC51817FE8D00E39311 /* Document.m in Sources */,
+				A7870DC91817FED400E39311 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7BF251918112A8F0013D8D7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2247,6 +2363,52 @@
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+		A7870DB81817FDED00E39311 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A7870DB91817FDED00E39311 /* Coverage */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
+				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Coverage;
+		};
+		A7870DBA1817FDED00E39311 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
+				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
@@ -2517,6 +2679,15 @@
 				A7870C701817F7BB00E39311 /* Debug */,
 				A7870C711817F7BB00E39311 /* Coverage */,
 				A7870C721817F7BB00E39311 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		A7870DB71817FDED00E39311 /* Build configuration list for PBXNativeTarget "Demo (Mac)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7870DB81817FDED00E39311 /* Debug */,
+				A7870DB91817FDED00E39311 /* Coverage */,
+				A7870DBA1817FDED00E39311 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};
