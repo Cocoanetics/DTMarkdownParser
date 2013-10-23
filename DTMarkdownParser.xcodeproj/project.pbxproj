@@ -1428,9 +1428,9 @@
 			productReference = A7BF251D18112A8F0013D8D7 /* UnitTests_Mac.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
-		A7BF25D3181138320013D8D7 /* Mac Framework */ = {
+		A7BF25D3181138320013D8D7 /* DTMarkdownParser (Mac) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A7BF25F8181138320013D8D7 /* Build configuration list for PBXNativeTarget "Mac Framework" */;
+			buildConfigurationList = A7BF25F8181138320013D8D7 /* Build configuration list for PBXNativeTarget "DTMarkdownParser (Mac)" */;
 			buildPhases = (
 				A7BF25CF181138320013D8D7 /* Sources */,
 				A7BF25D0181138320013D8D7 /* Frameworks */,
@@ -1441,7 +1441,7 @@
 			);
 			dependencies = (
 			);
-			name = "Mac Framework";
+			name = "DTMarkdownParser (Mac)";
 			productName = "Mac Framework";
 			productReference = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */;
 			productType = "com.apple.product-type.framework";
@@ -1481,7 +1481,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				A7BF25D3181138320013D8D7 /* Mac Framework */,
+				A7BF25D3181138320013D8D7 /* DTMarkdownParser (Mac) */,
 				A7870C2E1817F6C000E39311 /* DTMarkdownParser (iOS) */,
 				A7870C5F1817F7BB00E39311 /* UnitTests (iOS) */,
 				A7BF251C18112A8F0013D8D7 /* UnitTests (Mac) */,
@@ -2127,7 +2127,7 @@
 		};
 		A7BF2606181150FC0013D8D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A7BF25D3181138320013D8D7 /* Mac Framework */;
+			target = A7BF25D3181138320013D8D7 /* DTMarkdownParser (Mac) */;
 			targetProxy = A7BF2605181150FC0013D8D7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -2341,6 +2341,7 @@
 				INFOPLIST_FILE = "Core/Framework-Mac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = DTMarkdownParser;
+				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Coverage;
@@ -2484,6 +2485,7 @@
 				INFOPLIST_FILE = "Core/Framework-Mac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = DTMarkdownParser;
+				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -2501,6 +2503,7 @@
 				INFOPLIST_FILE = "Core/Framework-Mac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = DTMarkdownParser;
+				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -2546,7 +2549,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A7BF25F8181138320013D8D7 /* Build configuration list for PBXNativeTarget "Mac Framework" */ = {
+		A7BF25F8181138320013D8D7 /* Build configuration list for PBXNativeTarget "DTMarkdownParser (Mac)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A7BF25F9181138320013D8D7 /* Debug */,
