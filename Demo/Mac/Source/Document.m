@@ -10,6 +10,10 @@
 
 #import <WebKit/WebKit.h>
 
+#import <DTMarkdownParser/DTMarkdownParser.h>
+#import "SimpleTreeGenerator.h"
+#import "TagTreeOutlineController.h"
+
 NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 
 @implementation Document {
@@ -18,6 +22,9 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	
 	NSFont *				_defaultFont;
 	NSTextStorage *			_markdownText;
+	
+	IBOutlet TagTreeOutlineController *_tagTreeOutlineController;
+	NSMutableArray *		_nodeTree;
 }
 
 - (id)init
@@ -45,6 +52,8 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	
 	[[_markdownTextView layoutManager] replaceTextStorage:_markdownText];
 	[_markdownTextView setFont:_defaultFont];
+	
+	_tagTreeOutlineController.tagNodes = _nodeTree;
 }
 
 + (BOOL)autosavesInPlace
@@ -74,6 +83,18 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	if (markdownString != nil) {
 		[_markdownText replaceCharactersInRange:NSMakeRange(0, _markdownText.length)
 									 withString:markdownString];
+		
+		DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:markdownString
+																	options:DTMarkdownParserOptionGitHubLineBreaks];
+		
+		SimpleTreeGenerator *generator = [SimpleTreeGenerator new];
+		parser.delegate = generator;
+		
+		BOOL couldParse = [parser parse];
+		if (couldParse) {
+			_nodeTree = generator.nodeTree;
+		}
+		
 		result = YES;
 	}
 	else {

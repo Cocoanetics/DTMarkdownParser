@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		3DD93598181805DA0010AA87 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DD93597181805DA0010AA87 /* WebKit.framework */; };
+		3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */; };
+		3DFFAE7118184C1A00EE245D /* TagTreeOutlineController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */; };
+		3DFFAE7218184C7E00EE245D /* SimpleTreeGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */; };
+		3DFFAE731818577C00EE245D /* DTMarkdownParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
 		A765C44A18115855006B252A /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */; };
 		A765C44B1811589D006B252A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
 		A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */; };
@@ -648,6 +652,10 @@
 
 /* Begin PBXFileReference section */
 		3DD93597181805DA0010AA87 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleTreeGenerator.h; sourceTree = "<group>"; };
+		3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleTreeGenerator.m; sourceTree = "<group>"; };
+		3DFFAE6F18184C1A00EE245D /* TagTreeOutlineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagTreeOutlineController.h; sourceTree = "<group>"; };
+		3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagTreeOutlineController.m; sourceTree = "<group>"; };
 		A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+DTFoundation.h"; sourceTree = "<group>"; };
 		A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+DTFoundation.m"; sourceTree = "<group>"; };
 		A765C46118117EE5006B252A /* DTInvocationRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTInvocationRecorder.h; sourceTree = "<group>"; };
@@ -983,6 +991,7 @@
 			files = (
 				3DD93598181805DA0010AA87 /* WebKit.framework in Frameworks */,
 				A7870D8A1817FDEC00E39311 /* Cocoa.framework in Frameworks */,
+				3DFFAE731818577C00EE245D /* DTMarkdownParser.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1016,6 +1025,15 @@
 			path = ../..;
 			sourceTree = "<group>";
 		};
+		3DFFAE6E18183AFD00EE245D /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */,
+				3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		A7870D8B1817FDEC00E39311 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1030,6 +1048,7 @@
 			isa = PBXGroup;
 			children = (
 				A7870DC01817FE4900E39311 /* Mac */,
+				3DFFAE6E18183AFD00EE245D /* Common */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -1062,6 +1081,8 @@
 				A7870DC31817FE8D00E39311 /* Document.h */,
 				A7870DC41817FE8D00E39311 /* Document.m */,
 				A7870DC81817FED400E39311 /* main.m */,
+				3DFFAE6F18184C1A00EE245D /* TagTreeOutlineController.h */,
+				3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1476,6 +1497,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */,
 				A7BF26001811385A0013D8D7 /* DTMarkdownParser.h in Headers */,
 				A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */,
 			);
@@ -2241,6 +2263,8 @@
 			files = (
 				A7870DC51817FE8D00E39311 /* Document.m in Sources */,
 				A7870DC91817FED400E39311 /* main.m in Sources */,
+				3DFFAE7218184C7E00EE245D /* SimpleTreeGenerator.m in Sources */,
+				3DFFAE7118184C1A00EE245D /* TagTreeOutlineController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

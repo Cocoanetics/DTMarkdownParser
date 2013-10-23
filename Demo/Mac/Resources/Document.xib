@@ -10,6 +10,7 @@
             <connections>
                 <outlet property="_markdownTextView" destination="den-qh-lzN" id="B6r-z8-VTg"/>
                 <outlet property="_previewWebView" destination="90u-VV-TXQ" id="2C6-OD-hs1"/>
+                <outlet property="_tagTreeOutlineController" destination="Dko-3j-RVf" id="acz-VS-rS5"/>
                 <outlet property="window" destination="5" id="18"/>
             </connections>
         </customObject>
@@ -64,8 +65,64 @@
                                 <tabViewItems>
                                     <tabViewItem label="Tree" identifier="1" id="Xde-Av-Aq2">
                                         <view key="view" id="CoL-MQ-0NN">
-                                            <rect key="frame" x="10" y="33" width="359" height="486"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="315" height="516"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uyS-2j-EYx">
+                                                    <rect key="frame" x="0.0" y="0.0" width="315" height="516"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                    <clipView key="contentView" id="q4m-Vp-lw3">
+                                                        <rect key="frame" x="1" y="17" width="313" height="498"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <subviews>
+                                                            <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" multipleSelection="NO" autosaveColumns="NO" headerView="Jhz-3Q-C2w" indentationPerLevel="16" outlineTableColumn="h40-er-YSZ" id="gGz-XA-DWa">
+                                                                <rect key="frame" x="0.0" y="0.0" width="313" height="498"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <size key="intercellSpacing" width="3" height="2"/>
+                                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                                                <tableColumns>
+                                                                    <tableColumn width="310" minWidth="16" maxWidth="1000" id="h40-er-YSZ">
+                                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Tags &amp; Text">
+                                                                            <font key="font" metaFont="smallSystem"/>
+                                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
+                                                                        </tableHeaderCell>
+                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="SiW-LB-4qw">
+                                                                            <font key="font" metaFont="system"/>
+                                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                        </textFieldCell>
+                                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
+                                                                    </tableColumn>
+                                                                </tableColumns>
+                                                                <connections>
+                                                                    <outlet property="dataSource" destination="Dko-3j-RVf" id="JPf-pW-EjV"/>
+                                                                </connections>
+                                                            </outlineView>
+                                                        </subviews>
+                                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </clipView>
+                                                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" id="fgE-Xp-V0t">
+                                                        <rect key="frame" x="1" y="500" width="313" height="15"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                    </scroller>
+                                                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" id="rVh-gt-xBw">
+                                                        <rect key="frame" x="224" y="17" width="15" height="102"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                    </scroller>
+                                                    <tableHeaderView key="headerView" id="Jhz-3Q-C2w">
+                                                        <rect key="frame" x="0.0" y="0.0" width="313" height="17"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                    </tableHeaderView>
+                                                </scrollView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="uyS-2j-EYx" secondAttribute="bottom" id="B4l-cA-1Av"/>
+                                                <constraint firstAttribute="trailing" secondItem="uyS-2j-EYx" secondAttribute="trailing" id="YL2-kS-8jn"/>
+                                                <constraint firstItem="uyS-2j-EYx" firstAttribute="top" secondItem="CoL-MQ-0NN" secondAttribute="top" id="ZZy-0z-5CE"/>
+                                                <constraint firstItem="uyS-2j-EYx" firstAttribute="leading" secondItem="CoL-MQ-0NN" secondAttribute="leading" id="hGi-jq-MtT"/>
+                                            </constraints>
                                         </view>
                                     </tabViewItem>
                                     <tabViewItem label="HTML" identifier="2" id="kMi-4C-tdh">
@@ -141,5 +198,10 @@
             </connections>
         </window>
         <customObject id="-3" userLabel="Application"/>
+        <customObject id="Dko-3j-RVf" customClass="TagTreeOutlineController">
+            <connections>
+                <outlet property="_outlineView" destination="gGz-XA-DWa" id="hLz-9m-K6P"/>
+            </connections>
+        </customObject>
     </objects>
 </document>
