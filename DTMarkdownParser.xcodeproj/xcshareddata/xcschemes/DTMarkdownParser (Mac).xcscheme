@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A7BF25D3181138320013D8D7"
                BuildableName = "DTMarkdownParser.framework"
-               BlueprintName = "Mac Framework"
+               BlueprintName = "DTMarkdownParser (Mac)"
                ReferencedContainer = "container:DTMarkdownParser.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,8 +33,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A7BF251C18112A8F0013D8D7"
-               BuildableName = "UnitTests.octest"
-               BlueprintName = "UnitTests"
+               BuildableName = "UnitTests_Mac.octest"
+               BlueprintName = "UnitTests (Mac)"
                ReferencedContainer = "container:DTMarkdownParser.xcodeproj">
             </BuildableReference>
          </TestableReference>
