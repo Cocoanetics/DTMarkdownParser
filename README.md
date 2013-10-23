@@ -59,3 +59,10 @@ To Do
 - multiple-level quoting and code blocks
 - additional useful markdown extensions
 - proper reporting of applicable processed range of text, e.g. to use for syntax highlighting
+
+Markdown References
+-------------------
+
+- John Gruber's [Markdown Syntax Documentation](http://daringfireball.net/projects/markdown/syntax)
+- Stack Overflow's [Markdown Editing Help](http://stackoverflow.com/editing-help)
+- Fletcher T. Penney's [MultiMarkdown Syntax Guide](https://github.com/fletcher/MultiMarkdown/wiki/MultiMarkdown-Syntax-Guide)
