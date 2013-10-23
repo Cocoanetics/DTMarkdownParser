@@ -47,13 +47,13 @@ Implemented
 - Images (inline and reference)
 - Linebreaks Handling (GitHub versus Gruber)
 - lists (ordered or unordered)
+- lists (stacked)
+- forced linking via angle brackets
 
 To Do
 -----
 
-- lists (stacked)
 - auto linking of http URLs
-- forced linking via angle brackets
 - character escaping
 - inline HTML (? should we ever do this ?)
 - multiple-level quoting and code blocks
