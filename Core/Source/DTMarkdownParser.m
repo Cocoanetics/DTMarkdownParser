@@ -8,7 +8,6 @@
 
 #import "DTMarkdownParser.h"
 #import "NSScanner+DTMarkdown.h"
-#import "NSString+DTMarkdown.h"
 
 
 // constants for special lines
