@@ -956,7 +956,7 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
-#pragma mark - Lists
+#pragma mark - Lists (1 Level)
 
 - (void)testSimpleList
 {
@@ -1058,6 +1058,23 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p>Normal</p>\n<ol><li>one</li><li>two</li><li>three</li></ol>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+#pragma mark - Lists (Stacked)
+
+- (void)testStackedLists
+{
+	NSString *string = @"1. Lists in a list item:\n    - Indented four spaces.\n        * indented eight spaces.\n    - Four spaces again.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ol><li>Lists in a list item:<ul><li>Indented four spaces.<ul><li>indented eight spaces.</li></ul></li><li>Four spaces again.</li></ul></li></ol>";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
