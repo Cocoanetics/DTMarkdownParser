@@ -40,10 +40,10 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <size key="minSize" width="298" height="514"/>
-                                            <size key="maxSize" width="463" height="10000000"/>
+                                            <size key="maxSize" width="623" height="10000000"/>
                                             <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                             <size key="minSize" width="298" height="514"/>
-                                            <size key="maxSize" width="463" height="10000000"/>
+                                            <size key="maxSize" width="623" height="10000000"/>
                                         </textView>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -57,13 +57,39 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <webView fixedFrame="YES" id="90u-VV-TXQ">
+                            <tabView fixedFrame="YES" type="noTabsNoBorder" initialItem="Xde-Av-Aq2" id="PNA-g5-Khg">
                                 <rect key="frame" x="325" y="0.0" width="315" height="516"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO">
-                                    <nil key="identifier"/>
-                                </webPreferences>
-                            </webView>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <font key="font" metaFont="system"/>
+                                <tabViewItems>
+                                    <tabViewItem label="Tree" identifier="1" id="Xde-Av-Aq2">
+                                        <view key="view" id="CoL-MQ-0NN">
+                                            <rect key="frame" x="10" y="33" width="359" height="486"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </view>
+                                    </tabViewItem>
+                                    <tabViewItem label="HTML" identifier="2" id="kMi-4C-tdh">
+                                        <view key="view" id="x2N-9g-XhZ">
+                                            <rect key="frame" x="10" y="33" width="359" height="486"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </view>
+                                    </tabViewItem>
+                                    <tabViewItem label="Web" identifier="" id="8Qh-Qt-0Pk">
+                                        <view key="view" id="hRU-TF-Ygj">
+                                            <rect key="frame" x="0.0" y="0.0" width="315" height="516"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <webView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="90u-VV-TXQ">
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO">
+                                                        <nil key="identifier"/>
+                                                    </webPreferences>
+                                                </webView>
+                                            </subviews>
+                                        </view>
+                                    </tabViewItem>
+                                </tabViewItems>
+                            </tabView>
                         </subviews>
                         <holdingPriorities>
                             <real value="250"/>
@@ -82,16 +108,17 @@
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="14B1CC4D-CF99-4594-A295-115135FE75CD" label="Preview" paletteLabel="Preview" id="5hw-mN-UQV">
                         <nil key="toolTip"/>
-                        <size key="minSize" width="107" height="25"/>
-                        <size key="maxSize" width="107" height="28"/>
+                        <size key="minSize" width="98" height="25"/>
+                        <size key="maxSize" width="155" height="28"/>
                         <segmentedControl key="view" verticalHuggingPriority="750" id="XnY-9T-3O9">
-                            <rect key="frame" x="0.0" y="14" width="107" height="28"/>
+                            <rect key="frame" x="0.0" y="14" width="155" height="28"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <segmentedCell key="cell" alignment="left" style="texturedSquare" trackingMode="selectOne" id="wY2-pQ-gdv">
                                 <font key="font" metaFont="system"/>
                                 <segments>
-                                    <segment label="Tree"/>
-                                    <segment label="HTML" selected="YES" tag="1"/>
+                                    <segment label="Tree" selected="YES"/>
+                                    <segment label="HTML" tag="1"/>
+                                    <segment label="Web"/>
                                 </segments>
                             </segmentedCell>
                         </segmentedControl>
