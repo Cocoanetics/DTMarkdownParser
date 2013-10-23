@@ -142,6 +142,10 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	{
 		return @"`";
 	}
+	else if ([string hasPrefix:@"<"])
+	{
+		return @"<";
+	}
 	
 	return nil;
 }
@@ -205,7 +209,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
 	
-	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`"];
+	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
 	
 	while (![scanner isAtEnd])
 	{
@@ -230,80 +234,100 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			
 			NSAssert(effectiveOpeningMarker, @"There should be a closing marker to look for because we only get here from having scanned for marker characters");
 			
-			
-			if ([effectiveOpeningMarker isEqualToString:@"!["] || [effectiveOpeningMarker isEqualToString:@"["])
+			if ([effectiveOpeningMarker isEqualToString:@"!["] || [effectiveOpeningMarker isEqualToString:@"["] || [effectiveOpeningMarker isEqualToString:@"<"])
 			{
 				NSDictionary *attributes = nil;
 				
-				if ([scanner scanUpToString:@"]" intoString:&enclosedPart])
+				NSString *closingMarker;
+				BOOL isSimpleHREF;
+				
+				if ([effectiveOpeningMarker isEqualToString:@"<"])
+				{
+					closingMarker = @">";
+					isSimpleHREF = YES;
+				}
+				else
+				{
+					closingMarker = @"]";
+					isSimpleHREF = NO;
+				}
+				
+				if ([scanner scanUpToString:closingMarker intoString:&enclosedPart])
 				{
 					// scan closing part of link
-					if ([scanner scanString:@"]" intoString:NULL])
+					if ([scanner scanString:closingMarker intoString:NULL])
 					{
-						// skip whitespace
-						[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
-						
-						if ([scanner scanString:@"(" intoString:NULL])
+						if (isSimpleHREF)
 						{
-							// has potentially inline address
+							attributes = [NSDictionary dictionaryWithObject:enclosedPart forKey:@"href"];
+						}
+						else
+						{
+							// skip whitespace
+							[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
 							
-							NSString *hyperlink;
-							
-							if ([scanner scanUpToString:@")" intoString:&hyperlink])
+							if ([scanner scanString:@"(" intoString:NULL])
 							{
-								// see if it is closed too
-								if ([scanner scanString:@")" intoString:NULL])
+								// has potentially inline address
+								
+								NSString *hyperlink;
+								
+								if ([scanner scanUpToString:@")" intoString:&hyperlink])
 								{
-									NSString *URLString;
-									NSString *title;
-									
-									NSScanner *urlScanner = [NSScanner scannerWithString:hyperlink];
-									urlScanner.charactersToBeSkipped = nil;
-									
-									if ([urlScanner scanMarkdownHyperlink:&URLString title:&title])
+									// see if it is closed too
+									if ([scanner scanString:@")" intoString:NULL])
 									{
-										NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
+										NSString *URLString;
+										NSString *title;
 										
-										if ([URLString length])
-										{
-											tmpDict[@"href"] = URLString;
-										}
+										NSScanner *urlScanner = [NSScanner scannerWithString:hyperlink];
+										urlScanner.charactersToBeSkipped = nil;
 										
-										if ([title length])
+										if ([urlScanner scanMarkdownHyperlink:&URLString title:&title])
 										{
-											tmpDict[@"title"] = title;
-										}
-										
-										if ([tmpDict count])
-										{
-											attributes = [tmpDict copy];
+											NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
+											
+											if ([URLString length])
+											{
+												tmpDict[@"href"] = URLString;
+											}
+											
+											if ([title length])
+											{
+												tmpDict[@"title"] = title;
+											}
+											
+											if ([tmpDict count])
+											{
+												attributes = [tmpDict copy];
+											}
 										}
 									}
 								}
 							}
-						}
-						else if ([scanner scanString:@"[" intoString:NULL])
-						{
-							// has potentially address via ref
-							
-							NSString *reference;
-							
-							if ([scanner scanUpToString:@"]" intoString:&reference])
+							else if ([scanner scanString:@"[" intoString:NULL])
 							{
-								// see if it is closed too
-								if ([scanner scanString:@"]" intoString:NULL])
-								{
-									attributes = _references[[reference lowercaseString]];
-								}
-							}
-							else
-							{
-								// could be []
+								// has potentially address via ref
 								
-								if ([scanner scanString:@"]" intoString:NULL])
+								NSString *reference;
+								
+								if ([scanner scanUpToString:@"]" intoString:&reference])
 								{
-									reference = [enclosedPart lowercaseString];
-									attributes = _references[reference];
+									// see if it is closed too
+									if ([scanner scanString:@"]" intoString:NULL])
+									{
+										attributes = _references[[reference lowercaseString]];
+									}
+								}
+								else
+								{
+									// could be []
+									
+									if ([scanner scanString:@"]" intoString:NULL])
+									{
+										reference = [enclosedPart lowercaseString];
+										attributes = _references[reference];
+									}
 								}
 							}
 						}
@@ -313,7 +337,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				// only output hyperlink if all is ok
 				if (attributes)
 				{
-					if ([effectiveOpeningMarker isEqualToString:@"["])
+					if ([effectiveOpeningMarker isEqualToString:@"["] || isSimpleHREF)
 					{
 						[self _pushTag:@"a" attributes:attributes];
 						[self _reportCharacters:enclosedPart];

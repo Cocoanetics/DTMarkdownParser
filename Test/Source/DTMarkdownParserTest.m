@@ -818,6 +818,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testLinkWithAngleBrackets
+{
+	NSString *string = @"This is a link to <http://foo.com>\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>This is a link to <a href=\"http://foo.com\">http://foo.com</a></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 #pragma mark - Images
 
 - (void)testInlineImage
