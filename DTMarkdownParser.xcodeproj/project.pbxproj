@@ -2403,7 +2403,6 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2417,7 +2416,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2431,7 +2429,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2697,6 +2694,7 @@
 				A7870C4F1817F6C000E39311 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A7870C6F1817F7BB00E39311 /* Build configuration list for PBXNativeTarget "UnitTests (iOS)" */ = {
 			isa = XCConfigurationList;
@@ -2706,6 +2704,7 @@
 				A7870C721817F7BB00E39311 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A7870DB71817FDED00E39311 /* Build configuration list for PBXNativeTarget "Demo (Mac)" */ = {
 			isa = XCConfigurationList;
@@ -2715,6 +2714,7 @@
 				A7870DBA1817FDED00E39311 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A7BF250318112A3B0013D8D7 /* Build configuration list for PBXProject "DTMarkdownParser" */ = {
 			isa = XCConfigurationList;
