@@ -567,6 +567,8 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+#pragma mark - Horizontal Rule
+
 - (void)testHorizontalRule
 {
 	NSString *string = @"Line1\n\n * * *\n\n - - -\n\nLine2";
@@ -576,6 +578,20 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p>Line1</p>\n<hr />\n<hr />\n<p>Line2</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testHorizontalRuleAfterParagraphWithOnlyOneNL
+{
+	NSString *string = @"Line1\n___\nLine2";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Line1</p>\n<hr />\n<p>Line2</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
@@ -802,6 +818,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testLinkWithAngleBrackets
+{
+	NSString *string = @"This is a link to <http://foo.com>\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>This is a link to <a href=\"http://foo.com\">http://foo.com</a></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 #pragma mark - Images
 
 - (void)testInlineImage
@@ -951,6 +982,145 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p>Normal</p>\n<pre><code>10 print &quot;Hello World&quot;\n20 goto 10\n</code></pre>\n<p>Normal</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+#pragma mark - Lists (1 Level)
+
+- (void)testSimpleList
+{
+	NSString *string = @"Normal\n   * one\n   * two\n   * three";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<ul><li>one</li><li>two</li><li>three</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testSimpleListWithMixedPrefixes
+{
+	NSString *string = @"Normal\n   * one\n   1. two\n   2. three";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<ul><li>one</li><li>two</li><li>three</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testSimpleListWithEmptyLinesBefore
+{
+	NSString *string = @"Normal\n\n\n   * one\n   * two\n   * three";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<ul><li>one</li><li>two</li><li>three</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testSimpleListWithEmptyLinesAfter
+{
+	NSString *string = @"Normal\n   * one\n   * two\n   * three\n\n\n";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<ul><li>one</li><li>two</li><li>three</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testSimpleListWithIgnoredLineAfter
+{
+	NSString *string = @"Normal\n   * one\n   * two\n   * three\n[id]: http://foo.com";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<ul><li>one</li><li>two</li><li>three</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testSimpleOrderedList
+{
+	NSString *string = @"Normal\n   1. one\n   2. two\n   3. three";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<ol><li>one</li><li>two</li><li>three</li></ol>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testSimpleOrderedListWithMixedPrefixes
+{
+	NSString *string = @"Normal\n   1. one\n   * two\n   * three";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<ol><li>one</li><li>two</li><li>three</li></ol>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+#pragma mark - Lists (Stacked)
+
+- (void)testStackedLists
+{
+	NSString *string = @"1. Lists in a list item:\n    - Indented four spaces.\n        * indented eight spaces.\n    - Four spaces again.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ol><li>Lists in a list item:<ul><li>Indented four spaces.<ul><li>indented eight spaces.</li></ul></li><li>Four spaces again.</li></ul></li></ol>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testStackedListsClosingTwoLevels
+{
+	NSString *string = @"1. Lists in a list item:\n    - Indented four spaces.\n        * indented eight spaces.\n- Top level again.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ol><li>Lists in a list item:<ul><li>Indented four spaces.<ul><li>indented eight spaces.</li></ul></li></ul></li><li>Top level again.</li></ol>";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");

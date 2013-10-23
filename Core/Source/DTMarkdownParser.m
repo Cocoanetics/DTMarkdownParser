@@ -20,6 +20,8 @@ NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 NSString * const DTMarkdownParserSpecialFencedPreStart = @"<FENCED BEGIN>";
 NSString * const DTMarkdownParserSpecialFencedPreCode = @"<FENCED CODE>";
 NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
+NSString * const DTMarkdownParserSpecialList = @"<LIST>";
+NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 
 @implementation DTMarkdownParser
 {
@@ -43,6 +45,7 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 	NSMutableDictionary *_specialLines;
 	NSMutableIndexSet *_ignoredLines;
 	NSMutableDictionary *_references;
+	NSMutableDictionary *_lineIndentLevel;
 }
 
 - (instancetype)initWithString:(NSString *)string options:(DTMarkdownParserOptions)options
@@ -139,6 +142,10 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 	{
 		return @"`";
 	}
+	else if ([string hasPrefix:@"<"])
+	{
+		return @"<";
+	}
 	
 	return nil;
 }
@@ -202,7 +209,7 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
 	
-	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`"];
+	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
 	
 	while (![scanner isAtEnd])
 	{
@@ -227,80 +234,100 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 			
 			NSAssert(effectiveOpeningMarker, @"There should be a closing marker to look for because we only get here from having scanned for marker characters");
 			
-			
-			if ([effectiveOpeningMarker isEqualToString:@"!["] || [effectiveOpeningMarker isEqualToString:@"["])
+			if ([effectiveOpeningMarker isEqualToString:@"!["] || [effectiveOpeningMarker isEqualToString:@"["] || [effectiveOpeningMarker isEqualToString:@"<"])
 			{
 				NSDictionary *attributes = nil;
 				
-				if ([scanner scanUpToString:@"]" intoString:&enclosedPart])
+				NSString *closingMarker;
+				BOOL isSimpleHREF;
+				
+				if ([effectiveOpeningMarker isEqualToString:@"<"])
+				{
+					closingMarker = @">";
+					isSimpleHREF = YES;
+				}
+				else
+				{
+					closingMarker = @"]";
+					isSimpleHREF = NO;
+				}
+				
+				if ([scanner scanUpToString:closingMarker intoString:&enclosedPart])
 				{
 					// scan closing part of link
-					if ([scanner scanString:@"]" intoString:NULL])
+					if ([scanner scanString:closingMarker intoString:NULL])
 					{
-						// skip whitespace
-						[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
-						
-						if ([scanner scanString:@"(" intoString:NULL])
+						if (isSimpleHREF)
 						{
-							// has potentially inline address
+							attributes = [NSDictionary dictionaryWithObject:enclosedPart forKey:@"href"];
+						}
+						else
+						{
+							// skip whitespace
+							[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
 							
-							NSString *hyperlink;
-							
-							if ([scanner scanUpToString:@")" intoString:&hyperlink])
+							if ([scanner scanString:@"(" intoString:NULL])
 							{
-								// see if it is closed too
-								if ([scanner scanString:@")" intoString:NULL])
+								// has potentially inline address
+								
+								NSString *hyperlink;
+								
+								if ([scanner scanUpToString:@")" intoString:&hyperlink])
 								{
-									NSString *URLString;
-									NSString *title;
-									
-									NSScanner *urlScanner = [NSScanner scannerWithString:hyperlink];
-									urlScanner.charactersToBeSkipped = nil;
-									
-									if ([urlScanner scanMarkdownHyperlink:&URLString title:&title])
+									// see if it is closed too
+									if ([scanner scanString:@")" intoString:NULL])
 									{
-										NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
+										NSString *URLString;
+										NSString *title;
 										
-										if ([URLString length])
-										{
-											tmpDict[@"href"] = URLString;
-										}
+										NSScanner *urlScanner = [NSScanner scannerWithString:hyperlink];
+										urlScanner.charactersToBeSkipped = nil;
 										
-										if ([title length])
+										if ([urlScanner scanMarkdownHyperlink:&URLString title:&title])
 										{
-											tmpDict[@"title"] = title;
-										}
-										
-										if ([tmpDict count])
-										{
-											attributes = [tmpDict copy];
+											NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
+											
+											if ([URLString length])
+											{
+												tmpDict[@"href"] = URLString;
+											}
+											
+											if ([title length])
+											{
+												tmpDict[@"title"] = title;
+											}
+											
+											if ([tmpDict count])
+											{
+												attributes = [tmpDict copy];
+											}
 										}
 									}
 								}
 							}
-						}
-						else if ([scanner scanString:@"[" intoString:NULL])
-						{
-							// has potentially address via ref
-							
-							NSString *reference;
-							
-							if ([scanner scanUpToString:@"]" intoString:&reference])
+							else if ([scanner scanString:@"[" intoString:NULL])
 							{
-								// see if it is closed too
-								if ([scanner scanString:@"]" intoString:NULL])
-								{
-									attributes = _references[[reference lowercaseString]];
-								}
-							}
-							else
-							{
-								// could be []
+								// has potentially address via ref
 								
-								if ([scanner scanString:@"]" intoString:NULL])
+								NSString *reference;
+								
+								if ([scanner scanUpToString:@"]" intoString:&reference])
 								{
-									reference = [enclosedPart lowercaseString];
-									attributes = _references[reference];
+									// see if it is closed too
+									if ([scanner scanString:@"]" intoString:NULL])
+									{
+										attributes = _references[[reference lowercaseString]];
+									}
+								}
+								else
+								{
+									// could be []
+									
+									if ([scanner scanString:@"]" intoString:NULL])
+									{
+										reference = [enclosedPart lowercaseString];
+										attributes = _references[reference];
+									}
 								}
 							}
 						}
@@ -310,7 +337,7 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 				// only output hyperlink if all is ok
 				if (attributes)
 				{
-					if ([effectiveOpeningMarker isEqualToString:@"["])
+					if ([effectiveOpeningMarker isEqualToString:@"["] || isSimpleHREF)
 					{
 						[self _pushTag:@"a" attributes:attributes];
 						[self _reportCharacters:enclosedPart];
@@ -379,23 +406,161 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 	}
 }
 
+- (NSUInteger)_indentationLevelForLine:(NSString *)line
+{
+	NSUInteger spacesCount = 0;
+	
+	for (NSUInteger idx=0; idx < [line length]; idx++)
+	{
+		unichar ch = [line characterAtIndex:idx];
+		
+		if (ch == ' ')
+		{
+			spacesCount++;
+		}
+		else if (ch == '\t')
+		{
+			spacesCount+=3;
+		}
+		else
+		{
+			break;
+		}
+	}
+	
+	// found up to increments of 4
+	return (NSUInteger)floorf((spacesCount/4.0));
+}
+
+
+- (void)_processListLine:(NSString *)line lineIndex:(NSUInteger)lineIndex
+{
+	NSString *prefix;
+	
+	NSString *specialTypeOfLine = _specialLines[@(lineIndex)];
+	NSString *specialTypeOfFollowingLine = _specialLines[@(lineIndex+1)];
+	
+	NSInteger previousLineIndent = lineIndex?[_lineIndentLevel[@(lineIndex-1)] integerValue]:0;
+	NSInteger currentLineIndent = [_lineIndentLevel[@(lineIndex)] integerValue];
+
+	if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
+	{
+		// we know there is a list prefix, but we need to eliminate the indentation first
+		line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	}
+	
+	NSScanner *scanner = [NSScanner scannerWithString:line];
+	scanner.charactersToBeSkipped = nil;
+	
+	[scanner scanMarkdownLineListPrefix:&prefix];
+	
+	NSAssert(prefix, @"Cannot process line, no list prefix");
+
+	NSAssert(![[self _currentTag] isEqualToString:@"p"], @"There should never be an open P tag in %s", __PRETTY_FUNCTION__);
+	
+	// cut off prefix
+	line = [line substringFromIndex:scanner.scanLocation];
+	
+	
+	BOOL needOpenNewListLevel = NO;
+	
+	if (specialTypeOfLine == DTMarkdownParserSpecialList)
+	{
+		if (![_tagStack containsObject:@"ul"] && ![_tagStack containsObject:@"ol"])
+		{
+			// first line of list opens only if no list present
+			needOpenNewListLevel = YES;
+		}
+	}
+	else if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
+	{
+		// sub list only opens one level
+		
+		if (currentLineIndent>previousLineIndent)
+		{
+			needOpenNewListLevel = YES;
+		}
+	}
+	
+	if (currentLineIndent<previousLineIndent)
+	{
+		NSInteger level = previousLineIndent;
+		
+		// close any number of list levels
+		while (level>currentLineIndent)
+		{
+			NSString *tagToPop = [self _currentTag];
+			
+			[self _popTag];
+			
+			if ([tagToPop isEqualToString:@"ul"] || [tagToPop isEqualToString:@"ol"])
+			{
+				level--;
+			}
+		}
+	}
+	
+	
+	if (needOpenNewListLevel)
+	{
+		// need to open list
+		if ([prefix hasSuffix:@"."])
+		{
+			// ordered list
+			[self _pushTag:@"ol" attributes:nil];
+		}
+		else
+		{
+			// unordered list
+			[self _pushTag:@"ul" attributes:nil];
+		}
+	}
+	
+	if ([[self _currentTag] isEqualToString:@"li"])
+	{
+		[self _popTag]; // previous li
+	}
+	
+	[self _pushTag:@"li" attributes:nil];
+	
+	// process line as normal without prefix
+	[self _processLine:line];
+	
+	if (specialTypeOfFollowingLine != DTMarkdownParserSpecialSubList)
+	{
+		[self _popTag]; // li
+		
+		if ([_ignoredLines containsIndex:lineIndex+1])
+		{
+			[self _popTag];
+		}
+	}
+}
+
 - (void)_findAndMarkSpecialLines
 {
 	_ignoredLines = [NSMutableIndexSet new];
 	_specialLines = [NSMutableDictionary new];
 	_references = [NSMutableDictionary new];
+	_lineIndentLevel = [NSMutableDictionary new];
 	
 	NSScanner *scanner = [NSScanner scannerWithString:_string];
 	scanner.charactersToBeSkipped = nil;
 	
 	NSUInteger lineIndex = 0;
+	NSInteger previousLineIndent = 0;
+	
 	while (![scanner isAtEnd])
 	{
 		NSString *line;
+		
 		if ([scanner scanUpToString:@"\n" intoString:&line])
 		{
 			BOOL didFindSpecial = NO;
 			NSString *specialOfLineBefore = nil;
+			
+			NSInteger currentLineIndent = [self _indentationLevelForLine:line];
+			_lineIndentLevel[@(lineIndex)] = @(currentLineIndent);
 			
 			if (lineIndex)
 			{
@@ -435,7 +600,7 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 			
 			if (!didFindSpecial)
 			{
-				NSCharacterSet *ruleCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@" -*\n"];
+				NSCharacterSet *ruleCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@" -*_\n"];
 				
 				if ([[line stringByTrimmingCharactersInSet:ruleCharacterSet] length]==0)
 				{
@@ -510,6 +675,38 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialFencedPreCode;
 				}
 			}
+			
+			if (!didFindSpecial)
+			{
+				NSScanner *lineScanner = [NSScanner scannerWithString:line];
+				lineScanner.charactersToBeSkipped = nil;
+				
+				NSString *listPrefix;
+				if ([lineScanner scanMarkdownLineListPrefix:&listPrefix])
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialList;
+					didFindSpecial = YES;
+				}
+				else if (specialOfLineBefore == DTMarkdownParserSpecialList || specialOfLineBefore == DTMarkdownParserSpecialSubList)
+				{
+					// line before ist list start
+					if ((currentLineIndent>=previousLineIndent+1 && currentLineIndent<=previousLineIndent+2) || (currentLineIndent>=previousLineIndent-1 && currentLineIndent<=previousLineIndent))
+					{
+						NSString *indentedLine = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+						
+						NSScanner *indentedScanner = [NSScanner scannerWithString:indentedLine];
+						indentedScanner.charactersToBeSkipped = nil;
+						
+						if ([indentedScanner scanMarkdownLineListPrefix:&listPrefix])
+						{
+							_specialLines[@(lineIndex)] = DTMarkdownParserSpecialSubList;
+							didFindSpecial = YES;
+						}
+					}
+				}
+			}
+			
+			previousLineIndent = currentLineIndent;
 		}
 		
 		// look for empty lines
@@ -550,6 +747,8 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 	
 	while (![scanner isAtEnd])
 	{
+		NSUInteger currentLineIndex = lineIndex;
+		
 		NSString *line;
 		if ([scanner scanUpToString:@"\n" intoString:&line])
 		{
@@ -599,7 +798,13 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 			NSString *tag = nil;
 			NSUInteger headerLevel = 0;
 			
-			if (specialLine == DTMarkdownParserSpecialTagPre || specialLine == DTMarkdownParserSpecialFencedPreCode)
+			if (specialLine == DTMarkdownParserSpecialList || specialLine == DTMarkdownParserSpecialSubList)
+			{
+				[self _processListLine:line lineIndex:currentLineIndex];
+				
+				continue;
+			}
+			else if (specialLine == DTMarkdownParserSpecialTagPre || specialLine == DTMarkdownParserSpecialFencedPreCode)
 			{
 				NSString *codeLine;
 				
@@ -703,7 +908,7 @@ NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 				tag = [NSString stringWithFormat:@"h%d", (int)headerLevel];
 			}
 			
-			BOOL willCloseTag = (hasTwoNL || headerLevel || !shouldOutputLineText || followingLineIsIgnored);
+			BOOL willCloseTag = (hasTwoNL || headerLevel || !shouldOutputLineText || followingLineIsIgnored || specialFollowingLine == DTMarkdownParserSpecialList || specialFollowingLine == DTMarkdownParserSpecialTagHR);
 			
 			// handle new lines
 			if (shouldOutputLineText && !hasTwoNL && ![scanner isAtEnd])

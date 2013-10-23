@@ -46,14 +46,23 @@ Implemented
 - Hyperlinks (inline and reference)
 - Images (inline and reference)
 - Linebreaks Handling (GitHub versus Gruber)
+- lists (ordered or unordered)
+- lists (stacked)
+- forced linking via angle brackets
 
 To Do
 -----
 
-- lists (ordered or unordered)
-- lists (stacked)
-- inline HTML (? should we ever do this ?)
+- auto linking of http URLs
 - character escaping
+- inline HTML (? should we ever do this ?)
 - multiple-level quoting and code blocks
 - additional useful markdown extensions
 - proper reporting of applicable processed range of text, e.g. to use for syntax highlighting
+
+Markdown References
+-------------------
+
+- John Gruber's [Markdown Syntax Documentation](http://daringfireball.net/projects/markdown/syntax)
+- Stack Overflow's [Markdown Editing Help](http://stackoverflow.com/editing-help)
+- Fletcher T. Penney's [MultiMarkdown Syntax Guide](https://github.com/fletcher/MultiMarkdown/wiki/MultiMarkdown-Syntax-Guide)
