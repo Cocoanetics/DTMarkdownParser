@@ -567,6 +567,8 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+#pragma mark - Horizontal Rule
+
 - (void)testHorizontalRule
 {
 	NSString *string = @"Line1\n\n * * *\n\n - - -\n\nLine2";
@@ -576,6 +578,20 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p>Line1</p>\n<hr />\n<hr />\n<p>Line2</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testHorizontalRuleAfterParagraphWithOnlyOneNL
+{
+	NSString *string = @"Line1\n___\nLine2";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Line1</p>\n<hr />\n<p>Line2</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");

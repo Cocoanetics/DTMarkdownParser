@@ -576,7 +576,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			
 			if (!didFindSpecial)
 			{
-				NSCharacterSet *ruleCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@" -*\n"];
+				NSCharacterSet *ruleCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@" -*_\n"];
 				
 				if ([[line stringByTrimmingCharactersInSet:ruleCharacterSet] length]==0)
 				{
@@ -884,7 +884,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				tag = [NSString stringWithFormat:@"h%d", (int)headerLevel];
 			}
 			
-			BOOL willCloseTag = (hasTwoNL || headerLevel || !shouldOutputLineText || followingLineIsIgnored || specialFollowingLine == DTMarkdownParserSpecialList);
+			BOOL willCloseTag = (hasTwoNL || headerLevel || !shouldOutputLineText || followingLineIsIgnored || specialFollowingLine == DTMarkdownParserSpecialList || specialFollowingLine == DTMarkdownParserSpecialTagHR);
 			
 			// handle new lines
 			if (shouldOutputLineText && !hasTwoNL && ![scanner isAtEnd])
