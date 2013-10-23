@@ -52,8 +52,10 @@ To Do
 -----
 
 - lists (stacked)
-- inline HTML (? should we ever do this ?)
+- auto linking of http URLs
+- forced linking via angle brackets
 - character escaping
+- inline HTML (? should we ever do this ?)
 - multiple-level quoting and code blocks
 - additional useful markdown extensions
 - proper reporting of applicable processed range of text, e.g. to use for syntax highlighting
