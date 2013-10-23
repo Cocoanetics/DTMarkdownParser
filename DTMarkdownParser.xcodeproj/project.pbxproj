@@ -295,6 +295,7 @@
 		A7870DCD1817FF3800E39311 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7870DCA1817FF3800E39311 /* Document.xib */; };
 		A7870DCE1817FF3800E39311 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7870DCB1817FF3800E39311 /* MainMenu.xib */; };
 		A7870DCF1817FF3800E39311 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = A7870DCC1817FF3800E39311 /* Credits.rtf */; };
+		A7870DD61817FFCE00E39311 /* DTMarkdownParser.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
 		A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */ = {isa = PBXBuildFile; fileRef = A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */; };
 		A78EAACD18151EF800650426 /* NSScanner+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */; };
 		A7ABD3E41811BEEB00494DA5 /* auto_link.html in Resources */ = {isa = PBXBuildFile; fileRef = A7ABD2DC1811BEEB00494DA5 /* auto_link.html */; };
@@ -578,6 +579,13 @@
 			remoteGlobalIDString = A7870C2E1817F6C000E39311;
 			remoteInfo = "DTMarkdownParser (iOS)";
 		};
+		A7870DD31817FFA700E39311 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7BF250018112A3B0013D8D7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A7BF25D3181138320013D8D7;
+			remoteInfo = "DTMarkdownParser (Mac)";
+		};
 		A7BF25BD1811354B0013D8D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7BF258C1811352D0013D8D7 /* OCMockito.xcodeproj */;
@@ -625,6 +633,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A7870DD51817FFB700E39311 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A7870DD61817FFCE00E39311 /* DTMarkdownParser.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -639,7 +657,7 @@
 		A7870C401817F6C000E39311 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		A7870C5B1817F73900E39311 /* DTMarkdownParser-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DTMarkdownParser-Prefix.pch"; sourceTree = "<group>"; };
 		A7870C601817F7BB00E39311 /* UnitTests_iOS.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests_iOS.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A7870D891817FDEC00E39311 /* Demo (Mac).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Demo (Mac).app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7870D891817FDEC00E39311 /* DTMarkdown Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DTMarkdown Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7870D8C1817FDEC00E39311 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		A7870D8D1817FDEC00E39311 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		A7870D8E1817FDEC00E39311 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1341,7 +1359,7 @@
 				A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */,
 				A7870C2F1817F6C000E39311 /* libDTMarkdownParser_iOS.a */,
 				A7870C601817F7BB00E39311 /* UnitTests_iOS.octest */,
-				A7870D891817FDEC00E39311 /* Demo (Mac).app */,
+				A7870D891817FDEC00E39311 /* DTMarkdown Demo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1495,14 +1513,16 @@
 				A7870D851817FDEC00E39311 /* Sources */,
 				A7870D861817FDEC00E39311 /* Frameworks */,
 				A7870D871817FDEC00E39311 /* Resources */,
+				A7870DD51817FFB700E39311 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A7870DD41817FFA700E39311 /* PBXTargetDependency */,
 			);
 			name = "Demo (Mac)";
 			productName = "Demo (Mac)";
-			productReference = A7870D891817FDEC00E39311 /* Demo (Mac).app */;
+			productReference = A7870D891817FDEC00E39311 /* DTMarkdown Demo.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A7BF251C18112A8F0013D8D7 /* UnitTests (Mac) */ = {
@@ -2241,6 +2261,11 @@
 			target = A7870C2E1817F6C000E39311 /* DTMarkdownParser (iOS) */;
 			targetProxy = A7870C7A1817F89900E39311 /* PBXContainerItemProxy */;
 		};
+		A7870DD41817FFA700E39311 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A7BF25D3181138320013D8D7 /* DTMarkdownParser (Mac) */;
+			targetProxy = A7870DD31817FFA700E39311 /* PBXContainerItemProxy */;
+		};
 		A7BF2606181150FC0013D8D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A7BF25D3181138320013D8D7 /* DTMarkdownParser (Mac) */;
@@ -2379,7 +2404,7 @@
 				);
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -2393,7 +2418,7 @@
 				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Coverage;
@@ -2407,7 +2432,7 @@
 				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
