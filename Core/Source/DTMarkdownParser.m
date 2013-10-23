@@ -456,21 +456,22 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		{
 			needOpenNewListLevel = YES;
 		}
-		else if (currentLineIndent<previousLineIndent)
+	}
+	
+	if (currentLineIndent<previousLineIndent)
+	{
+		NSInteger level = previousLineIndent;
+		
+		// close any number of list levels
+		while (level>currentLineIndent)
 		{
-			NSInteger level = previousLineIndent;
+			NSString *tagToPop = [self _currentTag];
 			
-			// close any number of list levels
-			while (level>currentLineIndent)
+			[self _popTag];
+			
+			if ([tagToPop isEqualToString:@"ul"] || [tagToPop isEqualToString:@"ol"])
 			{
-				NSString *tagToPop = [self _currentTag];
-				
-				[self _popTag];
-				
-				if ([tagToPop isEqualToString:@"ul"] || [tagToPop isEqualToString:@"ol"])
-				{
-					level--;
-				}
+				level--;
 			}
 		}
 	}

@@ -1080,6 +1080,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testStackedListsClosingTwoLevels
+{
+	NSString *string = @"1. Lists in a list item:\n    - Indented four spaces.\n        * indented eight spaces.\n- Top level again.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ol><li>Lists in a list item:<ul><li>Indented four spaces.<ul><li>indented eight spaces.</li></ul></li></ul></li><li>Top level again.</li></ol>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 #pragma mark - Test Files
 
 - (void)testEmphasis
