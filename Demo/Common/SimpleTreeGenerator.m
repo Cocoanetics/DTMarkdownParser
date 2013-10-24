@@ -69,9 +69,12 @@ NSString * const	kSimpleTreeAttributes	= @"attributes";
 	
 	NSMutableDictionary *newNode = [@{
 									  kSimpleTreeText: elementTag,
-									  kSimpleTreeAttributes: ((attributeDict == nil) ? [NSNull null] : attributeDict),
 									  kSimpleTreeChildren: [NSMutableArray new]
 									  } mutableCopy];
+	
+	if (attributeDict != nil) {
+		newNode[kSimpleTreeAttributes] = attributeDict;
+	}
 	
 	[self _pushNode:newNode];
 }
