@@ -9,6 +9,7 @@
 #import "DTMarkdownParser.h"
 #import "NSScanner+DTMarkdown.h"
 
+#import <tgmath.h>
 
 // constants for special lines
 NSString * const DTMarkdownParserSpecialTagH1 = @"H1";
@@ -107,48 +108,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	return [_tagStack lastObject];
 }
 
-- (NSString *)_effectiveMarkerPrefixOfString:(NSString *)string
-{
-	if ([string hasPrefix:@"**"])
-	{
-		return @"**";
-	}
-	else if ([string hasPrefix:@"*"])
-	{
-		return @"*";
-	}
-	else if ([string hasPrefix:@"__"])
-	{
-		return @"__";
-	}
-	else if ([string hasPrefix:@"_"])
-	{
-		return @"_";
-	}
-	else if ([string hasPrefix:@"~~"])
-	{
-		return @"~~";
-	}
-	else if ([string hasPrefix:@"!["])
-	{
-		return @"![";
-	}
-	else if ([string hasPrefix:@"["])
-	{
-		return @"[";
-	}
-	else if ([string hasPrefix:@"`"])
-	{
-		return @"`";
-	}
-	else if ([string hasPrefix:@"<"])
-	{
-		return @"<";
-	}
-	
-	return nil;
-}
-
 - (void)_processMarkedString:(NSString *)markedString insideMarker:(NSString *)marker
 {
 	NSAssert([markedString hasPrefix:marker] && [markedString hasSuffix:marker], @"Processed string has to have the marker at beginning and end");
@@ -182,10 +141,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	
 	if (processFurtherMarkers)
 	{
-		// see if there is another marker
-		NSString *furtherMarker = [self _effectiveMarkerPrefixOfString:markedString];
-	
-		if (furtherMarker && [markedString hasSuffix:furtherMarker])
+		NSScanner *scanner = [NSScanner scannerWithString:markedString];
+		scanner.charactersToBeSkipped = nil;
+		
+		NSString *furtherMarker;
+		
+		if ([scanner scanMarkdownBeginMarker:&furtherMarker] && [markedString hasSuffix:furtherMarker])
 		{
 			[self _processMarkedString:markedString insideMarker:furtherMarker];
 		}
@@ -208,177 +169,49 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
 	
-	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
+	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
 	
 	while (![scanner isAtEnd])
 	{
 		NSString *part;
 		
-		// scan part before first marker
-		if ([scanner scanUpToCharactersFromSet:markerChars intoString:&part])
+		// scan part before first special character
+		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
 		{
 			// output part before markers
 			[self _reportCharacters:part];
 		}
 		
+		// stop scanning if done
+		if ([scanner isAtEnd])
+		{
+			break;
+		}
+		
 		// scan marker
-		NSString *openingMarkers;
+		NSString *effectiveOpeningMarker;
 		
 		NSRange markedRange = NSMakeRange(scanner.scanLocation, 0);
 		
-		if ([scanner scanCharactersFromSet:markerChars intoString:&openingMarkers])
+		NSDictionary *linkAttributes;
+		NSString *enclosedString;
+		
+		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
+		{
+			[self _pushTag:@"img" attributes:linkAttributes];
+			[self _popTag];
+		}
+		else if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
+		{
+			[self _pushTag:@"a" attributes:linkAttributes];
+			[self _reportCharacters:enclosedString];
+			[self _popTag];
+		}
+		else if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
 		{
 			NSString *enclosedPart;
-			NSString *effectiveOpeningMarker = [self _effectiveMarkerPrefixOfString:openingMarkers];
 			
-			NSAssert(effectiveOpeningMarker, @"There should be a closing marker to look for because we only get here from having scanned for marker characters");
-			
-			if ([effectiveOpeningMarker isEqualToString:@"!["] || [effectiveOpeningMarker isEqualToString:@"["] || [effectiveOpeningMarker isEqualToString:@"<"])
-			{
-				NSDictionary *attributes = nil;
-				
-				NSString *closingMarker;
-				BOOL isSimpleHREF;
-				
-				if ([effectiveOpeningMarker isEqualToString:@"<"])
-				{
-					closingMarker = @">";
-					isSimpleHREF = YES;
-				}
-				else
-				{
-					closingMarker = @"]";
-					isSimpleHREF = NO;
-				}
-				
-				if ([scanner scanUpToString:closingMarker intoString:&enclosedPart])
-				{
-					// scan closing part of link
-					if ([scanner scanString:closingMarker intoString:NULL])
-					{
-						if (isSimpleHREF)
-						{
-							attributes = [NSDictionary dictionaryWithObject:enclosedPart forKey:@"href"];
-						}
-						else
-						{
-							// skip whitespace
-							[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
-							
-							if ([scanner scanString:@"(" intoString:NULL])
-							{
-								// has potentially inline address
-								
-								NSString *hyperlink;
-								
-								if ([scanner scanUpToString:@")" intoString:&hyperlink])
-								{
-									// see if it is closed too
-									if ([scanner scanString:@")" intoString:NULL])
-									{
-										NSString *URLString;
-										NSString *title;
-										
-										NSScanner *urlScanner = [NSScanner scannerWithString:hyperlink];
-										urlScanner.charactersToBeSkipped = nil;
-										
-										if ([urlScanner scanMarkdownHyperlink:&URLString title:&title])
-										{
-											NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
-											
-											if ([URLString length])
-											{
-												tmpDict[@"href"] = URLString;
-											}
-											
-											if ([title length])
-											{
-												tmpDict[@"title"] = title;
-											}
-											
-											if ([tmpDict count])
-											{
-												attributes = [tmpDict copy];
-											}
-										}
-									}
-								}
-							}
-							else if ([scanner scanString:@"[" intoString:NULL])
-							{
-								// has potentially address via ref
-								
-								NSString *reference;
-								
-								if ([scanner scanUpToString:@"]" intoString:&reference])
-								{
-									// see if it is closed too
-									if ([scanner scanString:@"]" intoString:NULL])
-									{
-										attributes = _references[[reference lowercaseString]];
-									}
-								}
-								else
-								{
-									// could be []
-									
-									if ([scanner scanString:@"]" intoString:NULL])
-									{
-										reference = [enclosedPart lowercaseString];
-										attributes = _references[reference];
-									}
-								}
-							}
-						}
-					}
-				}
-				
-				// only output hyperlink if all is ok
-				if (attributes)
-				{
-					if ([effectiveOpeningMarker isEqualToString:@"["] || isSimpleHREF)
-					{
-						[self _pushTag:@"a" attributes:attributes];
-						[self _reportCharacters:enclosedPart];
-						[self _popTag];
-					}
-					else if ([effectiveOpeningMarker isEqualToString:@"!["])
-					{
-						NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
-						NSString *src = attributes[@"href"];
-						
-						if (src)
-						{
-							tmpDict[@"src"] = src;
-						}
-						
-						if ([enclosedPart length])
-						{
-							tmpDict[@"alt"] = enclosedPart;
-						}
-						
-						NSString *title = attributes[@"title"];
-						
-						if ([title length])
-						{
-							// optional title
-							tmpDict[@"title"] = title;
-						}
-						
-						[self _pushTag:@"img" attributes:tmpDict];
-						[self _popTag];
-					}
-				}
-				else
-				{
-					// something wrong with this link, just output opening [ and scan after that
-					[self _reportCharacters:effectiveOpeningMarker];
-					scanner.scanLocation = markedRange.location + [effectiveOpeningMarker length];
-				}
-				
-				continue;
-			}
-			else if ([scanner scanUpToString:effectiveOpeningMarker intoString:&enclosedPart])
+			if ([scanner scanUpToString:effectiveOpeningMarker intoString:&enclosedPart])
 			{
 				// there has to be a closing marker as well
 				if ([scanner scanString:effectiveOpeningMarker intoString:NULL])
@@ -399,8 +232,17 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			else
 			{
 				// did not enclose anything
-				[self _reportCharacters:openingMarkers];
+				[self _reportCharacters:effectiveOpeningMarker];
+				scanner.scanLocation = markedRange.location + [effectiveOpeningMarker length];
 			}
+		}
+		else
+		{
+			// single special character, just output
+			NSString *specialChar = [scanner.string substringWithRange:NSMakeRange(scanner.scanLocation, 1)];
+			
+			[self _reportCharacters:specialChar];
+			scanner.scanLocation ++;
 		}
 	}
 }
@@ -428,7 +270,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	}
 	
 	// found up to increments of 4
-	return (NSUInteger)floorf((spacesCount/4.0));
+	return (NSUInteger)floor((spacesCount/4.0));
 }
 
 
@@ -441,7 +283,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	
 	NSInteger previousLineIndent = lineIndex?[_lineIndentLevel[@(lineIndex-1)] integerValue]:0;
 	NSInteger currentLineIndent = [_lineIndentLevel[@(lineIndex)] integerValue];
-
+	
 	if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
 	{
 		// we know there is a list prefix, but we need to eliminate the indentation first
@@ -454,7 +296,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[scanner scanMarkdownLineListPrefix:&prefix];
 	
 	NSAssert(prefix, @"Cannot process line, no list prefix");
-
+	
 	NSAssert(![[self _currentTag] isEqualToString:@"p"], @"There should never be an open P tag in %s", __PRETTY_FUNCTION__);
 	
 	// cut off prefix

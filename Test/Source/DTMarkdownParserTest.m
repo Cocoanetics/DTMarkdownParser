@@ -536,6 +536,36 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Heading 1");
 }
 
+- (void)testHeading1WithFollowingParagraph
+{
+	NSString *string = @"Heading 1\n=========\nParagraph";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<h1>Heading 1</h1>\n<p>Paragraph</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testHeading2WithFollowingParagraph
+{
+	NSString *string = @"Heading 2\n---------\nParagraph";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<h2>Heading 2</h2>\n<p>Paragraph</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 
 #pragma mark - Line Break
 
@@ -832,6 +862,23 @@
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
+
+/*
+- (void)testLinkWithNestedImagesInside
+{
+	NSString *string = @"[![Build Status](https://travis-ci.org/Cocoanetics/DTMarkdownParser.png?branch=develop)](https://travis-ci.org/Cocoanetics/DTMarkdownParser)";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p><a href=\"https://travis-ci.org/Cocoanetics/DTMarkdownParser\">an <em>image</em> <img src=\"https://travis-ci.org/Cocoanetics/DTMarkdownParser.png?branch=develop\" alt=\"Build Status\"> inside a link</a></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+ */
 
 #pragma mark - Images
 
