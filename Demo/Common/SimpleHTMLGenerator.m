@@ -41,6 +41,32 @@ NSString * const kHTMLFooter = @""
 	return self;
 }
 
++ (NSSet *)blockLevelElements
+{
+    static NSSet *blockLevelElementsSet;
+    static dispatch_once_t onceToken = 0;
+	
+    dispatch_once(&onceToken, ^{
+		blockLevelElementsSet = [NSSet setWithArray:
+								 @[
+								   @"p",
+								   @"h1", @"h2", @"h3", @"h4", @"h5", @"h6",
+								   @"ol", @"ul",
+								   @"pre",
+								   @"address",
+								   @"blockquote",
+								   @"dl",
+								   @"div",
+								   @"fieldset",
+								   @"form",
+								   @"hr",
+								   @"noscript",
+								   @"table"
+								   ]];
+    });
+
+    return blockLevelElementsSet;
+}
 
 - (void)parserDidStartDocument:(DTMarkdownParser *)parser;
 {
@@ -87,7 +113,11 @@ NSString * const kHTMLFooter = @""
 
 - (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
 {
-	NSString *elementTag = [NSString stringWithFormat:@"</%@>\n", elementName];
+	NSMutableString *elementTag = [NSMutableString stringWithFormat:@"</%@>", elementName];
+	
+	if ([[[self class] blockLevelElements] containsObject:elementName]) {
+		[elementTag appendString:@"\n"];
+	}
 	
 	if (_verbose)  NSLog(@"%@", elementTag);
 	
