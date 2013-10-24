@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface TagTreeOutlineController : NSObject <NSOutlineViewDataSource>
+@interface TagTreeOutlineController : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
 
 @property (nonatomic, readwrite, strong) NSMutableArray *tagNodes;
 

@@ -66,4 +66,27 @@
 	return text;
 }
 
+
+#pragma mark ---- Delegate methods ----
+
+- (NSString *)outlineView:(NSOutlineView *)outlineView
+		   toolTipForCell:(NSCell *)cell
+					 rect:(NSRectPointer)rect
+			  tableColumn:(NSTableColumn *)tableColumn
+					 item:(id)item
+			mouseLocation:(NSPoint)mouseLocation
+{
+	NSDictionary *dict = item;
+	
+	NSDictionary *attributesDict = dict[kSimpleTreeAttributes];
+	if (attributesDict != nil) {
+		NSString *text = [attributesDict description];
+		return text;
+	}
+	else {
+		return nil;
+	}
+	
+}
+
 @end
