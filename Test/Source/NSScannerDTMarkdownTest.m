@@ -330,4 +330,60 @@
 	STAssertNil(prefix, @"prefix should be nil");
 }
 
+#pragma mark - Marked Range Markers
+
+- (void)_testScanMarkedRangeBeginningsInString:(NSString *)string expectedMarker:(NSString *)expectedMarker
+{
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *marker;
+	BOOL b = [scanner scanMarkdownBeginMarker:&marker];
+	
+	STAssertTrue(b, @"Should be able to scan opening marker");
+	STAssertEqualObjects(expectedMarker, marker, @"Incorrect Marker scanned");
+}
+
+- (void)testScanMarkedRanges
+{
+	[self _testScanMarkedRangeBeginningsInString:@"**Bold**" expectedMarker:@"**"];
+	[self _testScanMarkedRangeBeginningsInString:@"*Emphasis*" expectedMarker:@"*"];
+	[self _testScanMarkedRangeBeginningsInString:@"__Bold__" expectedMarker:@"__"];
+	[self _testScanMarkedRangeBeginningsInString:@"_Emphasis_" expectedMarker:@"_"];
+	[self _testScanMarkedRangeBeginningsInString:@"~~Deleted~~" expectedMarker:@"~~"];
+	[self _testScanMarkedRangeBeginningsInString:@"`Code`" expectedMarker:@"`"];
+}
+
+#pragma mark - Link Scanning
+
+- (void)testScanImage
+{
+	NSString *string = @"![Alt text](/path/to/img.jpg \"Optional title\")";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
+	
+	STAssertTrue(b, @"Should be able to scan opening marker");
+	STAssertEqualObjects(attributes[@"src"], @"/path/to/img.jpg", @"Incorrect SRC");
+	STAssertEqualObjects(attributes[@"alt"], @"Alt text", @"Incorrect ALT");
+	STAssertEqualObjects(attributes[@"title"], @"Optional title", @"Incorrect TITLE");
+}
+
+- (void)testUnclosedLink
+{
+	NSString *string = @"[link with reference][used.";
+
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	NSString *enclosed;
+	BOOL b = [scanner scanMarkdownHyperlinkAttributes:&attributes enclosedString:&enclosed references:nil];
+	
+	STAssertFalse(b, @"Should not result in scanned link");
+}
+
 @end
