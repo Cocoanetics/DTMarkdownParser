@@ -1141,6 +1141,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testSimpleOrderedListBetweenParagraphs
+{
+	NSString *string = @"Paragraph\n\n- One\n- Two\n- Three\n- Four\n\nParagraph";
+
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Paragraph</p>\n<ul><li>One</li><li>Two</li><li>Three</li><li>Four</li></ul><p>Paragraph</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 #pragma mark - Lists (Stacked)
 
 - (void)testStackedLists

@@ -371,7 +371,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	{
 		[self _popTag]; // li
 		
-		if ([_ignoredLines containsIndex:lineIndex+1])
+		if ([_ignoredLines containsIndex:lineIndex+1] || specialTypeOfFollowingLine == DTMarkdownParserSpecialEmptyLine)
 		{
 			[self _popTag];
 		}
