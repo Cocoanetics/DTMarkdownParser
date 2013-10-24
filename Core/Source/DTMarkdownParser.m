@@ -9,6 +9,7 @@
 #import "DTMarkdownParser.h"
 #import "NSScanner+DTMarkdown.h"
 
+#import <tgmath.h>
 
 // constants for special lines
 NSString * const DTMarkdownParserSpecialTagH1 = @"H1";
@@ -428,7 +429,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	}
 	
 	// found up to increments of 4
-	return (NSUInteger)floorf((spacesCount/4.0));
+	return (NSUInteger)floor((spacesCount/4.0));
 }
 
 
