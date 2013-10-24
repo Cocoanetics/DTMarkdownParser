@@ -65,7 +65,19 @@ NSString * const kHTMLFooter = @""
 
 - (void)parser:(DTMarkdownParser *)parser didStartElement:(NSString *)elementName attributes:(NSDictionary *)attributeDict;
 {
-	NSString *elementTag = [NSString stringWithFormat:@"<%@>", elementName];
+	NSMutableString *elementTag = [NSMutableString string];
+	[elementTag appendString:@"<"];
+	[elementTag appendString:elementName];
+
+	[attributeDict enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, NSString *attribute, BOOL *stop) {
+		[elementTag appendString:@" "];
+		[elementTag appendString:attributeName];
+		[elementTag appendString:@"=\""];
+		[elementTag appendString:attribute];
+		[elementTag appendString:@"\""];
+	}];
+	
+	[elementTag appendString:@">"];
 	
 	if (_verbose)  NSLog(@"%@", elementTag);
 	
