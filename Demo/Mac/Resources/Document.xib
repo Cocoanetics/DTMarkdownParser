@@ -175,13 +175,20 @@
                                             <rect key="frame" x="0.0" y="0.0" width="315" height="516"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <webView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="90u-VV-TXQ">
+                                                <webView translatesAutoresizingMaskIntoConstraints="NO" id="90u-VV-TXQ">
+                                                    <rect key="frame" x="0.0" y="0.0" width="315" height="516"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO">
                                                         <nil key="identifier"/>
                                                     </webPreferences>
                                                 </webView>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="90u-VV-TXQ" firstAttribute="leading" secondItem="hRU-TF-Ygj" secondAttribute="leading" id="7BJ-cD-Obx"/>
+                                                <constraint firstItem="90u-VV-TXQ" firstAttribute="top" secondItem="hRU-TF-Ygj" secondAttribute="top" id="YnW-ff-Raj"/>
+                                                <constraint firstAttribute="trailing" secondItem="90u-VV-TXQ" secondAttribute="trailing" id="b0P-Dl-9sq"/>
+                                                <constraint firstAttribute="bottom" secondItem="90u-VV-TXQ" secondAttribute="bottom" id="gip-Wy-IPN"/>
+                                            </constraints>
                                         </view>
                                     </tabViewItem>
                                 </tabViewItems>
