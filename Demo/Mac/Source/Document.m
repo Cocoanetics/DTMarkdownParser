@@ -118,6 +118,10 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 										 withString:HTMLString];
 		}
 		
+		// Parsing twice is pretty inefficient, but good enough for illustrative purposes.
+		// We could implement a delegate object that distributes the delegate messages
+		// to both SimpleTreeGenerator and SimpleHTMLGenerator.
+		
 		result = YES;
 	}
 	else {
