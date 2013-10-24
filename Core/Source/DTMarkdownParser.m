@@ -187,11 +187,18 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		
 		NSRange markedRange = NSMakeRange(scanner.scanLocation, 0);
 		
-		if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
+		NSDictionary *linkAttributes;
+		
+		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
+		{
+			[self _pushTag:@"img" attributes:linkAttributes];
+			[self _popTag];
+		}
+		else if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
 		{
 			NSString *enclosedPart;
 			
-			if ([effectiveOpeningMarker isEqualToString:@"!["] || [effectiveOpeningMarker isEqualToString:@"["] || [effectiveOpeningMarker isEqualToString:@"<"])
+			if ([effectiveOpeningMarker isEqualToString:@"["] || [effectiveOpeningMarker isEqualToString:@"<"])
 			{
 				NSDictionary *attributes = nil;
 				
@@ -298,32 +305,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					{
 						[self _pushTag:@"a" attributes:attributes];
 						[self _reportCharacters:enclosedPart];
-						[self _popTag];
-					}
-					else if ([effectiveOpeningMarker isEqualToString:@"!["])
-					{
-						NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
-						NSString *src = attributes[@"href"];
-						
-						if (src)
-						{
-							tmpDict[@"src"] = src;
-						}
-						
-						if ([enclosedPart length])
-						{
-							tmpDict[@"alt"] = enclosedPart;
-						}
-						
-						NSString *title = attributes[@"title"];
-						
-						if ([title length])
-						{
-							// optional title
-							tmpDict[@"title"] = title;
-						}
-						
-						[self _pushTag:@"img" attributes:tmpDict];
 						[self _popTag];
 					}
 				}

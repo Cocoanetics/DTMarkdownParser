@@ -12,11 +12,22 @@
 
 - (BOOL)scanMarkdownHyperlink:(NSString **)URLString title:(NSString **)title
 {
+	static NSCharacterSet *hrefTerminatorSet = nil;
+	
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		NSMutableCharacterSet *tmpSet = [NSMutableCharacterSet whitespaceCharacterSet];
+		[tmpSet addCharactersInString:@")'\"("];
+		hrefTerminatorSet = [tmpSet copy];
+	});
+	
+	
 	NSUInteger startPos = self.scanLocation;
 
 	NSString *hrefString;
 	
-	if (![self scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:&hrefString])
+	if (![self scanUpToCharactersFromSet:hrefTerminatorSet intoString:&hrefString])
 	{
 		self.scanLocation = startPos;
 		return NO;
@@ -284,6 +295,116 @@
 	}
 	
 	self.scanLocation = startPos + [effectiveMarker length];
+	
+	return YES;
+}
+
+- (BOOL)scanMarkdownImageAttributes:(NSDictionary **)attributes references:(NSDictionary *)references
+{
+	NSUInteger startPos = self.scanLocation;
+	
+	if (![self scanString:@"![" intoString:NULL])
+	{
+		return NO;
+	}
+	
+	// alt text never contains extra characters
+	
+	NSString *altText;
+	
+	if (![self scanUpToString:@"]" intoString:&altText])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// expect closing square bracket
+	if (![self scanString:@"]" intoString:NULL])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+
+	// skip whitespace
+	[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
+
+	NSString *hrefString;
+	NSString *title;
+
+	// expect opening round or square bracket
+	if ([self scanString:@"(" intoString:NULL])
+	{
+		// scan image hyperlink and optional title
+		
+		if (![self scanMarkdownHyperlink:&hrefString title:&title])
+		{
+			self.scanLocation = startPos;
+			return NO;
+		}
+		
+		// skip whitespace
+		[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
+		
+		// expect closing round bracket
+		if (![self scanString:@")" intoString:NULL])
+		{
+			self.scanLocation = startPos;
+			return NO;
+		}
+	}
+	else if ([self scanString:@"[" intoString:NULL])
+	{
+		// scan id
+		
+		NSString *refId;
+		
+		if (![self scanUpToString:@"]" intoString:&refId])
+		{
+			self.scanLocation = startPos;
+			return NO;
+		}
+		
+		NSDictionary *reference = references[[refId lowercaseString]];
+		
+		if (!reference)
+		{
+			self.scanLocation = startPos;
+			return NO;
+		}
+		
+		// transfer from reference
+		title = reference[@"title"];
+		hrefString = reference[@"href"];
+		
+		// expect closing round bracket
+		if (![self scanString:@"]" intoString:NULL])
+		{
+			self.scanLocation = startPos;
+			return NO;
+		}
+	}
+	
+	if (attributes)
+	{
+		NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
+		
+		if (hrefString)
+		{
+			tmpDict[@"src"] = hrefString;
+		}
+		
+		if (title)
+		{
+			tmpDict[@"title"] = title;
+		}
+		
+		if (altText)
+		{
+			tmpDict[@"alt"] = altText;
+		}
+		
+		*attributes = [tmpDict copy];
+	}
 	
 	return YES;
 }

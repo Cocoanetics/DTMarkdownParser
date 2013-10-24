@@ -833,6 +833,23 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+/*
+- (void)testLinkWithNestedImagesInside
+{
+	NSString *string = @"[![Build Status](https://travis-ci.org/Cocoanetics/DTMarkdownParser.png?branch=develop)](https://travis-ci.org/Cocoanetics/DTMarkdownParser)";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p><a href=\"https://travis-ci.org/Cocoanetics/DTMarkdownParser\">an <em>image</em> <img src=\"https://travis-ci.org/Cocoanetics/DTMarkdownParser.png?branch=develop\" alt=\"Build Status\"> inside a link</a></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+ */
+
 #pragma mark - Images
 
 - (void)testInlineImage

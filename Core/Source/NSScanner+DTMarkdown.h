@@ -22,4 +22,7 @@
 // returns `YES` if a beginning marker of a marked range was scanned
 - (BOOL)scanMarkdownBeginMarker:(NSString **)beginMarker;
 
+// returns `YES` if an image was scanned, equivalent to an IMG tag and its attributes src, alt and title. If it is a reference that is found in the references the reference is also used.
+- (BOOL)scanMarkdownImageAttributes:(NSDictionary **)attributes references:(NSDictionary *)references;
+
 @end
