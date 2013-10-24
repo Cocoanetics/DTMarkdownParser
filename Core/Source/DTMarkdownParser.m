@@ -188,12 +188,19 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		NSRange markedRange = NSMakeRange(scanner.scanLocation, 0);
 		
 		NSDictionary *linkAttributes;
+		NSString *enclosedString;
 		
 		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
 		{
 			[self _pushTag:@"img" attributes:linkAttributes];
 			[self _popTag];
 		}
+//		else if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
+//		{
+//			[self _pushTag:@"a" attributes:linkAttributes];
+//			[self _reportCharacters:enclosedString];
+//			[self _popTag];
+//		}
 		else if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
 		{
 			NSString *enclosedPart;

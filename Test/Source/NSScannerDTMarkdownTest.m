@@ -374,4 +374,20 @@
 	STAssertEqualObjects(attributes[@"title"], @"Optional title", @"Incorrect TITLE");
 }
 
+- (void)testUnclosedLink
+{
+	NSString *string = @"[link with reference][used.";
+
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	NSString *enclosed;
+	BOOL b = [scanner scanMarkdownHyperlinkAttributes:&attributes enclosedString:&enclosed references:nil];
+
+	
+	
+}
+
 @end
