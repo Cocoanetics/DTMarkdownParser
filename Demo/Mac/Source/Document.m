@@ -25,6 +25,9 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	
 	IBOutlet TagTreeOutlineController *_tagTreeOutlineController;
 	NSMutableArray *		_nodeTree;
+	
+	IBOutlet NSTextView *	_HTMLTextView;
+	NSTextStorage *			_HTMLText;
 }
 
 - (id)init
@@ -36,7 +39,9 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 									   size:18.0];
 
 		_markdownText = [[NSTextStorage alloc] init];
-    }
+
+		_HTMLText = [[NSTextStorage alloc] init];
+	}
 	
     return self;
 }
@@ -54,6 +59,9 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	[_markdownTextView setFont:_defaultFont];
 	
 	_tagTreeOutlineController.tagNodes = _nodeTree;
+	
+	[[_HTMLTextView layoutManager] replaceTextStorage:_HTMLText];
+	[_HTMLTextView setFont:_defaultFont];
 }
 
 + (BOOL)autosavesInPlace
