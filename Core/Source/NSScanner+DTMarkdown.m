@@ -234,7 +234,7 @@
 	static dispatch_once_t onceToken;
 	
 	dispatch_once(&onceToken, ^{
-		markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
+		markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~`"];
 	});
 	
 	NSUInteger startPos = self.scanLocation;

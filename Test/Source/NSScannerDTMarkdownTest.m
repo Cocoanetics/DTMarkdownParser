@@ -351,10 +351,7 @@
 	[self _testScanMarkedRangeBeginningsInString:@"__Bold__" expectedMarker:@"__"];
 	[self _testScanMarkedRangeBeginningsInString:@"_Emphasis_" expectedMarker:@"_"];
 	[self _testScanMarkedRangeBeginningsInString:@"~~Deleted~~" expectedMarker:@"~~"];
-	[self _testScanMarkedRangeBeginningsInString:@"![Image](foo.com)" expectedMarker:@"!["];
-	[self _testScanMarkedRangeBeginningsInString:@"[Link](foo.com)" expectedMarker:@"["];
 	[self _testScanMarkedRangeBeginningsInString:@"`Code`" expectedMarker:@"`"];
-	[self _testScanMarkedRangeBeginningsInString:@"<forced.link.com>" expectedMarker:@"<"];
 }
 
 #pragma mark - Link Scanning
@@ -385,9 +382,8 @@
 	NSDictionary *attributes;
 	NSString *enclosed;
 	BOOL b = [scanner scanMarkdownHyperlinkAttributes:&attributes enclosedString:&enclosed references:nil];
-
 	
-	
+	STAssertFalse(b, @"Should not result in scanned link");
 }
 
 @end

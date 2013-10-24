@@ -169,17 +169,23 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
 	
-	NSCharacterSet *markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
+	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
 	
 	while (![scanner isAtEnd])
 	{
 		NSString *part;
 		
-		// scan part before first marker
-		if ([scanner scanUpToCharactersFromSet:markerChars intoString:&part])
+		// scan part before first special character
+		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
 		{
 			// output part before markers
 			[self _reportCharacters:part];
+		}
+		
+		// stop scanning if done
+		if ([scanner isAtEnd])
+		{
+			break;
 		}
 		
 		// scan marker
@@ -203,14 +209,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		}
 		else if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
 		{
-			if ([effectiveOpeningMarker isEqualToString:@"["] || [effectiveOpeningMarker isEqualToString:@"!["])
-			{
-				// was not a valid image or href, just output it
-				[self _reportCharacters:effectiveOpeningMarker];
-				
-				continue;
-			}
-			
 			NSString *enclosedPart;
 			
 			if ([scanner scanUpToString:effectiveOpeningMarker intoString:&enclosedPart])
@@ -237,6 +235,14 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				[self _reportCharacters:effectiveOpeningMarker];
 				scanner.scanLocation = markedRange.location + [effectiveOpeningMarker length];
 			}
+		}
+		else
+		{
+			// single special character, just output
+			NSString *specialChar = [scanner.string substringWithRange:NSMakeRange(scanner.scanLocation, 1)];
+			
+			[self _reportCharacters:specialChar];
+			scanner.scanLocation ++;
 		}
 	}
 }
