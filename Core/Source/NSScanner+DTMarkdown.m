@@ -446,11 +446,8 @@
 		// expect opening round or square bracket
 		if ([self scanString:@"(" intoString:NULL])
 		{
-			if (![self scanMarkdownHyperlink:&hrefString title:&title])
-			{
-				self.scanLocation = startPos;
-				return NO;
-			}
+			// we allow empty href and title
+			[self scanMarkdownHyperlink:&hrefString title:&title];
 			
 			// skip whitespace
 			[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];

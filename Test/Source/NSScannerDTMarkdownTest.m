@@ -380,7 +380,7 @@
 	NSDictionary *attributes;
 	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
 	
-	STAssertFalse(b, @"Should be able to scan image");
+	STAssertFalse(b, @"Should not be able to scan image");
 }
 
 - (void)testScanImageNoClosingBracketAfterLink
@@ -392,7 +392,7 @@
 	NSDictionary *attributes;
 	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
 	
-	STAssertFalse(b, @"Should be able to scan image");
+	STAssertFalse(b, @"Should not be able to scan image");
 }
 
 - (void)testScanImageEmptyReference
@@ -404,7 +404,7 @@
 	NSDictionary *attributes;
 	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
 	
-	STAssertFalse(b, @"Should be able to scan image");
+	STAssertFalse(b, @"Should not be able to scan image");
 }
 
 - (void)testScanImageExistingReferenceButMissingClosingBracket
@@ -416,11 +416,12 @@
 	NSDictionary *attributes;
 	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:@{@"alt":@{@"href": @"http://foo.com"}}];
 	
-	STAssertFalse(b, @"Should be able to scan image");
+	STAssertFalse(b, @"Should not be able to scan image");
 }
-- (void)testUnclosedLink
+
+- (void)testEmptyLink
 {
-	NSString *string = @"[link with reference][used.";
+	NSString *string = @"[Link]()";
 
 	NSScanner *scanner = [NSScanner scannerWithString:string];
 	scanner.charactersToBeSkipped = nil;
@@ -429,7 +430,10 @@
 	NSString *enclosed;
 	BOOL b = [scanner scanMarkdownHyperlinkAttributes:&attributes enclosedString:&enclosed references:nil];
 	
-	STAssertFalse(b, @"Should not result in scanned link");
+	STAssertTrue(b, @"Should result in scanned link");
+	
+	STAssertEqualObjects(@"Link", enclosed, @"Wrong enclosed string");
+	STAssertEquals([attributes count], (NSUInteger)0, @"There should be no attributes");
 }
 
 @end
