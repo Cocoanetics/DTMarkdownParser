@@ -216,4 +216,76 @@
 	return YES;
 }
 
+- (BOOL)scanMarkdownBeginMarker:(NSString **)beginMarker
+{
+	static NSCharacterSet *markerChars = nil;
+	
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		markerChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
+	});
+	
+	NSUInteger startPos = self.scanLocation;
+	
+	NSString *marker;
+	
+	if (![self scanCharactersFromSet:markerChars intoString:&marker])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// determine effective marker
+	NSString *effectiveMarker = nil;
+	
+	if ([marker hasPrefix:@"**"])
+	{
+		effectiveMarker = @"**";
+	}
+	else if ([marker hasPrefix:@"*"])
+	{
+		effectiveMarker = @"*";
+	}
+	else if ([marker hasPrefix:@"__"])
+	{
+		effectiveMarker = @"__";
+	}
+	else if ([marker hasPrefix:@"_"])
+	{
+		effectiveMarker = @"_";
+	}
+	else if ([marker hasPrefix:@"~~"])
+	{
+		effectiveMarker = @"~~";
+	}
+	else if ([marker hasPrefix:@"!["])
+	{
+		effectiveMarker = @"![";
+	}
+	else if ([marker hasPrefix:@"["])
+	{
+		effectiveMarker = @"[";
+	}
+	else if ([marker hasPrefix:@"`"])
+	{
+		effectiveMarker = @"`";
+	}
+	else if ([marker hasPrefix:@"<"])
+	{
+		effectiveMarker = @"<";
+	}
+	
+	NSAssert(effectiveMarker, @"Should always have an effective marker here");
+	
+	if (marker)
+	{
+		*beginMarker = effectiveMarker;
+	}
+	
+	self.scanLocation = startPos + [effectiveMarker length];
+	
+	return YES;
+}
+
 @end

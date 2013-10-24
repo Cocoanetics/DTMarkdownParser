@@ -108,48 +108,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	return [_tagStack lastObject];
 }
 
-- (NSString *)_effectiveMarkerPrefixOfString:(NSString *)string
-{
-	if ([string hasPrefix:@"**"])
-	{
-		return @"**";
-	}
-	else if ([string hasPrefix:@"*"])
-	{
-		return @"*";
-	}
-	else if ([string hasPrefix:@"__"])
-	{
-		return @"__";
-	}
-	else if ([string hasPrefix:@"_"])
-	{
-		return @"_";
-	}
-	else if ([string hasPrefix:@"~~"])
-	{
-		return @"~~";
-	}
-	else if ([string hasPrefix:@"!["])
-	{
-		return @"![";
-	}
-	else if ([string hasPrefix:@"["])
-	{
-		return @"[";
-	}
-	else if ([string hasPrefix:@"`"])
-	{
-		return @"`";
-	}
-	else if ([string hasPrefix:@"<"])
-	{
-		return @"<";
-	}
-	
-	return nil;
-}
-
 - (void)_processMarkedString:(NSString *)markedString insideMarker:(NSString *)marker
 {
 	NSAssert([markedString hasPrefix:marker] && [markedString hasSuffix:marker], @"Processed string has to have the marker at beginning and end");
@@ -183,10 +141,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	
 	if (processFurtherMarkers)
 	{
-		// see if there is another marker
-		NSString *furtherMarker = [self _effectiveMarkerPrefixOfString:markedString];
-	
-		if (furtherMarker && [markedString hasSuffix:furtherMarker])
+		NSScanner *scanner = [NSScanner scannerWithString:markedString];
+		scanner.charactersToBeSkipped = nil;
+		
+		NSString *furtherMarker;
+		
+		if ([scanner scanMarkdownBeginMarker:&furtherMarker] && [markedString hasSuffix:furtherMarker])
 		{
 			[self _processMarkedString:markedString insideMarker:furtherMarker];
 		}
@@ -223,16 +183,13 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		}
 		
 		// scan marker
-		NSString *openingMarkers;
+		NSString *effectiveOpeningMarker;
 		
 		NSRange markedRange = NSMakeRange(scanner.scanLocation, 0);
 		
-		if ([scanner scanCharactersFromSet:markerChars intoString:&openingMarkers])
+		if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
 		{
 			NSString *enclosedPart;
-			NSString *effectiveOpeningMarker = [self _effectiveMarkerPrefixOfString:openingMarkers];
-			
-			NSAssert(effectiveOpeningMarker, @"There should be a closing marker to look for because we only get here from having scanned for marker characters");
 			
 			if ([effectiveOpeningMarker isEqualToString:@"!["] || [effectiveOpeningMarker isEqualToString:@"["] || [effectiveOpeningMarker isEqualToString:@"<"])
 			{
@@ -400,7 +357,8 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			else
 			{
 				// did not enclose anything
-				[self _reportCharacters:openingMarkers];
+				[self _reportCharacters:effectiveOpeningMarker];
+				scanner.scanLocation = markedRange.location + [effectiveOpeningMarker length];
 			}
 		}
 	}
@@ -442,7 +400,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	
 	NSInteger previousLineIndent = lineIndex?[_lineIndentLevel[@(lineIndex-1)] integerValue]:0;
 	NSInteger currentLineIndent = [_lineIndentLevel[@(lineIndex)] integerValue];
-
+	
 	if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
 	{
 		// we know there is a list prefix, but we need to eliminate the indentation first
@@ -455,7 +413,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[scanner scanMarkdownLineListPrefix:&prefix];
 	
 	NSAssert(prefix, @"Cannot process line, no list prefix");
-
+	
 	NSAssert(![[self _currentTag] isEqualToString:@"p"], @"There should never be an open P tag in %s", __PRETTY_FUNCTION__);
 	
 	// cut off prefix

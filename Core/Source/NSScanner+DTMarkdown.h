@@ -19,4 +19,7 @@
 // returns `YES` if a valid list prefix was scanned
 - (BOOL)scanMarkdownLineListPrefix:(NSString **)prefix;
 
+// returns `YES` if a beginning marker of a marked range was scanned
+- (BOOL)scanMarkdownBeginMarker:(NSString **)beginMarker;
+
 @end
