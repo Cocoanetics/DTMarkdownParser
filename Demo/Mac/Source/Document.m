@@ -11,6 +11,7 @@
 #import <WebKit/WebKit.h>
 
 #import <DTMarkdownParser/DTMarkdownParser.h>
+#import "SimpleHTMLGenerator.h"
 #import "SimpleTreeGenerator.h"
 #import "TagTreeOutlineController.h"
 
@@ -95,12 +96,23 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 		DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:markdownString
 																	options:DTMarkdownParserOptionGitHubLineBreaks];
 		
-		SimpleTreeGenerator *generator = [SimpleTreeGenerator new];
-		parser.delegate = generator;
+		SimpleTreeGenerator *treeGenerator = [SimpleTreeGenerator new];
+		parser.delegate = treeGenerator;
 		
 		BOOL couldParse = [parser parse];
 		if (couldParse) {
-			_nodeTree = generator.nodeTree;
+			_nodeTree = treeGenerator.nodeTree;
+		}
+	
+		SimpleHTMLGenerator *HTMLGenerator = [SimpleHTMLGenerator new];
+		HTMLGenerator.title = self.displayName;
+		parser.delegate = HTMLGenerator;
+		
+		BOOL couldParse2 = [parser parse];
+		if (couldParse2) {
+			NSMutableString *HTMLString = HTMLGenerator.HTMLString;
+			[_HTMLText replaceCharactersInRange:NSMakeRange(0, _HTMLText.length)
+										 withString:HTMLString];
 		}
 		
 		result = YES;
