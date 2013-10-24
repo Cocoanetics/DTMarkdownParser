@@ -8,6 +8,8 @@
 
 #import "TagTreeOutlineController.h"
 
+#import "SimpleTreeGenerator.h"
+
 @implementation TagTreeOutlineController {
 	IBOutlet NSOutlineView *_outlineView;
 }
@@ -43,23 +45,23 @@
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
 {
-	return (item == nil) ? [_tagNodes count] : [(NSDictionary *)item[@"children"] count];
+	return (item == nil) ? [_tagNodes count] : [(NSDictionary *)item[kSimpleTreeChildren] count];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
-	return (item == nil) ? NO : ([(NSDictionary *)item[@"children"] count] > 0);
+	return (item == nil) ? NO : ([(NSDictionary *)item[kSimpleTreeChildren] count] > 0);
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)childIndex ofItem:(id)item
 {
-	return (item == nil) ? [_tagNodes objectAtIndex:childIndex] : [(NSArray *)((NSDictionary *)item[@"children"]) objectAtIndex:childIndex];
+	return (item == nil) ? [_tagNodes objectAtIndex:childIndex] : [(NSArray *)((NSDictionary *)item[kSimpleTreeChildren]) objectAtIndex:childIndex];
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
 	NSDictionary *dict = item;
-	NSString *text = dict[@"text"];
+	NSString *text = dict[kSimpleTreeText];
 	
 	return text;
 }

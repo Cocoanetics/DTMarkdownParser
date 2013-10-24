@@ -8,6 +8,12 @@
 
 #import "SimpleTreeGenerator.h"
 
+
+NSString * const	kSimpleTreeChildren		= @"children";
+NSString * const	kSimpleTreeText			= @"text";
+NSString * const	kSimpleTreeAttributes	= @"attributes";
+
+
 @implementation SimpleTreeGenerator {
 	NSMutableArray *_nodeStack;
 	
@@ -46,8 +52,8 @@
 	if (_verbose)  NSLog(@"%@", string);
 
 	NSMutableDictionary *textNode = [@{
-									  @"text": string,
-									  @"children": [NSMutableArray new]
+									  kSimpleTreeText: string,
+									  kSimpleTreeChildren: [NSMutableArray new]
 									  } mutableCopy];
 	
 	NSMutableArray *children = [self _currentChildren];
@@ -62,9 +68,9 @@
 	if (_verbose)  NSLog(@"%@", elementTag);
 	
 	NSMutableDictionary *newNode = [@{
-									  @"text": elementTag,
-									  @"attributes": ((attributeDict == nil) ? [NSNull null] : attributeDict),
-									  @"children": [NSMutableArray new]
+									  kSimpleTreeText: elementTag,
+									  kSimpleTreeAttributes: ((attributeDict == nil) ? [NSNull null] : attributeDict),
+									  kSimpleTreeChildren: [NSMutableArray new]
 									  } mutableCopy];
 	
 	[self _pushNode:newNode];
@@ -104,7 +110,7 @@
 	
 	NSMutableDictionary *currentNode = [self _currentNode];
 	if (currentNode != nil) {
-		children = currentNode[@"children"];
+		children = currentNode[kSimpleTreeChildren];
 	} else {
 		children = _nodeTree;
 	}

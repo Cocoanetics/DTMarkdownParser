@@ -10,6 +10,10 @@
 
 #import <DTMarkdownParser/DTMarkdownParser.h>
 
+extern NSString * const kSimpleTreeChildren;
+extern NSString * const kSimpleTreeText;
+extern NSString * const kSimpleTreeAttributes;
+
 @interface SimpleTreeGenerator : NSObject <DTMarkdownParserDelegate>
 
 @property (readonly) NSMutableArray *nodeTree;
