@@ -371,7 +371,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	{
 		[self _popTag]; // li
 		
-		if ([_ignoredLines containsIndex:lineIndex+1])
+		if ([_ignoredLines containsIndex:lineIndex+1] || specialTypeOfFollowingLine == DTMarkdownParserSpecialEmptyLine)
 		{
 			[self _popTag];
 		}
@@ -752,7 +752,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			BOOL willCloseTag = (hasTwoNL || headerLevel || !shouldOutputLineText || followingLineIsIgnored || specialFollowingLine == DTMarkdownParserSpecialList || specialFollowingLine == DTMarkdownParserSpecialTagHR);
 			
 			// handle new lines
-			if (shouldOutputLineText && !hasTwoNL && ![scanner isAtEnd])
+			if (shouldOutputLineText && !hasTwoNL && ![scanner isAtEnd] && !headerLevel)
 			{
 				// not a paragraph break
 				

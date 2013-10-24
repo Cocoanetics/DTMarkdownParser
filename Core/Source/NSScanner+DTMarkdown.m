@@ -270,21 +270,9 @@
 	{
 		effectiveMarker = @"~~";
 	}
-	else if ([marker hasPrefix:@"!["])
-	{
-		effectiveMarker = @"![";
-	}
-	else if ([marker hasPrefix:@"["])
-	{
-		effectiveMarker = @"[";
-	}
 	else if ([marker hasPrefix:@"`"])
 	{
 		effectiveMarker = @"`";
-	}
-	else if ([marker hasPrefix:@"<"])
-	{
-		effectiveMarker = @"<";
 	}
 	
 	NSAssert(effectiveMarker, @"Should always have an effective marker here");
@@ -310,13 +298,10 @@
 	
 	// alt text never contains extra characters
 	
-	NSString *altText;
+	NSString *altText = nil;
 	
-	if (![self scanUpToString:@"]" intoString:&altText])
-	{
-		self.scanLocation = startPos;
-		return NO;
-	}
+	// consider alt text optional
+	[self scanUpToString:@"]" intoString:&altText];
 	
 	// expect closing square bracket
 	if (![self scanString:@"]" intoString:NULL])
@@ -360,8 +345,7 @@
 		
 		if (![self scanUpToString:@"]" intoString:&refId])
 		{
-			self.scanLocation = startPos;
-			return NO;
+			refId = [altText lowercaseString];
 		}
 		
 		NSDictionary *reference = references[[refId lowercaseString]];
@@ -462,11 +446,8 @@
 		// expect opening round or square bracket
 		if ([self scanString:@"(" intoString:NULL])
 		{
-			if (![self scanMarkdownHyperlink:&hrefString title:&title])
-			{
-				self.scanLocation = startPos;
-				return NO;
-			}
+			// we allow empty href and title
+			[self scanMarkdownHyperlink:&hrefString title:&title];
 			
 			// skip whitespace
 			[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
