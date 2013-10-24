@@ -195,136 +195,25 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			[self _pushTag:@"img" attributes:linkAttributes];
 			[self _popTag];
 		}
-//		else if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
-//		{
-//			[self _pushTag:@"a" attributes:linkAttributes];
-//			[self _reportCharacters:enclosedString];
-//			[self _popTag];
-//		}
+		else if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
+		{
+			[self _pushTag:@"a" attributes:linkAttributes];
+			[self _reportCharacters:enclosedString];
+			[self _popTag];
+		}
 		else if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
 		{
-			NSString *enclosedPart;
-			
-			if ([effectiveOpeningMarker isEqualToString:@"["] || [effectiveOpeningMarker isEqualToString:@"<"])
+			if ([effectiveOpeningMarker isEqualToString:@"["] || [effectiveOpeningMarker isEqualToString:@"!["])
 			{
-				NSDictionary *attributes = nil;
-				
-				NSString *closingMarker;
-				BOOL isSimpleHREF;
-				
-				if ([effectiveOpeningMarker isEqualToString:@"<"])
-				{
-					closingMarker = @">";
-					isSimpleHREF = YES;
-				}
-				else
-				{
-					closingMarker = @"]";
-					isSimpleHREF = NO;
-				}
-				
-				if ([scanner scanUpToString:closingMarker intoString:&enclosedPart])
-				{
-					// scan closing part of link
-					if ([scanner scanString:closingMarker intoString:NULL])
-					{
-						if (isSimpleHREF)
-						{
-							attributes = [NSDictionary dictionaryWithObject:enclosedPart forKey:@"href"];
-						}
-						else
-						{
-							// skip whitespace
-							[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
-							
-							if ([scanner scanString:@"(" intoString:NULL])
-							{
-								// has potentially inline address
-								
-								NSString *hyperlink;
-								
-								if ([scanner scanUpToString:@")" intoString:&hyperlink])
-								{
-									// see if it is closed too
-									if ([scanner scanString:@")" intoString:NULL])
-									{
-										NSString *URLString;
-										NSString *title;
-										
-										NSScanner *urlScanner = [NSScanner scannerWithString:hyperlink];
-										urlScanner.charactersToBeSkipped = nil;
-										
-										if ([urlScanner scanMarkdownHyperlink:&URLString title:&title])
-										{
-											NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
-											
-											if ([URLString length])
-											{
-												tmpDict[@"href"] = URLString;
-											}
-											
-											if ([title length])
-											{
-												tmpDict[@"title"] = title;
-											}
-											
-											if ([tmpDict count])
-											{
-												attributes = [tmpDict copy];
-											}
-										}
-									}
-								}
-							}
-							else if ([scanner scanString:@"[" intoString:NULL])
-							{
-								// has potentially address via ref
-								
-								NSString *reference;
-								
-								if ([scanner scanUpToString:@"]" intoString:&reference])
-								{
-									// see if it is closed too
-									if ([scanner scanString:@"]" intoString:NULL])
-									{
-										attributes = _references[[reference lowercaseString]];
-									}
-								}
-								else
-								{
-									// could be []
-									
-									if ([scanner scanString:@"]" intoString:NULL])
-									{
-										reference = [enclosedPart lowercaseString];
-										attributes = _references[reference];
-									}
-								}
-							}
-						}
-					}
-				}
-				
-				// only output hyperlink if all is ok
-				if (attributes)
-				{
-					if ([effectiveOpeningMarker isEqualToString:@"["] || isSimpleHREF)
-					{
-						[self _pushTag:@"a" attributes:attributes];
-						[self _reportCharacters:enclosedPart];
-						[self _popTag];
-					}
-				}
-				else
-				{
-					// something wrong with this link, just output opening [ and scan after that
-					[self _reportCharacters:effectiveOpeningMarker];
-					scanner.scanLocation = markedRange.location + [effectiveOpeningMarker length];
-				}
+				// was not a valid image or href, just output it
+				[self _reportCharacters:effectiveOpeningMarker];
 				
 				continue;
 			}
-			else if ([scanner scanUpToString:effectiveOpeningMarker intoString:&enclosedPart])
+			
+			NSString *enclosedPart;
+			
+			if ([scanner scanUpToString:effectiveOpeningMarker intoString:&enclosedPart])
 			{
 				// there has to be a closing marker as well
 				if ([scanner scanString:effectiveOpeningMarker intoString:NULL])

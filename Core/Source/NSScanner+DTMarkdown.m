@@ -486,8 +486,7 @@
 			
 			if (![self scanUpToString:@"]" intoString:&refId])
 			{
-				self.scanLocation = startPos;
-				return NO;
+				refId = [enclosedPart lowercaseString];
 			}
 			
 			NSDictionary *reference = references[[refId lowercaseString]];
@@ -508,6 +507,12 @@
 				self.scanLocation = startPos;
 				return NO;
 			}
+		}
+		else
+		{
+			// no [ or (
+			self.scanLocation = startPos;
+			return NO;
 		}
 	}
 
