@@ -170,7 +170,7 @@
                                             </constraints>
                                         </view>
                                     </tabViewItem>
-                                    <tabViewItem label="Web" identifier="" id="8Qh-Qt-0Pk">
+                                    <tabViewItem label="Web" identifier="3" id="8Qh-Qt-0Pk">
                                         <view key="view" id="hRU-TF-Ygj">
                                             <rect key="frame" x="0.0" y="0.0" width="315" height="516"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -185,6 +185,9 @@
                                         </view>
                                     </tabViewItem>
                                 </tabViewItems>
+                                <connections>
+                                    <binding destination="-2" name="selectedIndex" keyPath="selectedPreviewTabIndex" id="n9g-Fq-4wS"/>
+                                </connections>
                             </tabView>
                         </subviews>
                         <holdingPriorities>
@@ -212,11 +215,14 @@
                             <segmentedCell key="cell" alignment="left" style="texturedSquare" trackingMode="selectOne" id="wY2-pQ-gdv">
                                 <font key="font" metaFont="system"/>
                                 <segments>
-                                    <segment label="Tree" selected="YES"/>
-                                    <segment label="HTML" tag="1"/>
-                                    <segment label="Web"/>
+                                    <segment label="Tree" selected="YES" tag="1"/>
+                                    <segment label="HTML" tag="2"/>
+                                    <segment label="Web" tag="3"/>
                                 </segments>
                             </segmentedCell>
+                            <connections>
+                                <binding destination="-2" name="selectedIndex" keyPath="selectedPreviewTabIndex" id="qMG-Yw-fpa"/>
+                            </connections>
                         </segmentedControl>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="ovl-jB-GxT"/>
@@ -242,5 +248,6 @@
                 <outlet property="_outlineView" destination="gGz-XA-DWa" id="hLz-9m-K6P"/>
             </connections>
         </customObject>
+        <userDefaultsController representsSharedInstance="YES" id="J9A-Ho-Tv6"/>
     </objects>
 </document>

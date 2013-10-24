@@ -10,4 +10,6 @@
 
 @interface Document : NSDocument
 
+@property (assign) NSInteger selectedPreviewTabIndex;
+
 @end
