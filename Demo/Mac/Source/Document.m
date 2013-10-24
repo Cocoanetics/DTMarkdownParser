@@ -63,6 +63,9 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	
 	[[_HTMLTextView layoutManager] replaceTextStorage:_HTMLText];
 	[_HTMLTextView setFont:_defaultFont];
+	
+	[[_previewWebView mainFrame] loadHTMLString:_HTMLText.string
+										baseURL:[self fileURL]];
 }
 
 + (BOOL)autosavesInPlace
