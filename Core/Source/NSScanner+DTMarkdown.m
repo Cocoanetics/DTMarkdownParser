@@ -345,8 +345,7 @@
 		
 		if (![self scanUpToString:@"]" intoString:&refId])
 		{
-			self.scanLocation = startPos;
-			return NO;
+			refId = [altText lowercaseString];
 		}
 		
 		NSDictionary *reference = references[[refId lowercaseString]];

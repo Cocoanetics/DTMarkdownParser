@@ -371,11 +371,57 @@
 	STAssertEqualObjects(attributes[@"title"], @"Optional title", @"Incorrect TITLE");
 }
 
+- (void)testScanImageNoLink
+{
+	NSString *string = @"![Alt text]()";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
+	
+	STAssertFalse(b, @"Should be able to scan image");
+}
+
+- (void)testScanImageNoClosingBracketAfterLink
+{
+	NSString *string = @"![Alt text](http://foo.com";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
+	
+	STAssertFalse(b, @"Should be able to scan image");
+}
+
+- (void)testScanImageEmptyReference
+{
+	NSString *string = @"![Alt][]";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
+	
+	STAssertFalse(b, @"Should be able to scan image");
+}
+
+- (void)testScanImageExistingReferenceButMissingClosingBracket
+{
+	NSString *string = @"![Alt][";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:@{@"alt":@{@"href": @"http://foo.com"}}];
+	
+	STAssertFalse(b, @"Should be able to scan image");
+}
 - (void)testUnclosedLink
 {
 	NSString *string = @"[link with reference][used.";
 
-	
 	NSScanner *scanner = [NSScanner scannerWithString:string];
 	scanner.charactersToBeSkipped = nil;
 	
