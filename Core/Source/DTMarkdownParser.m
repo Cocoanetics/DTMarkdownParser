@@ -264,7 +264,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		}
 		else if (ch == '\t')
 		{
-			spacesCount+=3;
+			spacesCount+=4;
 		}
 		else
 		{
