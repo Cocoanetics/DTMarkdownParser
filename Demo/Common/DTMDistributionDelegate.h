@@ -1,5 +1,5 @@
 //
-//  DTMarkdownParserDistributionDelegate.h
+//  DTMDistributionDelegate.h
 //  DTMarkdownParser
 //
 //  Created by Jan on 25.10.13.
@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface DTMarkdownParserDistributionDelegate : NSObject
+#import <DTMarkdownParser/DTMarkdownParser.h>
+
+@interface DTMDistributionDelegate : NSObject <DTMarkdownParserDelegate>
+
+- (void)addDelegate:(id <DTMarkdownParserDelegate>)aDelegate;
 
 @end

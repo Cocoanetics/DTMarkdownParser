@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D285247181A9D3E000C44EC /* DTMDistributionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */; };
 		3D4308411819754500B8C024 /* SimpleHTMLGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */; };
 		3DD93598181805DA0010AA87 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DD93597181805DA0010AA87 /* WebKit.framework */; };
 		3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */; };
@@ -652,6 +653,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3D285245181A9D3D000C44EC /* DTMDistributionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTMDistributionDelegate.h; sourceTree = "<group>"; };
+		3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMDistributionDelegate.m; sourceTree = "<group>"; };
 		3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHTMLGenerator.m; sourceTree = "<group>"; };
 		3D4308401819754500B8C024 /* SimpleHTMLGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHTMLGenerator.h; sourceTree = "<group>"; };
 		3DD93597181805DA0010AA87 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -1032,6 +1035,8 @@
 		3DFFAE6E18183AFD00EE245D /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				3D285245181A9D3D000C44EC /* DTMDistributionDelegate.h */,
+				3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */,
 				3D4308401819754500B8C024 /* SimpleHTMLGenerator.h */,
 				3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */,
 				3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */,
@@ -2272,6 +2277,7 @@
 				A7870DC91817FED400E39311 /* main.m in Sources */,
 				3D4308411819754500B8C024 /* SimpleHTMLGenerator.m in Sources */,
 				3DFFAE7218184C7E00EE245D /* SimpleTreeGenerator.m in Sources */,
+				3D285247181A9D3E000C44EC /* DTMDistributionDelegate.m in Sources */,
 				3DFFAE7118184C1A00EE245D /* TagTreeOutlineController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

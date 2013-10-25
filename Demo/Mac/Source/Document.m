@@ -11,6 +11,7 @@
 #import <WebKit/WebKit.h>
 
 #import <DTMarkdownParser/DTMarkdownParser.h>
+#import "DTMDistributionDelegate.h"
 #import "SimpleHTMLGenerator.h"
 #import "SimpleTreeGenerator.h"
 #import "TagTreeOutlineController.h"
@@ -31,6 +32,10 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	
 	IBOutlet NSTextView *	_HTMLTextView;
 	NSTextStorage *			_HTMLText;
+	
+	DTMDistributionDelegate *	_distributionDelegate;
+	SimpleTreeGenerator *		_treeGenerator;
+	SimpleHTMLGenerator *		_HTMLGenerator;
 }
 
 - (id)init
@@ -114,32 +119,32 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 {
 	NSString *markdownString = _markdownText.string;
 	
+	if (_distributionDelegate == nil) {
+		_distributionDelegate = [DTMDistributionDelegate new];
+		
+		_treeGenerator = [SimpleTreeGenerator new];
+		[_distributionDelegate addDelegate:_treeGenerator];
+		
+		_HTMLGenerator = [SimpleHTMLGenerator new];
+		[_distributionDelegate addDelegate:_HTMLGenerator];
+	}
+	
 	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:markdownString
 																options:DTMarkdownParserOptionGitHubLineBreaks];
 	
-	SimpleTreeGenerator *treeGenerator = [SimpleTreeGenerator new];
-	parser.delegate = treeGenerator;
+	parser.delegate = _distributionDelegate;
 	
+	_HTMLGenerator.title = self.displayName;
+
 	BOOL couldParse = [parser parse];
 	if (couldParse) {
-		_nodeTree = treeGenerator.nodeTree;
-	}
-	
-	SimpleHTMLGenerator *HTMLGenerator = [SimpleHTMLGenerator new];
-	HTMLGenerator.title = self.displayName;
-	parser.delegate = HTMLGenerator;
-	
-	BOOL couldParse2 = [parser parse];
-	if (couldParse2) {
-		NSMutableString *HTMLString = HTMLGenerator.HTMLString;
+		_nodeTree = _treeGenerator.nodeTree;
+
+		NSMutableString *HTMLString = _HTMLGenerator.HTMLString;
 		[_HTMLText replaceCharactersInRange:NSMakeRange(0, _HTMLText.length)
 								 withString:HTMLString];
 		[_HTMLTextView setFont:_defaultFont];
 	}
-	
-	// Parsing twice is pretty inefficient, but good enough for illustrative purposes.
-	// We could implement a delegate object that distributes the delegate messages
-	// to both SimpleTreeGenerator and SimpleHTMLGenerator.
 	
 	_tagTreeOutlineController.tagNodes = _nodeTree;
 	
