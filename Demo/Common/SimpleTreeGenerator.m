@@ -26,9 +26,6 @@ NSString * const	kSimpleTreeAttributes	= @"attributes";
 	self = [super init];
 	
 	if (self) {
-		_nodeStack = [NSMutableArray array];
-		_nodeTree = [NSMutableArray array];
-		
 		_verbose = NO;
 	}
 	
@@ -38,6 +35,9 @@ NSString * const	kSimpleTreeAttributes	= @"attributes";
 
 - (void)parserDidStartDocument:(DTMarkdownParser *)parser;
 {
+	_nodeStack = [NSMutableArray array];
+	_nodeTree = [NSMutableArray array];
+		
 	if (_verbose)  NSLog(@"Markdown Start!");
 }
 
