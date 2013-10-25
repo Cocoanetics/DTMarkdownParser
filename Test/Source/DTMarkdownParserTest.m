@@ -969,7 +969,7 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
-- (void)testAutoLinkingEmailInsidePre
+- (void)testAutoLinkingEmailInsideCode
 {
 	NSString *string = @"`Mail me at oliver@cocoanetics.com.`";
 	
@@ -979,6 +979,21 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p><code>Mail me at oliver@cocoanetics.com.</code></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testAutoLinkingEmailInsidePre
+{
+	NSString *string = @"```\nMail me at oliver@cocoanetics.com.\n```";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<pre><code>Mail me at oliver@cocoanetics.com.\n</code></pre>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
