@@ -458,6 +458,20 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testAsterisksWithSpaces
+{
+	NSString *string = @"Where are * asterisks *";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	
+	NSString *expected = @"<p>Where are * asterisks *</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
 
 #pragma mark - Heading
 
@@ -652,6 +666,21 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p>Line1</p>\n<hr />\n<p>Line2</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testHorizontalRuleWithTooManySpaces
+{
+	NSString *string = @"-   -   -";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>-   -   -</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
@@ -924,6 +953,144 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testAutoLinking
+{
+	NSString *string = @"Look at http://www.cococanetics.com for more info";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Look at <a href=\"http://www.cococanetics.com\">http://www.cococanetics.com</a> for more info</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testAutoLinkingNumber
+{
+	NSString *string = @"This is a sample of a http://abc.com/efg.php?EFAei687e3EsA sentence with a URL within it and a number 097843.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>This is a sample of a <a href=\"http://abc.com/efg.php?EFAei687e3EsA\">http://abc.com/efg.php?EFAei687e3EsA</a> sentence with a URL within it and a number 097843.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testAutoLinkingEmail
+{
+	NSString *string = @"Mail me at oliver@cocoanetics.com.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Mail me at <a href=\"mailto:oliver@cocoanetics.com\">oliver@cocoanetics.com</a>.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testAutoLinkingEmailInsideCode
+{
+	NSString *string = @"`Mail me at oliver@cocoanetics.com.`";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p><code>Mail me at oliver@cocoanetics.com.</code></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testAutoLinkingEmailInsidePre
+{
+	NSString *string = @"```\nMail me at oliver@cocoanetics.com.\n```";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<pre><code>Mail me at oliver@cocoanetics.com.\n</code></pre>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testAutoLinkingPhone
+{
+	NSString *string = @"Call me at +436991234567";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Call me at <a href=\"+436991234567\">+436991234567</a></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testForcedLinkEmail
+{
+	NSString *string = @"Mail me at <oliver@cocoanetics.com>.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Mail me at <a href=\"mailto:oliver@cocoanetics.com\">oliver@cocoanetics.com</a>.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testForcedInvalidLink
+{
+	NSString *string = @"Mail me at <abc>.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Mail me at <a href=\"abc\">abc</a>.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testForcedInvalidLink2
+{
+	NSString *string = @"Mail me at <abc def>.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Mail me at &lt;abc def&gt;.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
 
 #pragma mark - Images
 
@@ -1250,7 +1417,7 @@
 
 #pragma mark - Test Files
 
-- (void)testEmphasis
+- (void)testFileEmphasis
 {
 	DTMarkdownParser *parser = [self _parserForFile:@"emphasis" options:0];
 	
@@ -1263,7 +1430,7 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
-- (void)testHeader
+- (void)testFileHeader
 {
 	DTMarkdownParser *parser = [self _parserForFile:@"header" options:0];
 	
@@ -1276,7 +1443,37 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
-- (void)testMissingLinkDefn
+- (void)testFileHR
+{
+	DTMarkdownParser *parser = [self _parserForFile:@"hr" options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = [self _resultStringForFile:@"hr"];
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+/*
+ // doesn't work yet due to HTML entities differing
+
+- (void)testFileHRSpaces
+{
+	DTMarkdownParser *parser = [self _parserForFile:@"hr_spaces" options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = [self _resultStringForFile:@"hr_spaces"];
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+*/
+
+- (void)testFileMissingLinkDefn
 {
 	DTMarkdownParser *parser = [self _parserForFile:@"missing_link_defn" options:0];
 	

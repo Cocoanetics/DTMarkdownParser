@@ -276,7 +276,16 @@
 	}
 	
 	NSAssert(effectiveMarker, @"Should always have an effective marker here");
+
+	self.scanLocation = startPos + [effectiveMarker length];
 	
+	// there cannot be a space after a beginning marker
+	if ([self scanString:@" " intoString:NULL])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+
 	if (marker)
 	{
 		*beginMarker = effectiveMarker;
@@ -447,6 +456,13 @@
 	NSString *closingMarker;
 	NSString *enclosedPart;
 	
+	static NSDataDetector *detector = nil;
+	
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+	});
+	
 	if ([self scanString:@"<" intoString:NULL])
 	{
 		isSimpleHREF = YES;
@@ -479,10 +495,32 @@
 		return NO;
 	}
 	
-			
 	if (isSimpleHREF)
 	{
-		hrefString = enclosedPart;
+		NSArray *links = [detector matchesInString:enclosedPart options:0 range:NSMakeRange(0, [enclosedPart length])];
+		
+		NSURL *URL = nil;
+		
+		if ([links count])
+		{
+			URL = [links[0] URL];
+		}
+
+		if (!URL)
+		{
+			URL = [NSURL URLWithString:enclosedPart];
+		}
+		
+		if (URL)
+		{
+			hrefString = [URL absoluteString];
+		}
+		
+		if (!URL)
+		{
+			self.scanLocation = startPos;
+			return NO;
+		}
 	}
 	else
 	{

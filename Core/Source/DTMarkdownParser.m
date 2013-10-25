@@ -16,7 +16,6 @@ NSString * const DTMarkdownParserSpecialTagH1 = @"H1";
 NSString * const DTMarkdownParserSpecialTagH2 = @"H2";
 NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 NSString * const DTMarkdownParserSpecialTagPre = @"PRE";
-NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 NSString * const DTMarkdownParserSpecialFencedPreStart = @"<FENCED BEGIN>";
 NSString * const DTMarkdownParserSpecialFencedPreCode = @"<FENCED CODE>";
 NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
@@ -56,6 +55,9 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	{
 		_string = [string copy];
 		_options = options;
+		
+		// default detector
+		_dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
 	}
 	
 	return self;
@@ -164,7 +166,58 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[self _popTag];
 }
 
-- (void)_processLine:(NSString *)line
+- (void)_processCharacters:(NSString *)string allowAutodetection:(BOOL)allowAutodetection
+{
+	if (!allowAutodetection || !_dataDetector)
+	{
+		[self _reportCharacters:string];
+		return;
+	}
+	
+	NSArray *matches = [_dataDetector matchesInString:string options:0 range:NSMakeRange(0, [string length])];
+	
+	NSUInteger outputChars = 0;
+	
+	for (NSTextCheckingResult *match in matches)
+	{
+		if (match.range.location > outputChars)
+		{
+			// need to output part before match
+			NSString *substring = [string substringWithRange:NSMakeRange(outputChars, match.range.location - outputChars)];
+			[self _reportCharacters:substring];
+		}
+		
+		NSString *urlString = [string substringWithRange:match.range];
+		
+		// get URL from match if possible
+		NSURL *URL = [match URL];
+		
+		if (!URL)
+		{
+			// if not possible, get it from the string
+			URL = [NSURL URLWithString:urlString];
+		}
+		
+		NSDictionary *attributes = @{@"href": [URL absoluteString]};
+		[self _pushTag:@"a" attributes:attributes];
+		[self _reportCharacters:urlString];
+		[self _popTag];
+		
+		outputChars = NSMaxRange(match.range);
+	}
+	
+	// output reset after last hyperlink
+	NSRange restRange = NSMakeRange(outputChars, [string length] - outputChars);
+	
+	if (restRange.length>0)
+	{
+		// need to output part before match
+		NSString *substring = [string substringWithRange:restRange];
+		[self _reportCharacters:substring];
+	}
+}
+
+- (void)_processLine:(NSString *)line allowAutoDetection:(BOOL)allowAutoDetection
 {
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
@@ -175,11 +228,14 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	{
 		NSString *part;
 		
-		// scan part before first special character
+		// scan part until next special character
 		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
 		{
 			// output part before markers
-			[self _reportCharacters:part];
+			[self _processCharacters:part allowAutodetection:allowAutoDetection];
+			
+			// re-enable detection, this might have been a faulty string containing a href
+			allowAutoDetection = YES;
 		}
 		
 		// stop scanning if done
@@ -206,7 +262,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			[self _pushTag:@"a" attributes:linkAttributes];
 			
 			// might contain further markdown/images
-			[self _processLine:enclosedString];
+			[self _processLine:enclosedString allowAutoDetection:NO];
 			
 			[self _popTag];
 		}
@@ -246,6 +302,13 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			
 			[self _reportCharacters:specialChar];
 			scanner.scanLocation ++;
+			
+			// scan part until next special character
+			if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
+			{
+				// output part before markers
+				[self _processCharacters:part allowAutodetection:NO];
+			}
 		}
 	}
 }
@@ -368,13 +431,13 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[self _pushTag:@"li" attributes:nil];
 	
 	// process line as normal without prefix
-	[self _processLine:line];
+	[self _processLine:line allowAutoDetection:YES];
 	
 	if (specialTypeOfFollowingLine != DTMarkdownParserSpecialSubList)
 	{
 		[self _popTag]; // li
 		
-		if ([_ignoredLines containsIndex:lineIndex+1] || specialTypeOfFollowingLine == DTMarkdownParserSpecialEmptyLine)
+		if ([_ignoredLines containsIndex:lineIndex+1])
 		{
 			[self _popTag];
 		}
@@ -425,18 +488,21 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					
 					if (idx>=lineLen)
 					{
-						// full line is this character
-						[_ignoredLines addIndex:lineIndex];
-						
-						if (firstChar=='=')
+						if (![_ignoredLines containsIndex:lineIndex-1])
 						{
-							_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH1;
-							didFindSpecial = YES;
-						}
-						else if (firstChar=='-')
-						{
-							_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH2;
-							didFindSpecial = YES;
+							// full line is this character
+							[_ignoredLines addIndex:lineIndex];
+							
+							if (firstChar=='=')
+							{
+								_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH1;
+								didFindSpecial = YES;
+							}
+							else if (firstChar=='-')
+							{
+								_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH2;
+								didFindSpecial = YES;
+							}
 						}
 					}
 				}
@@ -448,7 +514,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				
 				if ([[line stringByTrimmingCharactersInSet:ruleCharacterSet] length]==0)
 				{
-					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagHR;
+					if ([[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] rangeOfString:@"   "].location == NSNotFound)
+					{
+						_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagHR;
+					}
+					
+					// block it from further special detection
 					didFindSpecial = YES;
 				}
 			}
@@ -489,7 +560,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			{
 				// PRE only possible if there is an empty line before it or already a PRE, or beginning doc
 				
-				if (!lineIndex || (lineIndex>0 && (specialOfLineBefore == DTMarkdownParserSpecialTagPre || specialOfLineBefore == DTMarkdownParserSpecialEmptyLine)))
+				if (!lineIndex || (lineIndex>0 && (specialOfLineBefore == DTMarkdownParserSpecialTagPre || [_ignoredLines containsIndex:lineIndex-1])))
 				{
 					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagPre;
 					didFindSpecial = YES;
@@ -556,7 +627,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		// look for empty lines
 		if (![[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length])
 		{
-			_specialLines[@(lineIndex)] = DTMarkdownParserSpecialEmptyLine;
+			[_ignoredLines addIndex:lineIndex];
 		}
 		
 		if ([scanner scanString:@"\n" intoString:NULL])
@@ -808,7 +879,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					}
 				}
 				
-				[self _processLine:line];
+				[self _processLine:line allowAutoDetection:YES];
 				
 				if (needsBR)
 				{
