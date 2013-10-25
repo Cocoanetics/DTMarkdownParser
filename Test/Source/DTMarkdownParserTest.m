@@ -458,6 +458,20 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testAsterisksWithSpaces
+{
+	NSString *string = @"Where are * asterisks *";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	
+	NSString *expected = @"<p>Where are * asterisks *</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
 
 #pragma mark - Heading
 
@@ -652,6 +666,21 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p>Line1</p>\n<hr />\n<p>Line2</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testHorizontalRuleWithTooManySpaces
+{
+	NSString *string = @"-   -   -";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>-   -   -</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
@@ -1388,7 +1417,7 @@
 
 #pragma mark - Test Files
 
-- (void)testEmphasis
+- (void)testFileEmphasis
 {
 	DTMarkdownParser *parser = [self _parserForFile:@"emphasis" options:0];
 	
@@ -1401,7 +1430,7 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
-- (void)testHeader
+- (void)testFileHeader
 {
 	DTMarkdownParser *parser = [self _parserForFile:@"header" options:0];
 	
@@ -1414,7 +1443,37 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
-- (void)testMissingLinkDefn
+- (void)testFileHR
+{
+	DTMarkdownParser *parser = [self _parserForFile:@"hr" options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = [self _resultStringForFile:@"hr"];
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+/*
+ // doesn't work yet due to HTML entities differing
+
+- (void)testFileHRSpaces
+{
+	DTMarkdownParser *parser = [self _parserForFile:@"hr_spaces" options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = [self _resultStringForFile:@"hr_spaces"];
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+*/
+
+- (void)testFileMissingLinkDefn
 {
 	DTMarkdownParser *parser = [self _parserForFile:@"missing_link_defn" options:0];
 	

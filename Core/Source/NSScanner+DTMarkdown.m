@@ -276,7 +276,16 @@
 	}
 	
 	NSAssert(effectiveMarker, @"Should always have an effective marker here");
+
+	self.scanLocation = startPos + [effectiveMarker length];
 	
+	// there cannot be a space after a beginning marker
+	if ([self scanString:@" " intoString:NULL])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+
 	if (marker)
 	{
 		*beginMarker = effectiveMarker;

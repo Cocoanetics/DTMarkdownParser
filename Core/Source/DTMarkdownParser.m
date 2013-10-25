@@ -514,7 +514,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				
 				if ([[line stringByTrimmingCharactersInSet:ruleCharacterSet] length]==0)
 				{
-					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagHR;
+					if ([[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] rangeOfString:@"   "].location == NSNotFound)
+					{
+						_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagHR;
+					}
+					
+					// block it from further special detection
 					didFindSpecial = YES;
 				}
 			}
