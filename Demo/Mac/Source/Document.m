@@ -59,13 +59,10 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	[[_markdownTextView layoutManager] replaceTextStorage:_markdownText];
 	[_markdownTextView setFont:_defaultFont];
 	
-	_tagTreeOutlineController.tagNodes = _nodeTree;
-	
 	[[_HTMLTextView layoutManager] replaceTextStorage:_HTMLText];
 	[_HTMLTextView setFont:_defaultFont];
-	
-	[[_previewWebView mainFrame] loadHTMLString:_HTMLText.string
-										baseURL:[self fileURL]];
+
+	[self parseMarkdown];
 }
 
 + (BOOL)autosavesInPlace
@@ -96,32 +93,6 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 		[_markdownText replaceCharactersInRange:NSMakeRange(0, _markdownText.length)
 									 withString:markdownString];
 		
-		DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:markdownString
-																	options:DTMarkdownParserOptionGitHubLineBreaks];
-		
-		SimpleTreeGenerator *treeGenerator = [SimpleTreeGenerator new];
-		parser.delegate = treeGenerator;
-		
-		BOOL couldParse = [parser parse];
-		if (couldParse) {
-			_nodeTree = treeGenerator.nodeTree;
-		}
-	
-		SimpleHTMLGenerator *HTMLGenerator = [SimpleHTMLGenerator new];
-		HTMLGenerator.title = self.displayName;
-		parser.delegate = HTMLGenerator;
-		
-		BOOL couldParse2 = [parser parse];
-		if (couldParse2) {
-			NSMutableString *HTMLString = HTMLGenerator.HTMLString;
-			[_HTMLText replaceCharactersInRange:NSMakeRange(0, _HTMLText.length)
-										 withString:HTMLString];
-		}
-		
-		// Parsing twice is pretty inefficient, but good enough for illustrative purposes.
-		// We could implement a delegate object that distributes the delegate messages
-		// to both SimpleTreeGenerator and SimpleHTMLGenerator.
-		
 		result = YES;
 	}
 	else {
@@ -135,6 +106,43 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	}
 	
 	return result;
+}
+
+- (void)parseMarkdown
+{
+	NSString *markdownString = _markdownText.string;
+	
+	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:markdownString
+																options:DTMarkdownParserOptionGitHubLineBreaks];
+	
+	SimpleTreeGenerator *treeGenerator = [SimpleTreeGenerator new];
+	parser.delegate = treeGenerator;
+	
+	BOOL couldParse = [parser parse];
+	if (couldParse) {
+		_nodeTree = treeGenerator.nodeTree;
+	}
+	
+	SimpleHTMLGenerator *HTMLGenerator = [SimpleHTMLGenerator new];
+	HTMLGenerator.title = self.displayName;
+	parser.delegate = HTMLGenerator;
+	
+	BOOL couldParse2 = [parser parse];
+	if (couldParse2) {
+		NSMutableString *HTMLString = HTMLGenerator.HTMLString;
+		[_HTMLText replaceCharactersInRange:NSMakeRange(0, _HTMLText.length)
+								 withString:HTMLString];
+		[_HTMLTextView setFont:_defaultFont];
+	}
+	
+	// Parsing twice is pretty inefficient, but good enough for illustrative purposes.
+	// We could implement a delegate object that distributes the delegate messages
+	// to both SimpleTreeGenerator and SimpleHTMLGenerator.
+	
+	_tagTreeOutlineController.tagNodes = _nodeTree;
+	
+	[[_previewWebView mainFrame] loadHTMLString:_HTMLText.string
+										baseURL:[self fileURL]];
 }
 
 @end
