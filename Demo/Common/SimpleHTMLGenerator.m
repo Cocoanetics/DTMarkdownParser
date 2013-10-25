@@ -82,13 +82,6 @@ NSString * const kHTMLFooter = @""
 	[_HTMLString appendString:kHTMLFooter];
 }
 
-- (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
-{
-	if (_verbose)  NSLog(@"%@", string);
-
-	[_HTMLString appendString:string];
-}
-
 - (void)parser:(DTMarkdownParser *)parser didStartElement:(NSString *)elementName attributes:(NSDictionary *)attributeDict;
 {
 	NSMutableString *elementTag = [NSMutableString string];
@@ -108,6 +101,13 @@ NSString * const kHTMLFooter = @""
 	if (_verbose)  NSLog(@"%@", elementTag);
 	
 	[_HTMLString appendString:elementTag];
+}
+
+- (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
+{
+	if (_verbose)  NSLog(@"%@", string);
+
+	[_HTMLString appendString:string];
 }
 
 - (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
