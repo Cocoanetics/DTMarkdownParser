@@ -393,38 +393,84 @@
 	return YES;
 }
 
+
+- (BOOL)_scanMarkdownTextEnclosedByHyperlink:(NSString **)enclosedText
+{
+	NSMutableString *tmpString = [NSMutableString string];
+	
+	NSCharacterSet *stopChars = [NSCharacterSet characterSetWithCharactersInString:@"![]"];
+	
+	while (![self isAtEnd])
+	{
+		NSString *part;
+		
+		if ([self scanUpToCharactersFromSet:stopChars intoString:&part])
+		{
+			[tmpString appendString:part];
+		}
+		
+		// skip image
+		NSUInteger posBeforeImage = self.scanLocation;
+		
+		if ([self scanMarkdownImageAttributes:NULL references:nil])
+		{
+			// append image markdown
+			NSRange imgRange = NSMakeRange(posBeforeImage, self.scanLocation-posBeforeImage);
+			[tmpString appendString:[self.string substringWithRange:imgRange]];
+		}
+		
+		if ([self scanString:@"]" intoString:NULL])
+		{
+			self.scanLocation --;
+			break;
+		}
+	}
+	
+	if (![tmpString length])
+	{
+		return NO;
+	}
+	
+	if (enclosedText)
+	{
+		*enclosedText = [tmpString copy];
+	}
+	
+	return YES;
+}
+
+
 - (BOOL)scanMarkdownHyperlinkAttributes:(NSDictionary **)attributes enclosedString:(NSString **)encosedString references:(NSDictionary *)references
 {
 	NSUInteger startPos = self.scanLocation;
 	BOOL isSimpleHREF;
 	NSString *closingMarker;
+	NSString *enclosedPart;
 	
 	if ([self scanString:@"<" intoString:NULL])
 	{
 		isSimpleHREF = YES;
 		closingMarker = @">";
+		
+		// scan enclosed part, can only be a href
+		[self scanUpToString:closingMarker intoString:&enclosedPart];
 	}
 	else if ([self scanString:@"[" intoString:NULL])
 	{
 		isSimpleHREF = NO;
 		closingMarker = @"]";
+		
+		// scan enclosed part, can contain images
+		[self _scanMarkdownTextEnclosedByHyperlink:&enclosedPart];
 	}
 	else
 	{
 		return NO;
 	}
 	
-	NSString *enclosedPart;
-	
 	NSString *hrefString;
 	NSString *title;
 	
-	// scan enclosed part
-	if (![self scanUpToString:closingMarker intoString:&enclosedPart])
-	{
-		self.scanLocation = startPos;
-		return NO;
-	}
 	
 	// expect closing marker
 	if (![self scanString:closingMarker intoString:NULL])
