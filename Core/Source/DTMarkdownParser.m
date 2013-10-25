@@ -224,7 +224,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	scanner.charactersToBeSkipped = nil;
 	
 	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
-	BOOL shouldAllowAutoDetection = allowAutoDetection;
 	
 	while (![scanner isAtEnd])
 	{
@@ -237,10 +236,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			[self _processCharacters:part allowAutodetection:allowAutoDetection];
 			
 			// re-enable detection, this might have been a faulty string containing a href
-			if (shouldAllowAutoDetection && !allowAutoDetection)
-			{
-				allowAutoDetection = YES;
-			}
+			allowAutoDetection = YES;
 		}
 		
 		// stop scanning if done
