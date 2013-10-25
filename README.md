@@ -49,11 +49,11 @@ Implemented
 - Lists (ordered or unordered)
 - Lists (stacked)
 - Forced linking via angle brackets
+- Automatic Linking of URLs (web and mail)
 
 To Do
 -----
 
-- Automatic Linking of HTTP URLs
 - Character Escaping
 - Inline HTML (? should we ever do this ?)
 - Multi-level Quoting and Code Blocks
