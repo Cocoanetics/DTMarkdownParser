@@ -56,6 +56,9 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	{
 		_string = [string copy];
 		_options = options;
+		
+		// default detector
+		_dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
 	}
 	
 	return self;
@@ -164,22 +167,80 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[self _popTag];
 }
 
-- (void)_processLine:(NSString *)line
+- (void)_processCharacters:(NSString *)string allowAutodetection:(BOOL)allowAutodetection
+{
+	if (!allowAutodetection || !_dataDetector)
+	{
+		[self _reportCharacters:string];
+		return;
+	}
+	
+	NSArray *matches = [_dataDetector matchesInString:string options:0 range:NSMakeRange(0, [string length])];
+	
+	NSUInteger outputChars = 0;
+	
+	for (NSTextCheckingResult *match in matches)
+	{
+		if (match.range.location > outputChars)
+		{
+			// need to output part before match
+			NSString *substring = [string substringWithRange:NSMakeRange(outputChars, match.range.location - outputChars)];
+			[self _reportCharacters:substring];
+		}
+		
+		NSString *urlString = [string substringWithRange:match.range];
+		
+		// get URL from match if possible
+		NSURL *URL = [match URL];
+		
+		if (!URL)
+		{
+			// if not possible, get it from the string
+			URL = [NSURL URLWithString:urlString];
+		}
+		
+		NSDictionary *attributes = @{@"href": [URL absoluteString]};
+		[self _pushTag:@"a" attributes:attributes];
+		[self _reportCharacters:urlString];
+		[self _popTag];
+		
+		outputChars = NSMaxRange(match.range);
+	}
+	
+	// output reset after last hyperlink
+	NSRange restRange = NSMakeRange(outputChars, [string length] - outputChars);
+	
+	if (restRange.length>0)
+	{
+		// need to output part before match
+		NSString *substring = [string substringWithRange:restRange];
+		[self _reportCharacters:substring];
+	}
+}
+
+- (void)_processLine:(NSString *)line allowAutoDetection:(BOOL)allowAutoDetection
 {
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
 	
 	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
+	BOOL shouldAllowAutoDetection = allowAutoDetection;
 	
 	while (![scanner isAtEnd])
 	{
 		NSString *part;
 		
-		// scan part before first special character
+		// scan part until next special character
 		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
 		{
 			// output part before markers
-			[self _reportCharacters:part];
+			[self _processCharacters:part allowAutodetection:allowAutoDetection];
+			
+			// re-enable detection, this might have been a faulty string containing a href
+			if (shouldAllowAutoDetection && !allowAutoDetection)
+			{
+				allowAutoDetection = YES;
+			}
 		}
 		
 		// stop scanning if done
@@ -206,7 +267,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			[self _pushTag:@"a" attributes:linkAttributes];
 			
 			// might contain further markdown/images
-			[self _processLine:enclosedString];
+			[self _processLine:enclosedString allowAutoDetection:NO];
 			
 			[self _popTag];
 		}
@@ -246,6 +307,13 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			
 			[self _reportCharacters:specialChar];
 			scanner.scanLocation ++;
+			
+			// scan part until next special character
+			if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
+			{
+				// output part before markers
+				[self _processCharacters:part allowAutodetection:NO];
+			}
 		}
 	}
 }
@@ -368,7 +436,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[self _pushTag:@"li" attributes:nil];
 	
 	// process line as normal without prefix
-	[self _processLine:line];
+	[self _processLine:line allowAutoDetection:YES];
 	
 	if (specialTypeOfFollowingLine != DTMarkdownParserSpecialSubList)
 	{
@@ -808,7 +876,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					}
 				}
 				
-				[self _processLine:line];
+				[self _processLine:line allowAutoDetection:YES];
 				
 				if (needsBR)
 				{

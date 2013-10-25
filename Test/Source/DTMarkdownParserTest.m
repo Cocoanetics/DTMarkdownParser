@@ -924,6 +924,66 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testAutoLinking
+{
+	NSString *string = @"Look at http://www.cococanetics.com for more info";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Look at <a href=\"http://www.cococanetics.com\">http://www.cococanetics.com</a> for more info</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testAutoLinkingNumber
+{
+	NSString *string = @"This is a sample of a http://abc.com/efg.php?EFAei687e3EsA sentence with a URL within it and a number 097843.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>This is a sample of a <a href=\"http://abc.com/efg.php?EFAei687e3EsA\">http://abc.com/efg.php?EFAei687e3EsA</a> sentence with a URL within it and a number 097843.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testAutoLinkingEmail
+{
+	NSString *string = @"Mail me at oliver@cocoanetics.com.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Mail me at <a href=\"mailto:oliver@cocoanetics.com\">oliver@cocoanetics.com</a>.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testAutoLinkingPhone
+{
+	NSString *string = @"Call me at +436991234567";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Call me at <a href=\"+436991234567\">+436991234567</a></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
 
 #pragma mark - Images
 
