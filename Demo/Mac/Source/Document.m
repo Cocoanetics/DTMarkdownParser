@@ -17,6 +17,8 @@
 
 NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 
+const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
+
 @implementation Document {
 	IBOutlet NSTextView *	_markdownTextView;
 	IBOutlet WebView *		_previewWebView;
@@ -62,7 +64,7 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	[[_HTMLTextView layoutManager] replaceTextStorage:_HTMLText];
 	[_HTMLTextView setFont:_defaultFont];
 
-	[self parseMarkdown];
+	[self parseMarkdown]; // Necessary, because reparseMarkdown is not triggered by replacing the text storage above.
 }
 
 + (BOOL)autosavesInPlace
@@ -143,6 +145,30 @@ NSString * const	MarkdownDocumentType	= @"net.daringfireball.markdown";
 	
 	[[_previewWebView mainFrame] loadHTMLString:_HTMLText.string
 										baseURL:[self fileURL]];
+}
+
+// Based on “Replacing an NSTimer with performSelector:withObject:afterDelay:”
+// http://benedictcohen.co.uk/blog/archives/157
+- (void)textDidChange:(NSNotification *)notification
+{
+	SEL reparseMarkdown = @selector(reparseMarkdown);
+	
+	// Cancel the previous reparse request.
+	[[self class] cancelPreviousPerformRequestsWithTarget:self
+												 selector:reparseMarkdown
+												   object:nil];
+	
+	// Reparse after a kMarkdownDocumentReparseDelay delay.
+	// If the user enters additional text, reparsing will be cancelled/delayed again by the previous message.
+	[self performSelector:reparseMarkdown
+			   withObject:nil
+			   afterDelay:kMarkdownDocumentReparseDelay];
+}
+
+- (void)reparseMarkdown
+{
+	//NSLog(@"Re-parsing Markdown.");
+	[self parseMarkdown];
 }
 
 @end
