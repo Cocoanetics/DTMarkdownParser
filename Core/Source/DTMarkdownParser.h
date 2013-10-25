@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
+#import "DTWeakSupport.h"
+
 @class DTMarkdownParser;
 
 /**
@@ -75,7 +77,7 @@ typedef NS_ENUM(NSUInteger, DTMarkdownParserOptions)
 /**
  Parsing Delegate
  */
-@property (nonatomic, weak) id <DTMarkdownParserDelegate> delegate;
+@property (nonatomic, DT_WEAK_PROPERTY) id <DTMarkdownParserDelegate> delegate;
 
 /**
  Starts the event-driven parsing operation.

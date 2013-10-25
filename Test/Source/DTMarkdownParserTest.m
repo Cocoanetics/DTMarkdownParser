@@ -1218,6 +1218,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testStackedListsWithTab
+{
+	NSString *string = @"1. Lists in a list item:\n\t- Indented with tab.\n\t\t* two tabs.\n\t- One tab again.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ol><li>Lists in a list item:<ul><li>Indented with tab.<ul><li>two tabs.</li></ul></li><li>One tab again.</li></ul></li></ol>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 - (void)testStackedListsClosingTwoLevels
 {
 	NSString *string = @"1. Lists in a list item:\n    - Indented four spaces.\n        * indented eight spaces.\n- Top level again.";
