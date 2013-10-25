@@ -489,18 +489,21 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					
 					if (idx>=lineLen)
 					{
-						// full line is this character
-						[_ignoredLines addIndex:lineIndex];
-						
-						if (firstChar=='=')
+						if (_specialLines[@(lineIndex-1)] != DTMarkdownParserSpecialEmptyLine)
 						{
-							_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH1;
-							didFindSpecial = YES;
-						}
-						else if (firstChar=='-')
-						{
-							_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH2;
-							didFindSpecial = YES;
+							// full line is this character
+							[_ignoredLines addIndex:lineIndex];
+							
+							if (firstChar=='=')
+							{
+								_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH1;
+								didFindSpecial = YES;
+							}
+							else if (firstChar=='-')
+							{
+								_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH2;
+								didFindSpecial = YES;
+							}
 						}
 					}
 				}
@@ -621,6 +624,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		if (![[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length])
 		{
 			_specialLines[@(lineIndex)] = DTMarkdownParserSpecialEmptyLine;
+			[_ignoredLines addIndex:lineIndex];
 		}
 		
 		if ([scanner scanString:@"\n" intoString:NULL])
@@ -663,7 +667,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			NSString *specialLine = _specialLines[@(lineIndex)];
 			NSString *specialFollowingLine = _specialLines[@(lineIndex+1)];
 			
-			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
+			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex] || specialLine == DTMarkdownParserSpecialEmptyLine;
 			BOOL followingLineIsIgnored = [_ignoredLines containsIndex:lineIndex+1];
 			
 			if ([line hasSuffix:@"\r"])
