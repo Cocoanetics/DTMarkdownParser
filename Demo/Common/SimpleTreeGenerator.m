@@ -49,10 +49,12 @@ NSString * const	kSimpleTreeAttributes	= @"attributes";
 
 - (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
 {
-	if (_verbose)  NSLog(@"%@", string);
+	NSString *quotedString = [NSString stringWithFormat:@"“%@”", string];
+	
+	if (_verbose)  NSLog(@"%@", quotedString);
 
 	NSMutableDictionary *textNode = [@{
-									  kSimpleTreeText: string,
+									  kSimpleTreeText: quotedString,
 									  kSimpleTreeChildren: [NSMutableArray new]
 									  } mutableCopy];
 	
