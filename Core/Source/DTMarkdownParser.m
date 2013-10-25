@@ -204,7 +204,10 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		else if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
 		{
 			[self _pushTag:@"a" attributes:linkAttributes];
-			[self _reportCharacters:enclosedString];
+			
+			// might contain further markdown/images
+			[self _processLine:enclosedString];
+			
 			[self _popTag];
 		}
 		else if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
