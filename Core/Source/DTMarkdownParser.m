@@ -16,7 +16,6 @@ NSString * const DTMarkdownParserSpecialTagH1 = @"H1";
 NSString * const DTMarkdownParserSpecialTagH2 = @"H2";
 NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 NSString * const DTMarkdownParserSpecialTagPre = @"PRE";
-NSString * const DTMarkdownParserSpecialEmptyLine = @"<WHITE>";
 NSString * const DTMarkdownParserSpecialFencedPreStart = @"<FENCED BEGIN>";
 NSString * const DTMarkdownParserSpecialFencedPreCode = @"<FENCED CODE>";
 NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
@@ -438,7 +437,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	{
 		[self _popTag]; // li
 		
-		if ([_ignoredLines containsIndex:lineIndex+1] || specialTypeOfFollowingLine == DTMarkdownParserSpecialEmptyLine)
+		if ([_ignoredLines containsIndex:lineIndex+1])
 		{
 			[self _popTag];
 		}
@@ -489,7 +488,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					
 					if (idx>=lineLen)
 					{
-						if (_specialLines[@(lineIndex-1)] != DTMarkdownParserSpecialEmptyLine)
+						if (![_ignoredLines containsIndex:lineIndex-1])
 						{
 							// full line is this character
 							[_ignoredLines addIndex:lineIndex];
@@ -556,7 +555,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			{
 				// PRE only possible if there is an empty line before it or already a PRE, or beginning doc
 				
-				if (!lineIndex || (lineIndex>0 && (specialOfLineBefore == DTMarkdownParserSpecialTagPre || specialOfLineBefore == DTMarkdownParserSpecialEmptyLine)))
+				if (!lineIndex || (lineIndex>0 && (specialOfLineBefore == DTMarkdownParserSpecialTagPre || [_ignoredLines containsIndex:lineIndex-1])))
 				{
 					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagPre;
 					didFindSpecial = YES;
@@ -623,7 +622,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		// look for empty lines
 		if (![[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length])
 		{
-			_specialLines[@(lineIndex)] = DTMarkdownParserSpecialEmptyLine;
 			[_ignoredLines addIndex:lineIndex];
 		}
 		
@@ -667,7 +665,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			NSString *specialLine = _specialLines[@(lineIndex)];
 			NSString *specialFollowingLine = _specialLines[@(lineIndex+1)];
 			
-			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex] || specialLine == DTMarkdownParserSpecialEmptyLine;
+			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
 			BOOL followingLineIsIgnored = [_ignoredLines containsIndex:lineIndex+1];
 			
 			if ([line hasSuffix:@"\r"])
