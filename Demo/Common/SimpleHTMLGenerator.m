@@ -24,6 +24,8 @@ NSString * const kHTMLFooter = @""
 
 
 @implementation SimpleHTMLGenerator {
+	NSString *_immediateOpeningTagName;
+	
 	BOOL _verbose;
 }
 
@@ -101,6 +103,8 @@ NSString * const kHTMLFooter = @""
 	if (_verbose)  NSLog(@"%@", elementTag);
 	
 	[_HTMLString appendString:elementTag];
+	
+	_immediateOpeningTagName = elementName;
 }
 
 - (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
@@ -108,19 +112,30 @@ NSString * const kHTMLFooter = @""
 	if (_verbose)  NSLog(@"%@", string);
 
 	[_HTMLString appendString:string];
+	
+	_immediateOpeningTagName = nil;
 }
 
 - (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
 {
 	NSMutableString *elementTag = [NSMutableString stringWithFormat:@"</%@>", elementName];
-	
-	if ([[[self class] blockLevelElements] containsObject:elementName]) {
-		[elementTag appendString:@"\n"];
-	}
-	
 	if (_verbose)  NSLog(@"%@", elementTag);
 	
-	[_HTMLString appendString:elementTag];
+	BOOL isSelfClosingTag = (_immediateOpeningTagName != nil) && [_immediateOpeningTagName isEqualToString:elementName];
+	
+	if (isSelfClosingTag) {
+		NSUInteger lastCharacterIndex = _HTMLString.length - 1;
+		NSRange closingAngleBracketRange = NSMakeRange(lastCharacterIndex, 1);
+		[_HTMLString replaceCharactersInRange:closingAngleBracketRange
+								   withString:@" />"];
+	}
+	else {
+		if ([[[self class] blockLevelElements] containsObject:elementName]) {
+			[elementTag appendString:@"\n"];
+		}
+		
+		[_HTMLString appendString:elementTag];
+	}
 }
 
 @end
