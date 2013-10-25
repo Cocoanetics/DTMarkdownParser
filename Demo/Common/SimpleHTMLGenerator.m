@@ -107,7 +107,6 @@ NSString * const kHTMLFooter = @""
 	
 	if (_verbose)  NSLog(@"%@", elementTag);
 	
-	// FIXME: Add attributes.
 	[_HTMLString appendString:elementTag];
 }
 
