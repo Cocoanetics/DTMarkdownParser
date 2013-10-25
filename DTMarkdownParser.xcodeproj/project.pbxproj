@@ -646,6 +646,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTWeakSupport.h; sourceTree = "<group>"; };
 		A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+DTFoundation.h"; sourceTree = "<group>"; };
 		A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+DTFoundation.m"; sourceTree = "<group>"; };
 		A765C46118117EE5006B252A /* DTInvocationRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTInvocationRecorder.h; sourceTree = "<group>"; };
@@ -1403,6 +1404,7 @@
 				A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */,
 				A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */,
 				A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */,
+				A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */,
 			);
 			path = Source;
 			sourceTree = "<group>";
