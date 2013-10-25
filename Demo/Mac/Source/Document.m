@@ -152,9 +152,14 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 										baseURL:[self fileURL]];
 }
 
+- (void)textDidChange:(NSNotification *)notification
+{
+	[self triggerDelayedReparsing];
+}
+
 // Based on “Replacing an NSTimer with performSelector:withObject:afterDelay:”
 // http://benedictcohen.co.uk/blog/archives/157
-- (void)textDidChange:(NSNotification *)notification
+- (void)triggerDelayedReparsing
 {
 	SEL reparseMarkdown = @selector(reparseMarkdown);
 	
