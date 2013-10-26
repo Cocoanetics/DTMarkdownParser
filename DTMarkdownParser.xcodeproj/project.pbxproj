@@ -2851,6 +2851,7 @@
 				A7248B30181BC5E90021A209 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A7870C571817F6C000E39311 /* Build configuration list for PBXNativeTarget "DTMarkdownParser (iOS)" */ = {
 			isa = XCConfigurationList;

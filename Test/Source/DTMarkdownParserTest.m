@@ -635,6 +635,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testHeading1WithHashesFollowedBySpace
+{
+	NSString *string = @"# Heading 1 # ";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:DTMarkdownParserOptionGitHubLineBreaks];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<h1>Heading 1 #</h1>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 
 #pragma mark - Line Break
 
@@ -668,7 +683,6 @@
 
 #pragma mark - Hanging Paragraphs
 
-/*
 - (void)testHangingOnList
 {
 	NSString *string = @"- one  \ntwo";
@@ -677,13 +691,11 @@
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
 	
-	NSString *expected = @"<p>Line1<br />Line2</p>\n<p>Line3</p>\n";
+	NSString *expected = @"<ul><li>one<br />two</li></ul>";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
-	
 }
-*/
 
 #pragma mark - Horizontal Rule
 
