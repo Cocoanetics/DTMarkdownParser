@@ -650,6 +650,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testHeadingFollowedByHeading
+{
+	NSString *string = @"## Heading 1 #####\n## Heading 2 ##\nFoo";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:DTMarkdownParserOptionGitHubLineBreaks];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<h2>Heading 1</h2>\n<h2>Heading 2</h2>\n<p>Foo</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+
+}
 
 #pragma mark - Line Break
 

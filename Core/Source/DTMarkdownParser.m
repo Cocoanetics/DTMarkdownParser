@@ -14,6 +14,7 @@
 // constants for special lines
 NSString * const DTMarkdownParserSpecialTagH1 = @"H1";
 NSString * const DTMarkdownParserSpecialTagH2 = @"H2";
+NSString * const DTMarkdownParserSpecialTagHeading = @"<HEADING>";
 NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 NSString * const DTMarkdownParserSpecialTagPre = @"PRE";
 NSString * const DTMarkdownParserSpecialFencedPreStart = @"<FENCED BEGIN>";
@@ -420,13 +421,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		return NO;
 	}
 	
-	NSString *specialLineType = _specialLines[@(lineIndex)];
 	NSString *specialLineTypeOfFollowingLine = _specialLines[@(lineIndex+1)];
-	
-	if (specialLineType == DTMarkdownParserSpecialTagH1 || specialLineType == DTMarkdownParserSpecialTagH2)
-	{
-		return NO;
-	}
 	
 	if (![_ignoredLines containsIndex:lineIndex+1] && !specialLineTypeOfFollowingLine)
 	{
@@ -702,6 +697,16 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			
 			if (!didFindSpecial)
 			{
+				if ([line hasPrefix:@"#"])
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagHeading;
+					
+					didFindSpecial = YES;
+				}
+			}
+			
+			if (!didFindSpecial)
+			{
 				NSScanner *lineScanner = [NSScanner scannerWithString:line];
 				lineScanner.charactersToBeSkipped = nil;
 				
@@ -747,7 +752,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		paragraphRange = NSUnionRange(paragraphRange, lineRange);
 		
 		BOOL currentLineIsIgnored = [_ignoredLines containsIndex:lineIndex];
-		BOOL currentLineIsHR = (_specialLines[@(lineIndex)] == DTMarkdownParserSpecialTagHR);
+		BOOL currentLineIsHR = _specialLines[@(lineIndex)] == DTMarkdownParserSpecialTagHR || _specialLines[@(lineIndex)] == DTMarkdownParserSpecialTagHeading;
 		BOOL currentLineBeginsList = (_specialLines[@(lineIndex)] == DTMarkdownParserSpecialList);
 
 		if (currentLineIsIgnored || [scanner isAtEnd] || currentLineIsHR || currentLineBeginsList)
@@ -910,7 +915,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					needsPushTag = YES;
 				}
 			}
-			else if ([line hasPrefix:@"#"])
+			else if (specialLine == DTMarkdownParserSpecialTagHeading)
 			{
 				while ([line hasPrefix:@"#"])
 				{
