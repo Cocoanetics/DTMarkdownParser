@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A7248B09181BC5E90021A209 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF250B18112A3B0013D8D7 /* Foundation.framework */; };
+		A7248B0B181BC5E90021A209 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7248B0A181BC5E90021A209 /* CoreGraphics.framework */; };
+		A7248B0C181BC5E90021A209 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7870C401817F6C000E39311 /* UIKit.framework */; };
+		A7248B35181BC62B0021A209 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A7248AFF181BC5D50021A209 /* main.m */; };
 		A765C44A18115855006B252A /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */; };
 		A765C44B1811589D006B252A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
 		A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */; };
@@ -572,6 +576,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		A7248B36181BC6670021A209 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7BF250018112A3B0013D8D7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A7248B07181BC5E90021A209;
+			remoteInfo = BundleLoaderDummy;
+		};
 		A7870C7A1817F89900E39311 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7BF250018112A3B0013D8D7 /* Project object */;
@@ -646,6 +657,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A7248AFE181BC5D50021A209 /* BundleLoaderDummy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BundleLoaderDummy-Info.plist"; sourceTree = "<group>"; };
+		A7248AFF181BC5D50021A209 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A7248B08181BC5E90021A209 /* BundleLoaderDummy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BundleLoaderDummy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7248B0A181BC5E90021A209 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTWeakSupport.h; sourceTree = "<group>"; };
 		A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+DTFoundation.h"; sourceTree = "<group>"; };
 		A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+DTFoundation.m"; sourceTree = "<group>"; };
@@ -957,6 +972,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A7248B05181BC5E90021A209 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7248B0B181BC5E90021A209 /* CoreGraphics.framework in Frameworks */,
+				A7248B0C181BC5E90021A209 /* UIKit.framework in Frameworks */,
+				A7248B09181BC5E90021A209 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7870C2C1817F6C000E39311 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1005,6 +1030,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A7248AFD181BC5D50021A209 /* BundleLoaderDummy */ = {
+			isa = PBXGroup;
+			children = (
+				A7248AFE181BC5D50021A209 /* BundleLoaderDummy-Info.plist */,
+				A7248AFF181BC5D50021A209 /* main.m */,
+			);
+			path = BundleLoaderDummy;
+			sourceTree = "<group>";
+		};
 		A7870D8B1817FDEC00E39311 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1361,6 +1395,7 @@
 				A7870C2F1817F6C000E39311 /* libDTMarkdownParser_iOS.a */,
 				A7870C601817F7BB00E39311 /* UnitTests_iOS.octest */,
 				A7870D891817FDEC00E39311 /* DTMarkdown Demo.app */,
+				A7248B08181BC5E90021A209 /* BundleLoaderDummy.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1373,6 +1408,7 @@
 				A7BF25D5181138320013D8D7 /* Cocoa.framework */,
 				A7870C3D1817F6C000E39311 /* XCTest.framework */,
 				A7870C401817F6C000E39311 /* UIKit.framework */,
+				A7248B0A181BC5E90021A209 /* CoreGraphics.framework */,
 				A7870D8B1817FDEC00E39311 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -1412,6 +1448,7 @@
 		A7BF253318112C8B0013D8D7 /* Test */ = {
 			isa = PBXGroup;
 			children = (
+				A7248AFD181BC5D50021A209 /* BundleLoaderDummy */,
 				A7ABD2DB1811BEEB00494DA5 /* Resources */,
 				A7BF253418112C8B0013D8D7 /* Source */,
 				A7BF253618112C8B0013D8D7 /* UnitTests-Info.plist */,
@@ -1473,6 +1510,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		A7248B07181BC5E90021A209 /* BundleLoaderDummy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7248B2D181BC5E90021A209 /* Build configuration list for PBXNativeTarget "BundleLoaderDummy" */;
+			buildPhases = (
+				A7248B04181BC5E90021A209 /* Sources */,
+				A7248B05181BC5E90021A209 /* Frameworks */,
+				A7248B06181BC5E90021A209 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BundleLoaderDummy;
+			productName = BundleLoaderDummy;
+			productReference = A7248B08181BC5E90021A209 /* BundleLoaderDummy.app */;
+			productType = "com.apple.product-type.application";
+		};
 		A7870C2E1817F6C000E39311 /* DTMarkdownParser (iOS) */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A7870C571817F6C000E39311 /* Build configuration list for PBXNativeTarget "DTMarkdownParser (iOS)" */;
@@ -1501,6 +1555,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A7248B37181BC6670021A209 /* PBXTargetDependency */,
 				A7870C7B1817F89900E39311 /* PBXTargetDependency */,
 			);
 			name = "UnitTests (iOS)";
@@ -1604,6 +1659,7 @@
 				A7870C5F1817F7BB00E39311 /* UnitTests (iOS) */,
 				A7BF251C18112A8F0013D8D7 /* UnitTests (Mac) */,
 				A7870D881817FDEC00E39311 /* Demo (Mac) */,
+				A7248B07181BC5E90021A209 /* BundleLoaderDummy */,
 			);
 		};
 /* End PBXProject section */
@@ -1640,6 +1696,13 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A7248B06181BC5E90021A209 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7870C5E1817F7BB00E39311 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2202,6 +2265,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A7248B04181BC5E90021A209 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7248B35181BC62B0021A209 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7870C2B1817F6C000E39311 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2258,6 +2329,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A7248B37181BC6670021A209 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A7248B07181BC5E90021A209 /* BundleLoaderDummy */;
+			targetProxy = A7248B36181BC6670021A209 /* PBXContainerItemProxy */;
+		};
 		A7870C7B1817F89900E39311 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A7870C2E1817F6C000E39311 /* DTMarkdownParser (iOS) */;
@@ -2276,6 +2352,76 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		A7248B2E181BC5E90021A209 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Test/BundleLoaderDummy/BundleLoaderDummy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = NO;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A7248B2F181BC5E90021A209 /* Coverage */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INFOPLIST_FILE = "Test/BundleLoaderDummy/BundleLoaderDummy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = NO;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Coverage;
+		};
+		A7248B30181BC5E90021A209 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INFOPLIST_FILE = "Test/BundleLoaderDummy/BundleLoaderDummy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = NO;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
 		A7870C4D1817F6C000E39311 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2331,6 +2477,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/BundleLoaderDummy.app/BundleLoaderDummy";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -2347,6 +2494,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = UnitTests_iOS;
 				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -2355,6 +2503,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/BundleLoaderDummy.app/BundleLoaderDummy";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -2367,6 +2516,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = UnitTests_iOS;
 				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = octest;
 			};
@@ -2376,6 +2526,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/BundleLoaderDummy.app/BundleLoaderDummy";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -2388,6 +2539,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = UnitTests_iOS;
 				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = octest;
 			};
@@ -2691,6 +2843,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A7248B2D181BC5E90021A209 /* Build configuration list for PBXNativeTarget "BundleLoaderDummy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7248B2E181BC5E90021A209 /* Debug */,
+				A7248B2F181BC5E90021A209 /* Coverage */,
+				A7248B30181BC5E90021A209 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		A7870C571817F6C000E39311 /* Build configuration list for PBXNativeTarget "DTMarkdownParser (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
