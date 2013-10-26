@@ -276,6 +276,8 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didEndElement:), @"p");
 }
 
+#pragma mark - Block Quotes
+
 - (void)testBlockquote
 {
 	NSString *string = @"> A Quote\n> With multiple lines\n";
@@ -298,7 +300,30 @@
 	
 	NSArray *tagEnds = [_recorder invocationsMatchingSelector:@selector(parser:didEndElement:)];
 	STAssertTrue([tagEnds count] == 1, @"There should be one tag end");
+	
+//	NSString *expected = @"<blockquote><p>A Quote\nWith multiple lines</p>\n</blockquote>\n";
+//	NSString *actual = [self _HTMLFromInvocations];
+//	
+//	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
+
+/*
+- (void)testBlockquoteStacked
+{
+	NSString *string = @"> This is the first level of quoting.\n>\n> > This is nested blockquote.\n>\n> Back to the first level.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	
+	NSString *expected = @"<p><del>deleted</del></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+ */
 
 #pragma mark - Emphasis
 
@@ -1028,28 +1053,11 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
-- (void)testAutoLinkingPhone
-{
-	NSString *string = @"Call me at +436991234567";
-	
-	DTMarkdownParser *parser = [self _parserForString:string options:0];
-	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
-	
-	BOOL result = [parser parse];
-	STAssertTrue(result, @"Parser should return YES");
-	
-	NSString *expected = @"<p>Call me at <a href=\"+436991234567\">+436991234567</a></p>\n";
-	NSString *actual = [self _HTMLFromInvocations];
-	
-	STAssertEqualObjects(actual, expected, @"Expected result did not match");
-}
-
 - (void)testForcedLinkEmail
 {
 	NSString *string = @"Mail me at <oliver@cocoanetics.com>.";
 	
 	DTMarkdownParser *parser = [self _parserForString:string options:0];
-	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
 	
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
@@ -1065,7 +1073,6 @@
 	NSString *string = @"Mail me at <abc>.";
 	
 	DTMarkdownParser *parser = [self _parserForString:string options:0];
-	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
 	
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
@@ -1081,7 +1088,6 @@
 	NSString *string = @"Mail me at <abc def>.";
 	
 	DTMarkdownParser *parser = [self _parserForString:string options:0];
-	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
 	
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");

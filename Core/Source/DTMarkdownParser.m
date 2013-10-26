@@ -45,6 +45,8 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	NSMutableIndexSet *_ignoredLines;
 	NSMutableDictionary *_references;
 	NSMutableDictionary *_lineIndentLevel;
+	
+	NSDataDetector *_dataDetector;
 }
 
 - (instancetype)initWithString:(NSString *)string options:(DTMarkdownParserOptions)options
@@ -198,10 +200,19 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			URL = [NSURL URLWithString:urlString];
 		}
 		
-		NSDictionary *attributes = @{@"href": [URL absoluteString]};
-		[self _pushTag:@"a" attributes:attributes];
-		[self _reportCharacters:urlString];
-		[self _popTag];
+		if ([[URL scheme] isEqualToString:@"tel"])
+		{
+			// output as is
+			NSString *substring = [string substringWithRange:match.range];
+			[self _reportCharacters:substring];
+		}
+		else
+		{
+			NSDictionary *attributes = @{@"href": [URL absoluteString]};
+			[self _pushTag:@"a" attributes:attributes];
+			[self _reportCharacters:urlString];
+			[self _popTag];
+		}
 		
 		outputChars = NSMaxRange(match.range);
 	}
