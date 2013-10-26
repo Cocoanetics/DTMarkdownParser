@@ -196,6 +196,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		// get URL from match if possible
 		NSURL *URL = [match URL];
 		
+#if TARGET_OS_IPHONE
 		if ([[URL scheme] isEqualToString:@"tel"])
 		{
 			// output as is
@@ -203,6 +204,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			[self _reportCharacters:substring];
 		}
 		else
+#endif
 		{
 			NSDictionary *attributes = @{@"href": [URL absoluteString]};
 			[self _pushTag:@"a" attributes:attributes];
