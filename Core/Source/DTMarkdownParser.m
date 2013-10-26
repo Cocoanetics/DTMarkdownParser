@@ -61,7 +61,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		_options = options;
 		
 		// default detector
-		_dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+		_dataDetector = [NSDataDetector dataDetectorWithTypes:(NSTextCheckingTypes)NSTextCheckingTypeLink error:NULL];
 	}
 	
 	return self;
@@ -195,12 +195,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		
 		// get URL from match if possible
 		NSURL *URL = [match URL];
-		
-		if (!URL)
-		{
-			// if not possible, get it from the string
-			URL = [NSURL URLWithString:urlString];
-		}
 		
 		if ([[URL scheme] isEqualToString:@"tel"])
 		{
