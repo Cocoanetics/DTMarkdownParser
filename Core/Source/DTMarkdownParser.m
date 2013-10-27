@@ -991,62 +991,59 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 - (NSUInteger)_listLevelForLineAtIndex:(NSUInteger)lineIndex
 {
 	NSString *lineSpecial = _specialLines[@(lineIndex)];
+
+	NSAssert(lineSpecial == DTMarkdownParserSpecialSubList || lineSpecial == DTMarkdownParserSpecialList, @"%s only valid for list and sublist items", __PRETTY_FUNCTION__);
 	
+	// main list is always level 1
 	if (lineSpecial == DTMarkdownParserSpecialList)
 	{
 		return 1;
 	}
-	else if (lineSpecial == DTMarkdownParserSpecialSubList)
+	
+	NSUInteger spaces = [_lineIndentLevel[@(lineIndex)] integerValue];
+	NSUInteger previousListItem = [self _lineIndexOfListItemBeforeLineIndex:lineIndex];
+	NSString *previousListItemSpecial = _specialLines[@(previousListItem)];
+	
+	if (previousListItemSpecial == DTMarkdownParserSpecialList)
 	{
-		NSUInteger spaces = [_lineIndentLevel[@(lineIndex)] integerValue];
+		// this is the first subitem
 		
-		NSUInteger previousListItem = [self _lineIndexOfListItemBeforeLineIndex:lineIndex];
+		NSUInteger listHeadSpaces = [_lineIndentLevel[@(previousListItem)] integerValue];
 		
-		NSString *previousListItemSpecial = _specialLines[@(previousListItem)];
-		
-		if (previousListItemSpecial == DTMarkdownParserSpecialList)
+		if (spaces==listHeadSpaces)
 		{
-			// this is the first subitem
-			
-			NSUInteger listHeadSpaces = [_lineIndentLevel[@(previousListItem)] integerValue];
-			
-			if (spaces==listHeadSpaces)
-			{
-				return 1;
-			}
-			else
-			{
-				return 2;
-			}
+			return 1;
 		}
 		else
 		{
-			NSUInteger previousItemSpaces = [_lineIndentLevel[@(previousListItem)] integerValue];
-			
-			NSUInteger previousItemLevel = [self _listLevelForLineAtIndex:previousListItem];
-			
-			if (spaces == previousItemSpaces)
-			{
-				return previousItemLevel;
-			}
-			
-			NSUInteger listHead = [self _lineIndexOfListHeadBeforeLineIndex:lineIndex];
-			NSUInteger headSpaces = [_lineIndentLevel[@(listHead)] integerValue];
-			
-			if (spaces<headSpaces)
-			{
-				return previousItemLevel + 1;
-			}
-			else if (spaces == headSpaces)
-			{
-				return 1;
-			}
-			
-			return (NSUInteger)ceilf(spaces/4.0) + 1;
+			return 2;
 		}
 	}
-	
-	return 0;
+	else
+	{
+		NSUInteger previousItemSpaces = [_lineIndentLevel[@(previousListItem)] integerValue];
+		
+		NSUInteger previousItemLevel = [self _listLevelForLineAtIndex:previousListItem];
+		
+		if (spaces == previousItemSpaces)
+		{
+			return previousItemLevel;
+		}
+		
+		NSUInteger listHead = [self _lineIndexOfListHeadBeforeLineIndex:lineIndex];
+		NSUInteger headSpaces = [_lineIndentLevel[@(listHead)] integerValue];
+		
+		if (spaces<headSpaces)
+		{
+			return previousItemLevel + 1;
+		}
+		else if (spaces == headSpaces)
+		{
+			return 1;
+		}
+		
+		return (NSUInteger)ceilf(spaces/4.0) + 1;
+	}
 }
 
 
