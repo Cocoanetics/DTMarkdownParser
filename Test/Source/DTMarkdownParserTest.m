@@ -1496,6 +1496,21 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testStackedListsManySpaces
+{
+	NSString *string = @"- one\n       - two\n                                     MUCH";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	// no P around two/MUCH
+	NSString *expected = @"<ul><li>one<ul><li>two\nMUCH</li></ul></li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 #pragma mark - Test Files
 
 - (void)testFileEmphasis

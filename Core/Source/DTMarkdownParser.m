@@ -835,6 +835,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 {
 	NSRange lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
 	NSUInteger numberOfLines = [_lineRanges count];
+	NSUInteger numberIgnored = 0;
 	
 	while (lineIndex<(numberOfLines-1))
 	{
@@ -842,6 +843,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		
 		if ([_ignoredLines containsIndex:lineIndex])
 		{
+			numberIgnored ++;
 			continue;
 		}
 		
@@ -854,7 +856,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
 		NSString *line = [_string substringWithRange:lineRange];
 		
-		if ([line hasPrefix:@" "])
+		if ([line hasPrefix:@" "] && numberIgnored>0)
 		{
 			return YES;
 		}
