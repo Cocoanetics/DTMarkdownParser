@@ -454,16 +454,13 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		
 		NSUInteger prevousListItem = [self _lineIndexOfListItemBeforeLineIndex:lineIndex];
 		
-		currentLineIndent = [_lineIndentLevel[@(lineIndex)] integerValue];
-		previousLineIndent = [_lineIndentLevel[@(prevousListItem)] integerValue];
+		currentLineIndent = [self _listLevelForLineAtIndex:lineIndex];
+		previousLineIndent = [self _listLevelForLineAtIndex:prevousListItem];
 		
 		if (currentLineIndent > previousLineIndent)
 		{
 			needOpenNewListLevel = YES;
 		}
-		
-		currentLineIndent = (NSUInteger)floor(currentLineIndent/4.0);
-		previousLineIndent = (NSUInteger)floor(previousLineIndent/4.0);
 	}
 	
 	NSScanner *scanner = [NSScanner scannerWithString:line];
@@ -960,6 +957,58 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	}
 	
 	return NO;
+}
+
+- (NSUInteger)_listLevelForLineAtIndex:(NSUInteger)lineIndex
+{
+	NSString *lineSpecial = _specialLines[@(lineIndex)];
+	
+	if (lineSpecial == DTMarkdownParserSpecialList)
+	{
+		return 1;
+	}
+	else if (lineSpecial == DTMarkdownParserSpecialSubList)
+	{
+		NSUInteger spaces = [_lineIndentLevel[@(lineIndex)] integerValue];
+		
+		if (!spaces)
+		{
+			return 1;
+		}
+		
+		NSUInteger previousListItem = [self _lineIndexOfListItemBeforeLineIndex:lineIndex];
+		
+		NSString *previousListItemSpecial = _specialLines[@(previousListItem)];
+		
+		if (previousListItemSpecial == DTMarkdownParserSpecialList)
+		{
+			// this is the first subitem
+			
+			NSUInteger listHeadSpaces = [_lineIndentLevel[@(previousListItem)] integerValue];
+			
+			if (spaces==listHeadSpaces)
+			{
+				return 1;
+			}
+			else
+			{
+				return 2;
+			}
+		}
+		else
+		{
+			NSUInteger previousItemSpaces = [_lineIndentLevel[@(previousListItem)] integerValue];
+			
+			if (spaces == previousItemSpaces)
+			{
+				return [self _listLevelForLineAtIndex:previousListItem];
+			}
+			
+			return (NSUInteger)ceilf(spaces/4.0) + 1;
+		}
+	}
+	
+	return 0;
 }
 
 
