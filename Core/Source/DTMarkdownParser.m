@@ -462,6 +462,14 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			needOpenNewListLevel = YES;
 		}
 	}
+	else if (specialTypeOfLine == DTMarkdownParserSpecialList)
+	{
+		// close all lists this is a new one
+		while ([_tagStack containsObject:@"ul"] || [_tagStack containsObject:@"ol"])
+		{
+			[self _popTag];
+		}
+	}
 	
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
@@ -888,6 +896,27 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	return lineIndex;
 }
 
+- (NSUInteger)_lineIndexOfListHeadBeforeLineIndex:(NSUInteger)lineIndex
+{
+	BOOL foundPreviousListItem = NO;
+	
+	while (lineIndex>0)
+	{
+		lineIndex--;
+		
+		NSString *lineSpecial = _specialLines[@(lineIndex)];
+		
+		if (lineSpecial == DTMarkdownParserSpecialList)
+		{
+			foundPreviousListItem = YES;
+			break;
+		}
+	}
+	
+	NSAssert(foundPreviousListItem, @"Error, you called %s without there being a previous list item", __PRETTY_FUNCTION__);
+	
+	return lineIndex;
+}
 
 - (BOOL)_isSubListAtLineIndex:(NSUInteger)lineIndex
 {
@@ -971,11 +1000,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	{
 		NSUInteger spaces = [_lineIndentLevel[@(lineIndex)] integerValue];
 		
-		if (!spaces)
-		{
-			return 1;
-		}
-		
 		NSUInteger previousListItem = [self _lineIndexOfListItemBeforeLineIndex:lineIndex];
 		
 		NSString *previousListItemSpecial = _specialLines[@(previousListItem)];
@@ -999,9 +1023,23 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		{
 			NSUInteger previousItemSpaces = [_lineIndentLevel[@(previousListItem)] integerValue];
 			
+			NSUInteger previousItemLevel = [self _listLevelForLineAtIndex:previousListItem];
+			
 			if (spaces == previousItemSpaces)
 			{
-				return [self _listLevelForLineAtIndex:previousListItem];
+				return previousItemLevel;
+			}
+			
+			NSUInteger listHead = [self _lineIndexOfListHeadBeforeLineIndex:lineIndex];
+			NSUInteger headSpaces = [_lineIndentLevel[@(listHead)] integerValue];
+			
+			if (spaces<headSpaces)
+			{
+				return previousItemLevel + 1;
+			}
+			else if (spaces == headSpaces)
+			{
+				return 1;
 			}
 			
 			return (NSUInteger)ceilf(spaces/4.0) + 1;
