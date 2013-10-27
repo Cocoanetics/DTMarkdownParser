@@ -552,11 +552,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	
 	if ([self _shouldCloseListItemAfterLineAtIndex:lineIndex])
 	{
-		if ([[self _currentTag] isEqualToString:@"p"])
-		{
-			[self _popTag];
-		}
-		
 		[self _popTag]; // li
 		
 		if ([_ignoredLines containsIndex:lineIndex+1])
