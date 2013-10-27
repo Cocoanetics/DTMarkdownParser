@@ -229,7 +229,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 
 - (void)_processLine:(NSString *)line withIndex:(NSUInteger)lineIndex allowAutoDetection:(BOOL)allowAutoDetection
 {
-	BOOL hasNewline = NO;
 	BOOL needsBR = NO;
 	BOOL allowLineBreak = [self _shouldAllowLineBreakAfterLineAtIndex:lineIndex];
 	
@@ -254,7 +253,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	{
 		if ([line hasSuffix:@"\n"])
 		{
-			hasNewline = YES;
 			line = [line substringToIndex:[line length]-1];
 		}
 		
@@ -737,7 +735,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				if ([lineScanner scanMarkdownLineListPrefix:&listPrefix])
 				{
 					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialList;
-					didFindSpecial = YES;
 				}
 				else if (specialOfLineBefore == DTMarkdownParserSpecialList || specialOfLineBefore == DTMarkdownParserSpecialSubList)
 				{
@@ -752,7 +749,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 						if ([indentedScanner scanMarkdownLineListPrefix:&listPrefix])
 						{
 							_specialLines[@(lineIndex)] = DTMarkdownParserSpecialSubList;
-							didFindSpecial = YES;
 						}
 					}
 				}
@@ -835,7 +831,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 
 - (BOOL)_hasHangingParagraphsForListItemBeginningAtLineIndex:(NSUInteger)lineIndex
 {
-	NSRange lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
+	NSRange lineRange;
 	NSUInteger numberOfLines = [_lineRanges count];
 	NSUInteger numberIgnored = 0;
 	
