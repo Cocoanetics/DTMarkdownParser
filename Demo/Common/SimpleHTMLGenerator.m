@@ -16,6 +16,10 @@ NSString * const kHTMLHeaderFormat = @""
 
 /*"	<link rel=\"stylesheet\" type=\"text/css\" href=\"./Shared/style.css\" charset=\"utf-8\" media=\"all\">\n"*/
 
+"	<style type=\"text/css\">\n"
+"	pre, code { background-color: #eee; font-family: Menlo, monospace; }\n"
+"	</style>\n"
+
 "	<title>%1$@</title>\n"
 "</head>\n"
 "<body>\n";
