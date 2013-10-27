@@ -91,7 +91,7 @@ void escapeAndAppend(NSString *string, NSMutableString *HTMLString, BOOL escapeQ
 				
 				[HTMLString appendString:replacementString];
 				
-				checkedRange.location = i + 1; // Skip over the charcter we just replaced.
+				checkedRange.location = i + 1; // Skip over the character we just replaced.
 				checkedRange.length = 0;
 			}
 			else {
