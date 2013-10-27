@@ -29,6 +29,89 @@ NSString * const kHTMLFooter = @""
 "</html>\n";
 
 
+void escapeAndAppend(NSString *string, NSMutableString *HTMLString, BOOL escapeQuotes)
+{
+	// Parse string for escaping and append piecemeal.
+	
+	NSUInteger stringLength = string.length;
+	
+#define ESCAPE_BUFFER_SIZE 64
+	NSRange checkedRange = NSMakeRange(0, 0);
+	
+	NSRange rangeInString = NSMakeRange(0, ESCAPE_BUFFER_SIZE);
+	
+	while (rangeInString.location < stringLength) {
+		unichar buffer[ESCAPE_BUFFER_SIZE];
+		
+		// Limit character fetching to length of string.
+		if (NSMaxRange(rangeInString) > stringLength) {
+			rangeInString.length = stringLength - rangeInString.location;
+		}
+		
+		[string getCharacters:buffer
+						range:rangeInString];
+		
+		// Check every character in the buffer for whether it is invalid in HTML text.
+		for (NSUInteger i = 0; i < rangeInString.length; i++) {
+			unichar c = buffer[i];
+			
+			NSString *replacementString;
+			
+			switch  (c) {
+				case '<':
+					replacementString = @"&lt;";
+					break;
+					
+				case '>':
+					replacementString = @"&gt;";
+					break;
+					
+				case '&':
+					replacementString = @"&amp;";
+					break;
+					
+				case '"':
+					if (escapeQuotes) {
+						replacementString = @"&quot;";
+					} else {
+						replacementString = nil;
+					}
+					break;
+					
+				default:
+					replacementString = nil;
+					checkedRange.length++;
+					break;
+			}
+			
+			// Escape if necessary.
+			if (replacementString != nil) {
+				if (checkedRange.length > 0) {
+					[HTMLString appendString:[string substringWithRange:checkedRange]];
+				}
+				
+				[HTMLString appendString:replacementString];
+				
+				checkedRange.location = i + 1; // Skip over the charcter we just replaced.
+				checkedRange.length = 0;
+			}
+		}
+		
+		rangeInString.location += ESCAPE_BUFFER_SIZE;
+	}
+	
+	if (checkedRange.length == stringLength) {
+		// We went all the way through string without anything to escape.
+		[HTMLString appendString:string];
+	} else {
+		// Append the remainder.
+		if (checkedRange.length > 0) {
+			[HTMLString appendString:[string substringWithRange:checkedRange]];
+		}
+	}
+}
+
+
 @implementation SimpleHTMLGenerator {
 	NSString *_immediateOpeningTagName;
 	
@@ -103,7 +186,7 @@ NSString * const kHTMLFooter = @""
 		[_HTMLString appendString:@" "];
 		[_HTMLString appendString:attributeName];
 		[_HTMLString appendString:@"=\""];
-		[_HTMLString appendString:attribute];
+		escapeAndAppend(attribute, _HTMLString, YES);
 		[_HTMLString appendString:@"\""];
 	}];
 	
@@ -122,8 +205,8 @@ NSString * const kHTMLFooter = @""
 - (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
 {
 	if (_verbose)  NSLog(@"%@", string);
-
-	[_HTMLString appendString:string];
+	
+	escapeAndAppend(string, _HTMLString, NO);
 	
 	_immediateOpeningTagName = nil;
 }
