@@ -80,7 +80,6 @@ void escapeAndAppend(NSString *string, NSMutableString *HTMLString, BOOL escapeQ
 					
 				default:
 					replacementString = nil;
-					checkedRange.length++;
 					break;
 			}
 			
@@ -94,6 +93,9 @@ void escapeAndAppend(NSString *string, NSMutableString *HTMLString, BOOL escapeQ
 				
 				checkedRange.location = i + 1; // Skip over the charcter we just replaced.
 				checkedRange.length = 0;
+			}
+			else {
+				checkedRange.length++;
 			}
 		}
 		
