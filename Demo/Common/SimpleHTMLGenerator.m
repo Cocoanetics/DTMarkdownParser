@@ -135,7 +135,7 @@ NSString * const kHTMLFooter = @""
 	}
 	else {
 		if ([[[self class] blockLevelElements] containsObject:elementName]) {
-			[elementTag appendString:@"\n"];
+			[elementTag appendString:@"\n\n"];
 		}
 		
 		[_HTMLString appendString:elementTag];
