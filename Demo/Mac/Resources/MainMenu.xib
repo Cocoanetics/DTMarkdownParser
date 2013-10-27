@@ -588,6 +588,28 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Preview" id="8BQ-DQ-mlw">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Preview" id="OUr-kD-S5u">
+                        <items>
+                            <menuItem title="Tree" keyEquivalent="1" id="QvC-WV-cSC">
+                                <connections>
+                                    <action selector="changePreviewTabIndex:" target="-1" id="aq9-HW-chn"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="HTML" tag="1" keyEquivalent="2" id="Q80-B8-wFb">
+                                <connections>
+                                    <action selector="changePreviewTabIndex:" target="-1" id="ifB-CU-DAO"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Web" tag="2" keyEquivalent="3" id="lwC-ie-Wc9">
+                                <connections>
+                                    <action selector="changePreviewTabIndex:" target="-1" id="heZ-wk-TpF"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="View" id="295">
                     <menu key="submenu" title="View" id="296">
                         <items>

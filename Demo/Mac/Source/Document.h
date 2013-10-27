@@ -12,4 +12,6 @@
 
 @property (assign) NSInteger selectedPreviewTabIndex;
 
+- (IBAction)changePreviewTabIndex:(id)sender;
+
 @end
