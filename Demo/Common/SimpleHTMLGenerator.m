@@ -118,7 +118,11 @@ NSString * const kHTMLFooter = @""
 
 - (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
 {
-	NSMutableString *elementTag = [NSMutableString stringWithFormat:@"</%@>", elementName];
+	NSMutableString *elementTag = [NSMutableString string];
+	[elementTag appendString:@"</"];
+	[elementTag appendString:elementName];
+	[elementTag appendString:@">"];
+	
 	if (_verbose)  NSLog(@"%@", elementTag);
 	
 	BOOL isSelfClosingTag = (_immediateOpeningTagName != nil) && [_immediateOpeningTagName isEqualToString:elementName];
