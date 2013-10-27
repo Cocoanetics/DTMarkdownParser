@@ -276,6 +276,8 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didEndElement:), @"p");
 }
 
+#pragma mark - Block Quotes
+
 - (void)testBlockquote
 {
 	NSString *string = @"> A Quote\n> With multiple lines\n";
@@ -298,7 +300,30 @@
 	
 	NSArray *tagEnds = [_recorder invocationsMatchingSelector:@selector(parser:didEndElement:)];
 	STAssertTrue([tagEnds count] == 1, @"There should be one tag end");
+	
+//	NSString *expected = @"<blockquote><p>A Quote\nWith multiple lines</p>\n</blockquote>\n";
+//	NSString *actual = [self _HTMLFromInvocations];
+//	
+//	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
+
+/*
+- (void)testBlockquoteStacked
+{
+	NSString *string = @"> This is the first level of quoting.\n>\n> > This is nested blockquote.\n>\n> Back to the first level.";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	
+	NSString *expected = @"<p><del>deleted</del></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+ */
 
 #pragma mark - Emphasis
 
@@ -610,6 +635,36 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testHeading1WithHashesFollowedBySpace
+{
+	NSString *string = @"# Heading 1 # ";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:DTMarkdownParserOptionGitHubLineBreaks];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<h1>Heading 1 #</h1>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testHeadingFollowedByHeading
+{
+	NSString *string = @"## Heading 1 #####\n## Heading 2 ##\nFoo";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:DTMarkdownParserOptionGitHubLineBreaks];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<h2>Heading 1</h2>\n<h2>Heading 2</h2>\n<p>Foo</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+
+}
 
 #pragma mark - Line Break
 
@@ -640,6 +695,51 @@
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
+
+#pragma mark - Hanging Paragraphs
+
+- (void)testHangingOnList
+{
+	NSString *string = @"- one  \ntwo";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ul><li>one<br />two</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testHangingOnListOneBROneNL
+{
+	NSString *string = @"- one  \ntwo\nthree";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ul><li>one<br />two\nthree</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testHangingOfParagraphOnOneLevelList
+{
+	NSString *string = @"- one\n\n two";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ul><li><p>one</p>\n<p>two</p>\n</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 
 #pragma mark - Horizontal Rule
 
@@ -1028,28 +1128,11 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
-- (void)testAutoLinkingPhone
-{
-	NSString *string = @"Call me at +436991234567";
-	
-	DTMarkdownParser *parser = [self _parserForString:string options:0];
-	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
-	
-	BOOL result = [parser parse];
-	STAssertTrue(result, @"Parser should return YES");
-	
-	NSString *expected = @"<p>Call me at <a href=\"+436991234567\">+436991234567</a></p>\n";
-	NSString *actual = [self _HTMLFromInvocations];
-	
-	STAssertEqualObjects(actual, expected, @"Expected result did not match");
-}
-
 - (void)testForcedLinkEmail
 {
 	NSString *string = @"Mail me at <oliver@cocoanetics.com>.";
 	
 	DTMarkdownParser *parser = [self _parserForString:string options:0];
-	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
 	
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
@@ -1065,7 +1148,6 @@
 	NSString *string = @"Mail me at <abc>.";
 	
 	DTMarkdownParser *parser = [self _parserForString:string options:0];
-	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
 	
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
@@ -1081,7 +1163,6 @@
 	NSString *string = @"Mail me at <abc def>.";
 	
 	DTMarkdownParser *parser = [self _parserForString:string options:0];
-	parser.dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber error:NULL];
 	
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
@@ -1195,7 +1276,7 @@
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
 	
-	NSString *expected = @"<p>Normal text\n    10 print &quot;Hello World&quot;\n    20 goto 10</p>\n";
+	NSString *expected = @"<p>Normal text\n10 print &quot;Hello World&quot;\n20 goto 10</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
@@ -1410,6 +1491,21 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<ol><li>Lists in a list item:<ul><li>Indented four spaces.<ul><li>indented eight spaces.</li></ul></li></ul></li><li>Top level again.</li></ol>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testStackedListsManySpaces
+{
+	NSString *string = @"- one\n       - two\n                                     MUCH";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	// no P around two/MUCH
+	NSString *expected = @"<ul><li>one<ul><li>two\nMUCH</li></ul></li></ul>";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");

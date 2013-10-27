@@ -14,6 +14,7 @@
 // constants for special lines
 NSString * const DTMarkdownParserSpecialTagH1 = @"H1";
 NSString * const DTMarkdownParserSpecialTagH2 = @"H2";
+NSString * const DTMarkdownParserSpecialTagHeading = @"<HEADING>";
 NSString * const DTMarkdownParserSpecialTagHR = @"HR";
 NSString * const DTMarkdownParserSpecialTagPre = @"PRE";
 NSString * const DTMarkdownParserSpecialFencedPreStart = @"<FENCED BEGIN>";
@@ -45,6 +46,10 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	NSMutableIndexSet *_ignoredLines;
 	NSMutableDictionary *_references;
 	NSMutableDictionary *_lineIndentLevel;
+	NSMutableArray *_lineRanges;
+	NSMutableArray *_paragraphRanges;
+	
+	NSDataDetector *_dataDetector;
 }
 
 - (instancetype)initWithString:(NSString *)string options:(DTMarkdownParserOptions)options
@@ -57,7 +62,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		_options = options;
 		
 		// default detector
-		_dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+		_dataDetector = [NSDataDetector dataDetectorWithTypes:(NSTextCheckingTypes)NSTextCheckingTypeLink error:NULL];
 	}
 	
 	return self;
@@ -192,16 +197,21 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		// get URL from match if possible
 		NSURL *URL = [match URL];
 		
-		if (!URL)
+#if TARGET_OS_IPHONE
+		if ([[URL scheme] isEqualToString:@"tel"])
 		{
-			// if not possible, get it from the string
-			URL = [NSURL URLWithString:urlString];
+			// output as is
+			NSString *substring = [string substringWithRange:match.range];
+			[self _reportCharacters:substring];
 		}
-		
-		NSDictionary *attributes = @{@"href": [URL absoluteString]};
-		[self _pushTag:@"a" attributes:attributes];
-		[self _reportCharacters:urlString];
-		[self _popTag];
+		else
+#endif
+		{
+			NSDictionary *attributes = @{@"href": [URL absoluteString]};
+			[self _pushTag:@"a" attributes:attributes];
+			[self _reportCharacters:urlString];
+			[self _popTag];
+		}
 		
 		outputChars = NSMaxRange(match.range);
 	}
@@ -217,10 +227,51 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	}
 }
 
-- (void)_processLine:(NSString *)line allowAutoDetection:(BOOL)allowAutoDetection
+- (void)_processLine:(NSString *)line withIndex:(NSUInteger)lineIndex allowAutoDetection:(BOOL)allowAutoDetection
 {
+	BOOL hasNewline = NO;
+	BOOL needsBR = NO;
+	BOOL allowLineBreak = [self _shouldAllowLineBreakAfterLineAtIndex:lineIndex];
+	
+	if (allowLineBreak)
+	{
+		line = [line stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+		
+		if ([line hasSuffix:@"\n"] && (_options && DTMarkdownParserOptionGitHubLineBreaks))
+		{
+			line = [line substringToIndex:[line length]-1];
+			needsBR = YES;
+			
+		}
+		else if ([line hasSuffix:@"  \n"])
+		{
+			needsBR = YES;
+			
+			line = [line substringToIndex:[line length]-3];
+		}
+	}
+	else
+	{
+		if ([line hasSuffix:@"\n"])
+		{
+			hasNewline = YES;
+			line = [line substringToIndex:[line length]-1];
+		}
+		
+		if ([line hasSuffix:@"\r"])
+		{
+			line = [line substringToIndex:[line length]-1];
+		}
+	}
+	
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
+
+	// ingore leading whitespace characters for non PRE
+	if (!_specialLines[@(lineIndex)])
+	{
+		[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
+	}
 	
 	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
 	
@@ -262,7 +313,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			[self _pushTag:@"a" attributes:linkAttributes];
 			
 			// might contain further markdown/images
-			[self _processLine:enclosedString allowAutoDetection:NO];
+			[self _processLine:enclosedString withIndex:lineIndex allowAutoDetection:NO];
 			
 			[self _popTag];
 		}
@@ -311,9 +362,15 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			}
 		}
 	}
+	
+	if (needsBR)
+	{
+		[self _pushTag:@"br" attributes:nil];
+		[self _popTag];
+	}
 }
 
-- (NSUInteger)_indentationLevelForLine:(NSString *)line
+- (NSUInteger)_numberOfLeadingSpacesForLine:(NSString *)line
 {
 	NSUInteger spacesCount = 0;
 	
@@ -335,20 +392,64 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		}
 	}
 	
-	// found up to increments of 4
-	return (NSUInteger)floor((spacesCount/4.0));
+	return spacesCount;
 }
 
-
-- (void)_processListLine:(NSString *)line lineIndex:(NSUInteger)lineIndex
+- (BOOL)_shouldCloseListItemAfterLineAtIndex:(NSUInteger)lineIndex
 {
+	NSString *specialTypeOfFollowingLine = _specialLines[@(lineIndex+1)];
+
+	// following line is a sub list, indent does not matter because we deal with opening/closing separately
+	if (specialTypeOfFollowingLine == DTMarkdownParserSpecialSubList)
+	{
+		return NO;
+	}
+
+	// normal paragraph follows
+	if (!specialTypeOfFollowingLine && ![_ignoredLines containsIndex:lineIndex+1])
+	{
+		return NO;
+	}
+
+	return YES;
+}
+
+- (BOOL)_shouldAllowLineBreakAfterLineAtIndex:(NSUInteger)lineIndex
+{
+	NSRange lineRange = [_lineRanges[lineIndex] rangeValue];
+	NSRange paragraphRange = [self _rangeOfParagraphAtIndex:lineRange.location];
+	
+	BOOL lineIsLastInParagraph = (NSMaxRange(lineRange) == NSMaxRange(paragraphRange));
+	
+	if (lineIsLastInParagraph)
+	{
+		return NO;
+	}
+	
+	NSString *specialLineTypeOfFollowingLine = _specialLines[@(lineIndex+1)];
+	
+	if (![_ignoredLines containsIndex:lineIndex+1] && !specialLineTypeOfFollowingLine)
+	{
+		return YES;
+	}
+	
+	return NO;
+}
+
+- (void)_processListLineAtLineIndex:(NSUInteger)lineIndex
+{
+	NSRange lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
+	NSString *line = [_string substringWithRange:lineRange];
+	
 	NSString *prefix;
 	
 	NSString *specialTypeOfLine = _specialLines[@(lineIndex)];
-	NSString *specialTypeOfFollowingLine = _specialLines[@(lineIndex+1)];
 	
 	NSInteger previousLineIndent = lineIndex?[_lineIndentLevel[@(lineIndex-1)] integerValue]:0;
 	NSInteger currentLineIndent = [_lineIndentLevel[@(lineIndex)] integerValue];
+	
+	previousLineIndent = floor(previousLineIndent/4.0);
+	currentLineIndent = floor(currentLineIndent/4.0);
 	
 	if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
 	{
@@ -430,11 +531,28 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	
 	[self _pushTag:@"li" attributes:nil];
 	
-	// process line as normal without prefix
-	[self _processLine:line allowAutoDetection:YES];
+	BOOL hasHangingParagraphs = [self _hasHangingParagraphsForListItemBeginningAtLineIndex:lineIndex];
 	
-	if (specialTypeOfFollowingLine != DTMarkdownParserSpecialSubList)
+	if (hasHangingParagraphs)
 	{
+		[self _pushTag:@"p" attributes:nil];
+	}
+	
+	// process line as normal without prefix
+	[self _processLine:line withIndex:lineIndex allowAutoDetection:YES];
+	
+	if (hasHangingParagraphs)
+	{
+		return;
+	}
+	
+	if ([self _shouldCloseListItemAfterLineAtIndex:lineIndex])
+	{
+		if ([[self _currentTag] isEqualToString:@"p"])
+		{
+			[self _popTag];
+		}
+		
 		[self _popTag]; // li
 		
 		if ([_ignoredLines containsIndex:lineIndex+1])
@@ -450,6 +568,8 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	_specialLines = [NSMutableDictionary new];
 	_references = [NSMutableDictionary new];
 	_lineIndentLevel = [NSMutableDictionary new];
+	_lineRanges = [NSMutableArray new];
+	_paragraphRanges = [NSMutableArray new];
 	
 	NSScanner *scanner = [NSScanner scannerWithString:_string];
 	scanner.charactersToBeSkipped = nil;
@@ -457,16 +577,23 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	NSUInteger lineIndex = 0;
 	NSInteger previousLineIndent = 0;
 	
+	NSRange paragraphRange = NSMakeRange(0, 0);
+	
 	while (![scanner isAtEnd])
 	{
 		NSString *line;
 		
+		NSRange lineRange = NSMakeRange(scanner.scanLocation, 0);
+		
 		if ([scanner scanUpToString:@"\n" intoString:&line])
 		{
+			lineRange.length = scanner.scanLocation - lineRange.location;
+			paragraphRange = NSUnionRange(paragraphRange, lineRange);
+			
 			BOOL didFindSpecial = NO;
 			NSString *specialOfLineBefore = nil;
 			
-			NSInteger currentLineIndent = [self _indentationLevelForLine:line];
+			NSInteger currentLineIndent = [self _numberOfLeadingSpacesForLine:line];
 			_lineIndentLevel[@(lineIndex)] = @(currentLineIndent);
 			
 			if (lineIndex)
@@ -593,6 +720,16 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			
 			if (!didFindSpecial)
 			{
+				if ([line hasPrefix:@"#"])
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagHeading;
+					
+					didFindSpecial = YES;
+				}
+			}
+			
+			if (!didFindSpecial)
+			{
 				NSScanner *lineScanner = [NSScanner scannerWithString:line];
 				lineScanner.charactersToBeSkipped = nil;
 				
@@ -605,7 +742,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				else if (specialOfLineBefore == DTMarkdownParserSpecialList || specialOfLineBefore == DTMarkdownParserSpecialSubList)
 				{
 					// line before ist list start
-					if ((currentLineIndent>=previousLineIndent+1 && currentLineIndent<=previousLineIndent+2) || (currentLineIndent>=previousLineIndent-1 && currentLineIndent<=previousLineIndent))
+					if ((currentLineIndent>=previousLineIndent+4 && currentLineIndent<=previousLineIndent+8) || (currentLineIndent>=previousLineIndent-4 && currentLineIndent<=previousLineIndent))
 					{
 						NSString *indentedLine = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 						
@@ -632,10 +769,109 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		
 		if ([scanner scanString:@"\n" intoString:NULL])
 		{
-			lineIndex++;
+			lineRange.length++;
 		}
+		
+		paragraphRange = NSUnionRange(paragraphRange, lineRange);
+		
+		BOOL currentLineIsIgnored = [_ignoredLines containsIndex:lineIndex];
+		BOOL currentLineIsHR = _specialLines[@(lineIndex)] == DTMarkdownParserSpecialTagHR || _specialLines[@(lineIndex)] == DTMarkdownParserSpecialTagHeading;
+		BOOL currentLineBeginsList = (_specialLines[@(lineIndex)] == DTMarkdownParserSpecialList);
+
+		if (currentLineIsIgnored || [scanner isAtEnd] || currentLineIsHR || currentLineBeginsList)
+		{
+			NSRange netParagraphRange = paragraphRange;
+			
+			if (currentLineIsIgnored || currentLineIsHR || currentLineBeginsList)
+			{
+				netParagraphRange.length -= lineRange.length;
+			}
+
+			if (netParagraphRange.length)
+			{
+				[_paragraphRanges addObject:[NSValue valueWithRange:netParagraphRange]];
+			}
+
+			if (currentLineIsIgnored || currentLineIsHR)
+			{
+				[_paragraphRanges addObject:[NSValue valueWithRange:lineRange]];
+				paragraphRange = NSMakeRange(paragraphRange.location + paragraphRange.length, 0);
+			}
+			else
+			{
+				paragraphRange = lineRange;
+			}
+		}
+		
+		[_lineRanges addObject:[NSValue valueWithRange:lineRange]];
+		
+		lineIndex++;
 	}
 }
+
+
+- (NSRange)_rangeOfParagraphAtIndex:(NSUInteger)index
+{
+	for (NSValue *value in _paragraphRanges)
+	{
+		NSRange range = [value rangeValue];
+		
+		if (NSLocationInRange(index, range))
+		{
+			return range;
+		}
+	}
+	
+	return NSMakeRange(NSNotFound, 0);
+}
+
+- (NSRange)_rangeOfLineAtLineIndex:(NSUInteger)lineIndex
+{
+	NSValue *value = _lineRanges[lineIndex];
+	
+	return [value rangeValue];
+}
+
+
+- (BOOL)_hasHangingParagraphsForListItemBeginningAtLineIndex:(NSUInteger)lineIndex
+{
+	NSRange lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
+	NSUInteger numberOfLines = [_lineRanges count];
+	NSUInteger numberIgnored = 0;
+	
+	while (lineIndex<(numberOfLines-1))
+	{
+		lineIndex++;
+		
+		if ([_ignoredLines containsIndex:lineIndex])
+		{
+			numberIgnored ++;
+			continue;
+		}
+		
+		// only normal paragraphs can be hanging
+		if (_specialLines[@(lineIndex)])
+		{
+			return NO;
+		}
+		
+		lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
+		NSString *line = [_string substringWithRange:lineRange];
+		
+		NSUInteger leadingSpaces = [self _numberOfLeadingSpacesForLine:line];
+		
+		if (leadingSpaces>0 && numberIgnored>0)
+		{
+			return YES;
+		}
+		
+		return NO;
+	}
+	
+	return NO;
+}
+
+
 
 #pragma mark - Parsing
 
@@ -655,69 +891,54 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	
 	[self _findAndMarkSpecialLines];
 	
-	NSScanner *scanner = [NSScanner scannerWithString:_string];
-	scanner.charactersToBeSkipped = nil;
-	
-	NSUInteger lineIndex = 0;
-	
-	while (![scanner isAtEnd])
-	{
-		NSUInteger currentLineIndex = lineIndex;
+	// enumerate lines
+	[_lineRanges enumerateObjectsUsingBlock:^(NSValue *rangeValue, NSUInteger lineIndex, BOOL *stop) {
 		
-		NSString *line;
-		if ([scanner scanUpToString:@"\n" intoString:&line])
+		if ([_ignoredLines containsIndex:lineIndex])
 		{
+			return;
+		}
+		
+		NSRange lineRange = [rangeValue rangeValue];
+		NSRange paragraphRange = [self _rangeOfParagraphAtIndex:lineRange.location];
+		
+		if (lineRange.length)
+		{
+			NSString *line = [_string substringWithRange:lineRange];
+			
 			NSString *specialLine = _specialLines[@(lineIndex)];
 			NSString *specialFollowingLine = _specialLines[@(lineIndex+1)];
-			
-			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
 			BOOL followingLineIsIgnored = [_ignoredLines containsIndex:lineIndex+1];
+			BOOL lineIsLastInParagraph = NO;
 			
-			if ([line hasSuffix:@"\r"])
+			if (NSMaxRange(lineRange) == NSMaxRange(paragraphRange))
 			{
-				// cut off Windows \r
-				line = [line substringWithRange:NSMakeRange(0, [line length]-1)];
+				lineIsLastInParagraph = YES;
 			}
 			
-			BOOL hasNL = [scanner scanString:@"\n" intoString:NULL];
+			BOOL lineIsFirstInParagraph = NO;
 			
-			lineIndex++;
-			
-			BOOL hasTwoNL = NO;
-			if (hasNL)
+			if (lineRange.location == paragraphRange.location)
 			{
-				// Windows-style NL
-				hasTwoNL = [scanner scanString:@"\r\n" intoString:NULL];
-				
-				if (!hasTwoNL)
-				{
-					// Unix-style NL
-					hasTwoNL = [scanner scanString:@"\n" intoString:NULL];
-				}
+				lineIsFirstInParagraph = YES;
 			}
 			
-			
-			if (hasTwoNL)
-			{
-				lineIndex++;
-			}
-			
-			if (lineIsIgnored)
-			{
-				continue;
-			}
-			
-			BOOL needsBR = NO;
-			
-			BOOL needsPushTag = NO;
-			NSString *tag = nil;
+			BOOL needsPushTag = lineIsFirstInParagraph; // first line usually pushes new paragraph
+			NSString *tag = @"p";
 			NSUInteger headerLevel = 0;
 			
-			if (specialLine == DTMarkdownParserSpecialList || specialLine == DTMarkdownParserSpecialSubList)
+			if (specialLine == DTMarkdownParserSpecialTagHR)
 			{
-				[self _processListLine:line lineIndex:currentLineIndex];
+				[self _pushTag:@"hr" attributes:nil];
+				[self _popTag];
 				
-				continue;
+				return;
+			}
+			else if (specialLine == DTMarkdownParserSpecialList || specialLine == DTMarkdownParserSpecialSubList)
+			{
+				[self _processListLineAtLineIndex:lineIndex];
+				
+				return;
 			}
 			else if (specialLine == DTMarkdownParserSpecialTagPre || specialLine == DTMarkdownParserSpecialFencedPreCode)
 			{
@@ -746,20 +967,15 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					[self _pushTag:@"code" attributes:nil];
 				}
 				
-				if (hasNL)
-				{
-					codeLine = [codeLine stringByAppendingString:@"\n"];
-				}
-				
 				[self _reportCharacters:codeLine];
 				
-				if (hasTwoNL || specialFollowingLine == DTMarkdownParserSpecialFencedPreEnd)
+				if (lineIsLastInParagraph)
 				{
 					[self _popTag];
 					[self _popTag];
 				}
 				
-				continue;
+				return;
 			}
 			else  if ([line hasPrefix:@">"])
 			{
@@ -770,7 +986,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					needsPushTag = YES;
 				}
 			}
-			else if ([line hasPrefix:@"#"])
+			else if (specialLine == DTMarkdownParserSpecialTagHeading)
 			{
 				while ([line hasPrefix:@"#"])
 				{
@@ -786,7 +1002,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				}
 				
 				// trim off trailing hashes
-				while ([line hasSuffix:@"#"])
+				while ([line hasSuffix:@"#"] || [line hasSuffix:@"#\n"])
 				{
 					line = [line substringToIndex:[line length]-1];
 				}
@@ -797,12 +1013,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					line = [line substringToIndex:[line length]-1];
 				}
 			}
-			else
-			{
-				tag = @"p";
-			}
-			
-			BOOL shouldOutputLineText = YES;
 			
 			if (specialLine == DTMarkdownParserSpecialTagH1)
 			{
@@ -812,81 +1022,39 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			{
 				headerLevel = 2;
 			}
-			else if (specialLine == DTMarkdownParserSpecialTagHR)
-			{
-				tag = @"hr";
-				shouldOutputLineText = NO;
-			}
 			
 			if (headerLevel)
 			{
 				tag = [NSString stringWithFormat:@"h%d", (int)headerLevel];
 			}
 			
-			BOOL willCloseTag = (hasTwoNL || headerLevel || !shouldOutputLineText || followingLineIsIgnored || specialFollowingLine == DTMarkdownParserSpecialList || specialFollowingLine == DTMarkdownParserSpecialTagHR);
-			
-			// handle new lines
-			if (shouldOutputLineText && !hasTwoNL && ![scanner isAtEnd] && !headerLevel)
-			{
-				// not a paragraph break
-				
-				if (_options & DTMarkdownParserOptionGitHubLineBreaks)
-				{
-					needsBR = YES;
-				}
-				else
-				{
-					if ([line hasSuffix:@"  "])
-					{
-						// two spaces at end of line are "Gruber-style BR"
-						needsBR = YES;
-						
-						// trim off trailing spaces
-						while ([line hasSuffix:@" "])
-						{
-							line = [line substringToIndex:[line length]-1];
-						}
-					}
-					else if (!willCloseTag)
-					{
-						line = [line stringByAppendingString:@"\n"];
-					}
-				}
-			}
-			
-			if (![[self _currentTag] isEqualToString:tag])
-			{
-				needsPushTag = YES;
-			}
+			BOOL willCloseTag = (lineIsLastInParagraph || headerLevel || followingLineIsIgnored || specialFollowingLine == DTMarkdownParserSpecialList || specialFollowingLine == DTMarkdownParserSpecialTagHR);
 			
 			if (needsPushTag)
 			{
+				// if there is still an open p we need to go back far enough to close it
+				while ([_tagStack containsObject:@"p"])
+				{
+					[self _popTag];
+				}
+				
 				[self _pushTag:tag attributes:nil];
 			}
 			
-			if (shouldOutputLineText)
+			if ([tag isEqualToString:@"blockquote"])
 			{
-				if ([tag isEqualToString:@"blockquote"])
+				if ([line hasPrefix:@">"])
 				{
-					if ([line hasPrefix:@">"])
-					{
-						line = [line substringFromIndex:1];
-					}
-					
-					if ([line hasPrefix:@" "])
-					{
-						line = [line substringFromIndex:1];
-					}
+					line = [line substringFromIndex:1];
 				}
 				
-				[self _processLine:line allowAutoDetection:YES];
-				
-				if (needsBR)
+				if ([line hasPrefix:@" "])
 				{
-					[self _pushTag:@"br" attributes:nil];
-					[self _popTag];
+					line = [line substringFromIndex:1];
 				}
 			}
+			
+			[self _processLine:line withIndex:lineIndex allowAutoDetection:YES];
 			
 			if (willCloseTag)
 			{
@@ -894,13 +1062,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				[self _popTag];
 			}
 		}
-		else
-		{
-			// empty line
-			[scanner scanString:@"\n" intoString:NULL];
-			lineIndex++;
-		}
-	}
+	}];
 	
 	// pop all remaining open tags
 	while ([_tagStack count])

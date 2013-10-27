@@ -85,9 +85,4 @@ typedef NS_ENUM(NSUInteger, DTMarkdownParserOptions)
  */
 - (BOOL)parse;
 
-/**
- The data detector to use for autodetecting links. The default is configured to detect http, https and mailto links. You can set it to `nil` to disable auto-linking, replace it with a custom `NSRegularExpression` or with a differently configured `NSDataDetector`.
- */
-@property (nonatomic, strong) NSRegularExpression *dataDetector;
-
 @end

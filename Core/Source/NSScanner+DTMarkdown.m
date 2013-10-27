@@ -460,7 +460,7 @@
 	
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+		detector = [NSDataDetector dataDetectorWithTypes:(NSTextCheckingTypes)NSTextCheckingTypeLink error:NULL];
 	});
 	
 	if ([self scanString:@"<" intoString:NULL])
