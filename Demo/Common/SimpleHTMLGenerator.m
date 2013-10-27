@@ -13,7 +13,9 @@ NSString * const kHTMLHeaderFormat = @""
 "<!doctype html>\n"
 "<head>\n"
 "	<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
+
 /*"	<link rel=\"stylesheet\" type=\"text/css\" href=\"./Shared/style.css\" charset=\"utf-8\" media=\"all\">\n"*/
+
 "	<title>%1$@</title>\n"
 "</head>\n"
 "<body>\n";
