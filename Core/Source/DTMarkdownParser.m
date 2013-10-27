@@ -370,7 +370,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	}
 }
 
-- (NSUInteger)_indentationLevelForLine:(NSString *)line
+- (NSUInteger)_numberOfLeadingSpacesForLine:(NSString *)line
 {
 	NSUInteger spacesCount = 0;
 	
@@ -392,8 +392,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		}
 	}
 	
-	// found up to increments of 4
-	return (NSUInteger)floor((spacesCount/4.0));
+	return spacesCount;
 }
 
 - (BOOL)_shouldCloseListItemAfterLineAtIndex:(NSUInteger)lineIndex
@@ -448,6 +447,9 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	
 	NSInteger previousLineIndent = lineIndex?[_lineIndentLevel[@(lineIndex-1)] integerValue]:0;
 	NSInteger currentLineIndent = [_lineIndentLevel[@(lineIndex)] integerValue];
+	
+	previousLineIndent = floor(previousLineIndent/4.0);
+	currentLineIndent = floor(currentLineIndent/4.0);
 	
 	if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
 	{
@@ -591,7 +593,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			BOOL didFindSpecial = NO;
 			NSString *specialOfLineBefore = nil;
 			
-			NSInteger currentLineIndent = [self _indentationLevelForLine:line];
+			NSInteger currentLineIndent = [self _numberOfLeadingSpacesForLine:line];
 			_lineIndentLevel[@(lineIndex)] = @(currentLineIndent);
 			
 			if (lineIndex)
@@ -740,7 +742,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				else if (specialOfLineBefore == DTMarkdownParserSpecialList || specialOfLineBefore == DTMarkdownParserSpecialSubList)
 				{
 					// line before ist list start
-					if ((currentLineIndent>=previousLineIndent+1 && currentLineIndent<=previousLineIndent+2) || (currentLineIndent>=previousLineIndent-1 && currentLineIndent<=previousLineIndent))
+					if ((currentLineIndent>=previousLineIndent+4 && currentLineIndent<=previousLineIndent+8) || (currentLineIndent>=previousLineIndent-4 && currentLineIndent<=previousLineIndent))
 					{
 						NSString *indentedLine = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 						
@@ -856,7 +858,9 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
 		NSString *line = [_string substringWithRange:lineRange];
 		
-		if ([line hasPrefix:@" "] && numberIgnored>0)
+		NSUInteger leadingSpaces = [self _numberOfLeadingSpacesForLine:line];
+		
+		if (leadingSpaces>0 && numberIgnored>0)
 		{
 			return YES;
 		}
