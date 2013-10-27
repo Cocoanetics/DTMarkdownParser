@@ -135,6 +135,7 @@ NSString * const kHTMLFooter = @""
 	BOOL isSelfClosingTag = (_immediateOpeningTagName != nil) && [_immediateOpeningTagName isEqualToString:elementName];
 	
 	if (isSelfClosingTag) {
+		// Rewrite the previous tag to be self-closing.
 		NSUInteger lastCharacterIndex = _HTMLString.length - 1;
 		NSRange closingAngleBracketRange = NSMakeRange(lastCharacterIndex, 1);
 		[_HTMLString replaceCharactersInRange:closingAngleBracketRange
