@@ -740,6 +740,20 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testHangingOfParagraphReturningToNonHanging
+{
+	NSString *string = @"- one\n\n two\n\nnormal";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ul><li><p>one</p>\n<p>two</p>\n</li></ul><p>normal</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 
 #pragma mark - Horizontal Rule
 
@@ -1506,6 +1520,21 @@
 	
 	// no P around two/MUCH
 	NSString *expected = @"<ul><li>one<ul><li>two\nMUCH</li></ul></li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testStackedListsDashBug
+{
+	NSString *string = @"- zero\n    - one\n       - two";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	// no P around two/MUCH
+	NSString *expected = @"<ul><li>zero<ul><li>one<ul><li>two</li></ul></li></ul></li></ul>";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");

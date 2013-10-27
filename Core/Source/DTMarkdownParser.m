@@ -442,17 +442,28 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	NSString *prefix;
 	
 	NSString *specialTypeOfLine = _specialLines[@(lineIndex)];
+	BOOL needOpenNewListLevel = NO;
 	
-	NSInteger previousLineIndent = lineIndex?[_lineIndentLevel[@(lineIndex-1)] integerValue]:0;
-	NSInteger currentLineIndent = [_lineIndentLevel[@(lineIndex)] integerValue];
-	
-	previousLineIndent = floor(previousLineIndent/4.0);
-	currentLineIndent = floor(currentLineIndent/4.0);
+	NSUInteger currentLineIndent = 0;
+	NSUInteger previousLineIndent = 0;
 	
 	if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
 	{
 		// we know there is a list prefix, but we need to eliminate the indentation first
 		line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+		
+		NSUInteger prevousListItem = [self _lineIndexOfListItemBeforeLineIndex:lineIndex];
+		
+		currentLineIndent = [_lineIndentLevel[@(lineIndex)] integerValue];
+		previousLineIndent = [_lineIndentLevel[@(prevousListItem)] integerValue];
+		
+		if (currentLineIndent > previousLineIndent)
+		{
+			needOpenNewListLevel = YES;
+		}
+		
+		currentLineIndent = (NSUInteger)floor(currentLineIndent/4.0);
+		previousLineIndent = (NSUInteger)floor(previousLineIndent/4.0);
 	}
 	
 	NSScanner *scanner = [NSScanner scannerWithString:line];
@@ -468,22 +479,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	line = [line substringFromIndex:scanner.scanLocation];
 	
 	
-	BOOL needOpenNewListLevel = NO;
 	
 	if (specialTypeOfLine == DTMarkdownParserSpecialList)
 	{
 		if (![_tagStack containsObject:@"ul"] && ![_tagStack containsObject:@"ol"])
 		{
 			// first line of list opens only if no list present
-			needOpenNewListLevel = YES;
-		}
-	}
-	else if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
-	{
-		// sub list only opens one level
-		
-		if (currentLineIndent>previousLineIndent)
-		{
 			needOpenNewListLevel = YES;
 		}
 	}
@@ -732,14 +733,10 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				lineScanner.charactersToBeSkipped = nil;
 				
 				NSString *listPrefix;
-				if ([lineScanner scanMarkdownLineListPrefix:&listPrefix])
-				{
-					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialList;
-				}
-				else if (specialOfLineBefore == DTMarkdownParserSpecialList || specialOfLineBefore == DTMarkdownParserSpecialSubList)
+			 	if (specialOfLineBefore == DTMarkdownParserSpecialList || specialOfLineBefore == DTMarkdownParserSpecialSubList)
 				{
 					// line before ist list start
-					if ((currentLineIndent>=previousLineIndent+4 && currentLineIndent<=previousLineIndent+8) || (currentLineIndent>=previousLineIndent-4 && currentLineIndent<=previousLineIndent))
+					if ([self _isSubListAtLineIndex:lineIndex])
 					{
 						NSString *indentedLine = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 						
@@ -751,6 +748,10 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 							_specialLines[@(lineIndex)] = DTMarkdownParserSpecialSubList;
 						}
 					}
+				}
+				else if ([lineScanner scanMarkdownLineListPrefix:&listPrefix])
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialList;
 				}
 			}
 			
@@ -867,6 +868,99 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	return NO;
 }
 
+
+- (NSUInteger)_lineIndexOfListItemBeforeLineIndex:(NSUInteger)lineIndex
+{
+	BOOL foundPreviousListItem = NO;
+	
+	while (lineIndex>0)
+	{
+		lineIndex--;
+		
+		NSString *lineSpecial = _specialLines[@(lineIndex)];
+		
+		if (lineSpecial == DTMarkdownParserSpecialSubList || lineSpecial == DTMarkdownParserSpecialList)
+		{
+			foundPreviousListItem = YES;
+			break;
+		}
+	}
+	
+	NSAssert(foundPreviousListItem, @"Error, you called %s without there being a previous list item", __PRETTY_FUNCTION__);
+	
+	return lineIndex;
+}
+
+
+- (BOOL)_isSubListAtLineIndex:(NSUInteger)lineIndex
+{
+	NSString *lineSpecial = _specialLines[@(lineIndex)];
+	
+	NSInteger indexOfListStartLine = lineIndex;
+	
+	while (indexOfListStartLine>0)
+	{
+		indexOfListStartLine--;
+		
+		lineSpecial = _specialLines[@(indexOfListStartLine)];
+		
+		if (lineSpecial == DTMarkdownParserSpecialList)
+		{
+			break;
+		}
+	}
+
+	NSAssert(indexOfListStartLine >= 0, @"Missing list start for sub list");
+	
+	NSInteger indexOfPreviousSubList = lineIndex;
+	BOOL hasPreviousSubList = NO;
+	
+	while (indexOfPreviousSubList>0)
+	{
+		indexOfPreviousSubList--;
+		
+		lineSpecial = _specialLines[@(indexOfPreviousSubList)];
+		
+		if (lineSpecial == DTMarkdownParserSpecialSubList)
+		{
+			hasPreviousSubList = YES;
+			break;
+		}
+	}
+	
+	NSUInteger spacesLine = [_lineIndentLevel[@(lineIndex)] integerValue];
+
+	// direct line after list start
+	if (!hasPreviousSubList)
+	{
+		if (spacesLine<=7)
+		{
+			return YES;
+		}
+	}
+	else
+	{
+		NSUInteger spacesLineBefore = [_lineIndentLevel[@(indexOfPreviousSubList)] integerValue];
+		
+		NSUInteger listLevelBefore = (NSUInteger)ceil(spacesLineBefore/4.0);
+		NSUInteger listLevel = (NSUInteger)ceil(spacesLine/4.0);
+		
+		if (listLevel>listLevelBefore)
+		{
+			if (listLevel-listLevelBefore<=1)
+			{
+				return YES;
+			}
+		}
+		else
+		{
+			// less indentation always allowed
+			return YES;
+		}
+	}
+	
+	return NO;
+}
 
 
 #pragma mark - Parsing
@@ -1028,6 +1122,15 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			
 			if (needsPushTag)
 			{
+				if ([_lineIndentLevel[@(lineIndex)] integerValue]==0)
+				{
+					// non-indented line needs to close previous list
+					while ([_tagStack containsObject:@"ul"] || [_tagStack containsObject:@"ol"])
+					{
+						[self _popTag];
+					}
+				}
+				
 				// if there is still an open p we need to go back far enough to close it
 				while ([_tagStack containsObject:@"p"])
 				{
