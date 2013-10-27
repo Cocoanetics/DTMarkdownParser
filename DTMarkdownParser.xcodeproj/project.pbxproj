@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D285247181A9D3E000C44EC /* DTMDistributionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */; };
+		3D4308411819754500B8C024 /* SimpleHTMLGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */; };
+		3DD93598181805DA0010AA87 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DD93597181805DA0010AA87 /* WebKit.framework */; };
+		3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */; };
+		3DFFAE7118184C1A00EE245D /* TagTreeOutlineController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */; };
+		3DFFAE7218184C7E00EE245D /* SimpleTreeGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */; };
+		3DFFAE731818577C00EE245D /* DTMarkdownParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
 		A7248B09181BC5E90021A209 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF250B18112A3B0013D8D7 /* Foundation.framework */; };
 		A7248B0B181BC5E90021A209 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7248B0A181BC5E90021A209 /* CoreGraphics.framework */; };
 		A7248B0C181BC5E90021A209 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7870C401817F6C000E39311 /* UIKit.framework */; };
@@ -657,6 +664,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3D285245181A9D3D000C44EC /* DTMDistributionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTMDistributionDelegate.h; sourceTree = "<group>"; };
+		3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMDistributionDelegate.m; sourceTree = "<group>"; };
+		3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHTMLGenerator.m; sourceTree = "<group>"; };
+		3D4308401819754500B8C024 /* SimpleHTMLGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHTMLGenerator.h; sourceTree = "<group>"; };
+		3DD93597181805DA0010AA87 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleTreeGenerator.h; sourceTree = "<group>"; };
+		3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleTreeGenerator.m; sourceTree = "<group>"; };
+		3DFFAE6F18184C1A00EE245D /* TagTreeOutlineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagTreeOutlineController.h; sourceTree = "<group>"; };
+		3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagTreeOutlineController.m; sourceTree = "<group>"; };
 		A7248AFE181BC5D50021A209 /* BundleLoaderDummy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BundleLoaderDummy-Info.plist"; sourceTree = "<group>"; };
 		A7248AFF181BC5D50021A209 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A7248B08181BC5E90021A209 /* BundleLoaderDummy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BundleLoaderDummy.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1005,7 +1021,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DD93598181805DA0010AA87 /* WebKit.framework in Frameworks */,
 				A7870D8A1817FDEC00E39311 /* Cocoa.framework in Frameworks */,
+				3DFFAE731818577C00EE245D /* DTMarkdownParser.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1030,6 +1048,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3DD93599181805F70010AA87 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3DD93597181805DA0010AA87 /* WebKit.framework */,
+			);
+			name = Frameworks;
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		3DFFAE6E18183AFD00EE245D /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				3D285245181A9D3D000C44EC /* DTMDistributionDelegate.h */,
+				3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */,
+				3D4308401819754500B8C024 /* SimpleHTMLGenerator.h */,
+				3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */,
+				3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */,
+				3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		A7248AFD181BC5D50021A209 /* BundleLoaderDummy */ = {
 			isa = PBXGroup;
 			children = (
@@ -1053,6 +1093,7 @@
 			isa = PBXGroup;
 			children = (
 				A7870DC01817FE4900E39311 /* Mac */,
+				3DFFAE6E18183AFD00EE245D /* Common */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -1064,6 +1105,7 @@
 				A7870DC71817FEC900E39311 /* Demo-Prefix.pch */,
 				A7870DC11817FE7F00E39311 /* Resources */,
 				A7870DC21817FE7F00E39311 /* Source */,
+				3DD93599181805F70010AA87 /* Frameworks */,
 			);
 			path = Mac;
 			sourceTree = "<group>";
@@ -1084,6 +1126,8 @@
 				A7870DC31817FE8D00E39311 /* Document.h */,
 				A7870DC41817FE8D00E39311 /* Document.m */,
 				A7870DC81817FED400E39311 /* main.m */,
+				3DFFAE6F18184C1A00EE245D /* TagTreeOutlineController.h */,
+				3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1502,6 +1546,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */,
 				A7BF26001811385A0013D8D7 /* DTMarkdownParser.h in Headers */,
 				A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */,
 			);
@@ -2301,6 +2346,10 @@
 			files = (
 				A7870DC51817FE8D00E39311 /* Document.m in Sources */,
 				A7870DC91817FED400E39311 /* main.m in Sources */,
+				3D4308411819754500B8C024 /* SimpleHTMLGenerator.m in Sources */,
+				3DFFAE7218184C7E00EE245D /* SimpleTreeGenerator.m in Sources */,
+				3D285247181A9D3E000C44EC /* DTMDistributionDelegate.m in Sources */,
+				3DFFAE7118184C1A00EE245D /* TagTreeOutlineController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2557,7 +2606,6 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2571,7 +2619,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2585,7 +2632,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
