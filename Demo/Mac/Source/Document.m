@@ -181,4 +181,10 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	[self parseMarkdown];
 }
 
+- (IBAction)changePreviewTabIndex:(id)sender;
+{
+	NSMenuItem *menuItem = sender;
+	self.selectedPreviewTabIndex = menuItem.tag;
+}
+
 @end

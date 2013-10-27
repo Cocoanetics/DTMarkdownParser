@@ -42,21 +42,27 @@
 - (void)parser:(DTMarkdownParser *)parser didStartElement:(NSString *)elementName attributes:(NSDictionary *)attributeDict;
 {
 	[_subDelegates enumerateObjectsUsingBlock:^(id <DTMarkdownParserDelegate>aDelegate, NSUInteger idx, BOOL *stop) {
-		[aDelegate parser:parser didStartElement:elementName attributes:attributeDict];
+		if (elementName != nil) {
+			[aDelegate parser:parser didStartElement:elementName attributes:attributeDict];
+		}
 	}];
 }
 
 - (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
 {
 	[_subDelegates enumerateObjectsUsingBlock:^(id <DTMarkdownParserDelegate>aDelegate, NSUInteger idx, BOOL *stop) {
-		[aDelegate parser:parser foundCharacters:string];
+		if (string != nil) {
+			[aDelegate parser:parser foundCharacters:string];
+		}
 	}];
 }
 
 - (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
 {
 	[_subDelegates enumerateObjectsUsingBlock:^(id <DTMarkdownParserDelegate>aDelegate, NSUInteger idx, BOOL *stop) {
-		[aDelegate parser:parser didEndElement:elementName];
+		if (elementName != nil) {
+			[aDelegate parser:parser didEndElement:elementName];
+		}
 	}];
 }
 

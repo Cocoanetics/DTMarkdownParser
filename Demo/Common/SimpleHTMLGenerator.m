@@ -13,7 +13,13 @@ NSString * const kHTMLHeaderFormat = @""
 "<!doctype html>\n"
 "<head>\n"
 "	<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
+
 /*"	<link rel=\"stylesheet\" type=\"text/css\" href=\"./Shared/style.css\" charset=\"utf-8\" media=\"all\">\n"*/
+
+"	<style type=\"text/css\">\n"
+"	pre, code { background-color: #eee; font-family: Menlo, monospace; }\n"
+"	</style>\n"
+
 "	<title>%1$@</title>\n"
 "</head>\n"
 "<body>\n";
@@ -118,7 +124,11 @@ NSString * const kHTMLFooter = @""
 
 - (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
 {
-	NSMutableString *elementTag = [NSMutableString stringWithFormat:@"</%@>", elementName];
+	NSMutableString *elementTag = [NSMutableString string];
+	[elementTag appendString:@"</"];
+	[elementTag appendString:elementName];
+	[elementTag appendString:@">"];
+	
 	if (_verbose)  NSLog(@"%@", elementTag);
 	
 	BOOL isSelfClosingTag = (_immediateOpeningTagName != nil) && [_immediateOpeningTagName isEqualToString:elementName];
@@ -131,7 +141,7 @@ NSString * const kHTMLFooter = @""
 	}
 	else {
 		if ([[[self class] blockLevelElements] containsObject:elementName]) {
-			[elementTag appendString:@"\n"];
+			[elementTag appendString:@"\n\n"];
 		}
 		
 		[_HTMLString appendString:elementTag];
