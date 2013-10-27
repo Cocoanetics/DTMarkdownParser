@@ -1357,6 +1357,22 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+// issue 10
+- (void)testMultipleBackticks
+{
+	NSString *string = @"    ``` multiple quotes ```";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<pre><code>``` multiple quotes ```</code></pre>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 #pragma mark - Lists (1 Level)
 
 - (void)testSimpleList
