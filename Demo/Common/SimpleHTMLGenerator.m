@@ -92,23 +92,29 @@ NSString * const kHTMLFooter = @""
 
 - (void)parser:(DTMarkdownParser *)parser didStartElement:(NSString *)elementName attributes:(NSDictionary *)attributeDict;
 {
-	NSMutableString *elementTag = [NSMutableString string];
-	[elementTag appendString:@"<"];
-	[elementTag appendString:elementName];
+	NSUInteger tagStartIndex;
+	
+	if (_verbose)  tagStartIndex = _HTMLString.length;
+
+	[_HTMLString appendString:@"<"];
+	[_HTMLString appendString:elementName];
 
 	[attributeDict enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, NSString *attribute, BOOL *stop) {
-		[elementTag appendString:@" "];
-		[elementTag appendString:attributeName];
-		[elementTag appendString:@"=\""];
-		[elementTag appendString:attribute];
-		[elementTag appendString:@"\""];
+		[_HTMLString appendString:@" "];
+		[_HTMLString appendString:attributeName];
+		[_HTMLString appendString:@"=\""];
+		[_HTMLString appendString:attribute];
+		[_HTMLString appendString:@"\""];
 	}];
 	
-	[elementTag appendString:@">"];
+	[_HTMLString appendString:@">"];
 	
-	if (_verbose)  NSLog(@"%@", elementTag);
-	
-	[_HTMLString appendString:elementTag];
+	if (_verbose) {
+		NSUInteger tagEndIndex = _HTMLString.length;
+		NSRange tagRange = NSMakeRange(tagStartIndex, (tagEndIndex - tagStartIndex));
+		NSString *elementTag = [_HTMLString substringWithRange:tagRange];
+		NSLog(@"%@", elementTag);
+	}
 	
 	_immediateOpeningTagName = elementName;
 }
@@ -124,12 +130,7 @@ NSString * const kHTMLFooter = @""
 
 - (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
 {
-	NSMutableString *elementTag = [NSMutableString string];
-	[elementTag appendString:@"</"];
-	[elementTag appendString:elementName];
-	[elementTag appendString:@">"];
-	
-	if (_verbose)  NSLog(@"%@", elementTag);
+	if (_verbose)  NSLog(@"</%@>", elementName);
 	
 	BOOL isSelfClosingTag = (_immediateOpeningTagName != nil) && [_immediateOpeningTagName isEqualToString:elementName];
 	
@@ -140,11 +141,13 @@ NSString * const kHTMLFooter = @""
 								   withString:@" />"];
 	}
 	else {
-		if ([[[self class] blockLevelElements] containsObject:elementName]) {
-			[elementTag appendString:@"\n\n"];
-		}
+		[_HTMLString appendString:@"</"];
+		[_HTMLString appendString:elementName];
+		[_HTMLString appendString:@">"];
 		
-		[_HTMLString appendString:elementTag];
+		if ([[[self class] blockLevelElements] containsObject:elementName]) {
+			[_HTMLString appendString:@"\n\n"];
+		}
 	}
 }
 
