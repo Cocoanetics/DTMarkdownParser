@@ -1589,7 +1589,7 @@
 
 - (void)testListWithSubItemHavingLessSpacesThanHead
 {
-	NSString *string = @"   1. one\n       - two\n	 - three";
+	NSString *string = @"   1. one\n       - two\n - three";
 	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
