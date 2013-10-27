@@ -712,6 +712,35 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testHangingOnListOneBROneNL
+{
+	NSString *string = @"- one  \ntwo\nthree";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ul><li>one<br />two\nthree</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testHangingOfParagraphOnOneLevelList
+{
+	NSString *string = @"- one\n\n two";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ul><li><p>one</p>\n<p>two</p>\n</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+
 #pragma mark - Horizontal Rule
 
 - (void)testHorizontalRule
@@ -1247,7 +1276,9 @@
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
 	
-	NSString *expected = @"<p>Normal text\n    10 print &quot;Hello World&quot;\n    20 goto 10</p>\n";
+	NSString *expected = @"<p>Normal text\n10 print &quot;Hello World&quot;\n20 goto 10</p>\n";
+	
+//<p>Normal text\n    10 print &quot;Hello World&quot;\n    20 goto 10</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");

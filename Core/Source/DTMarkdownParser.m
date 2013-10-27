@@ -266,6 +266,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
+
+	// ingore leading whitespace characters for non PRE
+	if (!_specialLines[@(lineIndex)])
+	{
+		[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
+	}
 	
 	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
 	
@@ -433,8 +439,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 
 - (void)_processListLineAtLineIndex:(NSUInteger)lineIndex
 {
-	NSValue *value = _lineRanges[lineIndex];
-	NSRange lineRange = [value rangeValue];
+	NSRange lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
 	NSString *line = [_string substringWithRange:lineRange];
 	
 	NSString *prefix;
@@ -524,12 +529,28 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	
 	[self _pushTag:@"li" attributes:nil];
 	
+	BOOL hasHangingParagraphs = [self _hasHangingParagraphsForListItemBeginningAtLineIndex:lineIndex];
+	
+	if (hasHangingParagraphs)
+	{
+		[self _pushTag:@"p" attributes:nil];
+	}
 	
 	// process line as normal without prefix
 	[self _processLine:line withIndex:lineIndex allowAutoDetection:YES];
 	
+	if (hasHangingParagraphs)
+	{
+		return;
+	}
+	
 	if ([self _shouldCloseListItemAfterLineAtIndex:lineIndex])
 	{
+		if ([[self _currentTag] isEqualToString:@"p"])
+		{
+			[self _popTag];
+		}
+		
 		[self _popTag]; // li
 		
 		if ([_ignoredLines containsIndex:lineIndex+1])
@@ -802,6 +823,50 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	return NSMakeRange(NSNotFound, 0);
 }
 
+- (NSRange)_rangeOfLineAtLineIndex:(NSUInteger)lineIndex
+{
+	NSValue *value = _lineRanges[lineIndex];
+	
+	return [value rangeValue];
+}
+
+
+- (BOOL)_hasHangingParagraphsForListItemBeginningAtLineIndex:(NSUInteger)lineIndex
+{
+	NSRange lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
+	NSUInteger numberOfLines = [_lineRanges count];
+	
+	while (lineIndex<(numberOfLines-1))
+	{
+		lineIndex++;
+		
+		if ([_ignoredLines containsIndex:lineIndex])
+		{
+			continue;
+		}
+		
+		// only normal paragraphs can be hanging
+		if (_specialLines[@(lineIndex)])
+		{
+			return NO;
+		}
+		
+		lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
+		NSString *line = [_string substringWithRange:lineRange];
+		
+		if ([line hasPrefix:@" "])
+		{
+			return YES;
+		}
+		
+		return NO;
+	}
+	
+	return NO;
+}
+
+
+
 #pragma mark - Parsing
 
 - (BOOL)parse
@@ -961,6 +1026,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			
 			if (needsPushTag)
 			{
+				// if there is still an open p we need to go back far enough to close it
+				while ([_tagStack containsObject:@"p"])
+				{
+					[self _popTag];
+				}
+				
 				[self _pushTag:tag attributes:nil];
 			}
 			
