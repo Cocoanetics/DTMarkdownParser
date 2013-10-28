@@ -249,6 +249,11 @@
 	STAssertTrue(result, @"Parser should return YES");
 
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown");
+	
+	NSString *expected = @"<p>Hello Markdown</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testMultipleLines
@@ -262,6 +267,11 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown\n");
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A second line\n");
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A third line");
+	
+	NSString *expected = @"<p>Hello Markdown\nA second line\nA third line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testParagraphBeginEnd
@@ -278,7 +288,21 @@
 
 #pragma mark - Block Quotes
 
-- (void)testBlockquote
+- (void)testBlockquoteSingleLine
+{
+	NSString *string = @"> A Quote\n";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<blockquote><p>A Quote</p>\n</blockquote>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testBlockquoteMultiLine
 {
 	NSString *string = @"> A Quote\n> With multiple lines\n";
 	DTMarkdownParser *parser = [self _parserForString:string options:0];
@@ -296,15 +320,15 @@
 	
 	// there should be only a single tag even though there are two \n
 	NSArray *tagStarts = [_recorder invocationsMatchingSelector:@selector(parser:didStartElement:attributes:)];
-	STAssertTrue([tagStarts count] == 1, @"There should be one tag start");
+	STAssertTrue([tagStarts count] == 2, @"There should two tag starts, p and blockquote");
 	
 	NSArray *tagEnds = [_recorder invocationsMatchingSelector:@selector(parser:didEndElement:)];
-	STAssertTrue([tagEnds count] == 1, @"There should be one tag end");
+	STAssertTrue([tagEnds count] == 2, @"There should be two tag ends, p and blockquote");
 	
-//	NSString *expected = @"<blockquote><p>A Quote\nWith multiple lines</p>\n</blockquote>\n";
-//	NSString *actual = [self _HTMLFromInvocations];
-//	
-//	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+	NSString *expected = @"<blockquote><p>A Quote\nWith multiple lines</p>\n</blockquote>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 /*

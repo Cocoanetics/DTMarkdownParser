@@ -606,4 +606,64 @@
 	return YES;
 }
 
+- (BOOL)scanMarkdownTextBetweenFormatMarkers:(NSString **)text outermostMarker:(NSString **)outermostMarker
+{
+	NSUInteger startPos = self.scanLocation;
+	
+	NSString *marker;
+	
+	if (![self scanMarkdownBeginMarker:&marker])
+	{
+		return NO;
+	}
+	
+	NSString *enclosedPart;
+		
+	if (![self scanUpToString:marker intoString:&enclosedPart])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// there has to be a closing marker as well
+	if (![self scanString:marker intoString:NULL])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// enclosed part cannot begin with whitespace
+	if ([[NSCharacterSet whitespaceAndNewlineCharacterSet] characterIsMember:[enclosedPart characterAtIndex:0]])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// enclosed part cannot end with whitespace
+	if ([[NSCharacterSet whitespaceAndNewlineCharacterSet] characterIsMember:[enclosedPart characterAtIndex:[enclosedPart length]-1]])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// enclosed part cannot contain a newline
+	if ([enclosedPart rangeOfString:@"\n"].location != NSNotFound)
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	if (text)
+	{
+		*text = enclosedPart;
+	}
+	
+	if (outermostMarker)
+	{
+		*outermostMarker = marker;
+	}
+	
+	return YES;
+}
+
 @end

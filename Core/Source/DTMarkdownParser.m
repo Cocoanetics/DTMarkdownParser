@@ -70,6 +70,22 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 
 #pragma mark - Communication with Delegate
 
+- (void)_reportBeginOfDocument
+{
+	if (_delegateFlags.supportsStartDocument)
+	{
+		[_delegate parserDidStartDocument:self];
+	}
+}
+
+- (void)_reportEndOfDocument
+{
+	if (_delegateFlags.supportsEndDocument)
+	{
+		[_delegate parserDidEndDocument:self];
+	}
+}
+
 - (void)_reportBeginOfTag:(NSString *)tag attributes:(NSDictionary *)attributes
 {
 	if (_delegateFlags.supportsStartTag)
@@ -913,6 +929,42 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	return lineIndex;
 }
 
+- (NSInteger)_lineIndexContainingIndex:(NSUInteger)index
+{
+	NSUInteger lineIndex = 0;
+	for (NSValue *value in _lineRanges)
+	{
+		NSRange range = [value rangeValue];
+		
+		if (NSLocationInRange(index, range))
+		{
+			return lineIndex;
+		}
+		
+		lineIndex++;
+	}
+	
+	return NSNotFound;
+}
+
+- (NSRange)_lineRangeContainingIndex:(NSUInteger)index
+{
+	NSUInteger lineIndex = 0;
+	for (NSValue *value in _lineRanges)
+	{
+		NSRange range = [value rangeValue];
+		
+		if (NSLocationInRange(index, range))
+		{
+			return range;
+		}
+		
+		lineIndex++;
+	}
+	
+	return NSMakeRange(NSNotFound, 0);
+}
+
 - (BOOL)_isSubListAtLineIndex:(NSUInteger)lineIndex
 {
 	NSString *lineSpecial = _specialLines[@(lineIndex)];
@@ -1044,7 +1096,237 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 
 #pragma mark - Parsing
 
+// text without format markers
+- (void)_handleText:(NSString *)text inRange:(NSRange)range
+{
+	if (![_tagStack containsObject:@"p"])
+	{
+		[self _pushTag:@"p" attributes:nil];
+	}
+	
+	[self _reportCharacters:text];
+}
+
+- (void)_handleTextAtBeginningOfLine:(NSString *)text inRange:(NSRange)range
+{
+	if ([text hasPrefix:@">"])
+	{
+		NSRange blockQuotePrefixRange = NSMakeRange(range.location, 1);
+		range.location++;
+		range.length--;
+		
+		// blockquote
+		text = [text substringFromIndex:1];
+		
+		if ([text hasPrefix:@" "])
+		{
+			text = [text substringFromIndex:1];
+			blockQuotePrefixRange.length++;
+			range.location++;
+			range.length--;
+		}
+		
+		if (![_tagStack containsObject:@"blockquote"])
+		{
+			[self _handleBlockquoteStartInRange:blockQuotePrefixRange];
+		}
+	}
+	
+	[self _handleText:text inRange:range];
+}
+
+// text enclosed in formatting markers
+- (void)_handleMarkedText:(NSString *)markedText marker:(NSString *)marker inRange:(NSRange)range
+{
+	[self _processMarkedString:markedText insideMarker:marker];
+}
+
+// image
+- (void)_handleImageAttributes:(NSDictionary *)attributes inRange:(NSRange)range
+{
+	[self _pushTag:@"img" attributes:attributes];
+	[self _popTag];
+}
+
+// hyperlink
+- (void)_handleLinkText:(NSString *)linkText attributes:(NSDictionary *)attributes inRange:(NSRange)range
+{
+	[self _pushTag:@"a" attributes:attributes];
+	
+	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	
+	// might contain further markdown/images
+	[self _processLine:linkText withIndex:lineIndex allowAutoDetection:NO];
+	
+	[self _popTag];
+}
+
+// line break
+- (void)_handleLineBreakinRange:(NSRange)range
+{
+	[self _pushTag:@"br" attributes:nil];
+	[self _popTag];
+}
+
+- (void)_handleBlockquoteStartInRange:(NSRange)range
+{
+	[self _pushTag:@"blockquote" attributes:nil];
+}
+
+- (void)_parseLoop
+{
+	[self _findAndMarkSpecialLines];
+	
+	_tagStack = [NSMutableArray new];
+
+	NSScanner *scanner = [NSScanner scannerWithString:_string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<\n"];
+
+	NSUInteger positionBeforeScan;
+	
+	while (![scanner isAtEnd])
+	{
+		NSString *partWithoutSpecialChars;
+		positionBeforeScan = scanner.scanLocation;
+		NSRange lineBreakRange = NSMakeRange(scanner.scanLocation, 0);
+		
+		NSRange lineRange = [self _lineRangeContainingIndex:positionBeforeScan];
+		BOOL isAtBeginningOfLine = (lineRange.location == positionBeforeScan);
+		
+		NSRange paragraphRange = [self _rangeOfParagraphAtIndex:positionBeforeScan];
+		BOOL isAtEndOfParagraph = (NSMaxRange(lineRange) == NSMaxRange(paragraphRange));
+		
+		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&partWithoutSpecialChars])
+		{
+			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
+
+			lineBreakRange.location = scanner.scanLocation;
+			
+			if ([scanner scanString:@"\n" intoString:NULL])
+			{
+				// part has newline
+				if (_options && DTMarkdownParserOptionGitHubLineBreaks)
+				{
+					lineBreakRange.length = 1;
+				}
+				else
+				{
+					if ([partWithoutSpecialChars hasSuffix:@"  "])
+					{
+						partWithoutSpecialChars = [partWithoutSpecialChars substringToIndex:[partWithoutSpecialChars length]-2];
+						
+						// range includes the two spaces
+						lineBreakRange.location = scanner.scanLocation-3;
+						lineBreakRange.length = 3;
+					}
+					else
+					{
+						if (!isAtEndOfParagraph)
+						{
+							// just extend range to include \n
+							range.length++;
+							partWithoutSpecialChars = [partWithoutSpecialChars stringByAppendingString:@"\n"];
+						}
+					}
+				}
+			}
+			
+			if (isAtBeginningOfLine)
+			{
+				[self _handleTextAtBeginningOfLine:partWithoutSpecialChars inRange:range];
+			}
+			else
+			{
+				[self _handleText:partWithoutSpecialChars inRange:range];
+			}
+			
+			if (lineBreakRange.length)
+			{
+				[self _handleLineBreakinRange:lineBreakRange];
+			}
+			
+			continue;
+		}
+		
+		if ([scanner isAtEnd])
+		{
+			break;
+		}
+		
+		if ([scanner scanString:@"\n" intoString:NULL])
+		{
+			// end of line
+			continue;
+		}
+		
+		NSDictionary *linkAttributes;
+		NSString *enclosedString;
+		positionBeforeScan = scanner.scanLocation;
+
+		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
+		{
+			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
+			[self _handleImageAttributes:linkAttributes inRange:range];
+			
+			continue;
+		}
+		
+		if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
+		{
+			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
+			[self _handleLinkText:enclosedString attributes:linkAttributes inRange:range];
+
+			continue;
+		}
+		
+		NSString *effectiveOpeningMarker;
+		
+		if ([scanner scanMarkdownTextBetweenFormatMarkers:&enclosedString outermostMarker:&effectiveOpeningMarker])
+		{
+			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
+			[self _handleMarkedText:enclosedString marker:effectiveOpeningMarker inRange:range];
+
+			continue;
+		}
+		
+		// single special character, just output
+		NSRange range = NSMakeRange(scanner.scanLocation, 1);
+		NSString *specialChar = [scanner.string substringWithRange:NSMakeRange(scanner.scanLocation, 1)];
+		scanner.scanLocation ++;
+
+		[self _handleText:specialChar inRange:range];
+		
+		continue;
+	}
+	
+	// pop all remaining open tags
+	while ([_tagStack count])
+	{
+		[self _popTag];
+	}
+}
+
 - (BOOL)parse
+{
+	if (![_string length])
+	{
+		return NO;
+	}
+	
+	[self _reportBeginOfDocument];
+
+	[self _parseLoop];
+	
+	[self _reportEndOfDocument];
+	
+	return YES;
+}
+
+
+
+- (BOOL)parse2
 {
 	if (![_string length])
 	{
