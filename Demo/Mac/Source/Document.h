@@ -12,6 +12,8 @@
 
 @property (assign) NSInteger selectedPreviewTabIndex;
 
+@property (assign) BOOL gitHubMode;
+
 - (IBAction)changePreviewTabIndex:(id)sender;
 
 @end

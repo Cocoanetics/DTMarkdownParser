@@ -215,6 +215,22 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="1171B2F0-8F21-4553-83C9-C0040022E302" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="5OL-Z7-d8f">
                 <allowedToolbarItems>
+                    <toolbarItem implicitItemIdentifier="4B321B47-8485-483C-A675-0618C3E23792" label="Mode" paletteLabel="Mode" id="ENq-t2-FhE">
+                        <nil key="toolTip"/>
+                        <size key="minSize" width="80" height="28"/>
+                        <size key="maxSize" width="80" height="28"/>
+                        <button key="view" verticalHuggingPriority="750" id="i34-m2-RBb">
+                            <rect key="frame" x="0.0" y="14" width="80" height="28"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" title="GitHub" bezelStyle="texturedRounded" alignment="center" borderStyle="border" inset="2" id="AI2-Rq-lfJ">
+                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                <font key="font" metaFont="system"/>
+                                <connections>
+                                    <binding destination="-2" name="value" keyPath="gitHubMode" id="2a9-J1-aVS"/>
+                                </connections>
+                            </buttonCell>
+                        </button>
+                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="14B1CC4D-CF99-4594-A295-115135FE75CD" label="Preview" paletteLabel="Preview" id="5hw-mN-UQV">
                         <nil key="toolTip"/>
                         <size key="minSize" width="98" height="25"/>
@@ -241,6 +257,7 @@
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="rg5-eZ-jtZ"/>
+                    <toolbarItem reference="ENq-t2-FhE"/>
                     <toolbarItem reference="rg5-eZ-jtZ"/>
                     <toolbarItem reference="rg5-eZ-jtZ"/>
                     <toolbarItem reference="rg5-eZ-jtZ"/>

@@ -36,6 +36,8 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	DTMDistributionDelegate *	_distributionDelegate;
 	SimpleTreeGenerator *		_treeGenerator;
 	SimpleHTMLGenerator *		_HTMLGenerator;
+	
+	BOOL					_gitHubMode;
 }
 
 
@@ -52,6 +54,8 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 		_markdownText = [[NSTextStorage alloc] init];
 
 		_HTMLText = [[NSTextStorage alloc] init];
+
+		_gitHubMode = YES;
 	}
 	
     return self;
@@ -145,7 +149,7 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	}
 	
 	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:markdownString
-																options:DTMarkdownParserOptionGitHubLineBreaks];
+																options:_gitHubMode ? DTMarkdownParserOptionGitHubLineBreaks : 0];
 	
 	parser.delegate = _distributionDelegate;
 	
@@ -197,6 +201,22 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 {
 	//NSLog(@"Re-parsing Markdown.");
 	[self parseMarkdown];
+}
+
+
+#pragma mark Properties
+
+- (BOOL)gitHubMode
+{
+	return _gitHubMode;
+}
+
+- (void)setGitHubMode:(BOOL)gitHubMode
+{
+	if (_gitHubMode != gitHubMode) {
+		_gitHubMode = gitHubMode;
+		[self reparseMarkdown];
+	}
 }
 
 
