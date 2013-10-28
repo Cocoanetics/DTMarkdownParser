@@ -1099,7 +1099,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 // text without format markers
 - (void)_handleText:(NSString *)text inRange:(NSRange)range  allowAutodetection:(BOOL)allowAutodetection
 {
-	if (![_tagStack containsObject:@"p"])
+	if (![_tagStack containsObject:@"p"] && ![_tagStack containsObject:@"li"])
 	{
 		[self _pushTag:@"p" attributes:nil];
 	}
