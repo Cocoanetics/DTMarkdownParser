@@ -1120,6 +1120,21 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		text = [text substringFromIndex:1];
 	}
 	
+	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	
+	if (lineIndex)
+	{
+		NSString *specialPreviousLine = _specialLines[@(lineIndex-1)];
+		
+		if (!specialPreviousLine)
+		{
+			if (![_tagStack containsObject:@"p"])
+			{
+				[self _pushTag:@"p" attributes:nil];
+			}
+		}
+	}
+	
 	[self _handleText:text inRange:range allowAutodetection:YES];
 }
 
