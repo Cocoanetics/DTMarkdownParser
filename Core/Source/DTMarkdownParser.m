@@ -1210,6 +1210,49 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[self _popTag];
 }
 
+// code blocks
+- (void)_handlePreformattedLine:(NSString *)line inRange:(NSRange)range
+{
+	NSString *codeLine;
+	
+	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	NSString *lineSpecial = _specialLines[@(lineIndex)];
+	
+	NSRange paragraphRange = [self _rangeOfParagraphAtIndex:range.location];
+	BOOL isAtEndOfParagraph = (NSMaxRange(range) == NSMaxRange(paragraphRange));
+
+	if (lineSpecial == DTMarkdownParserSpecialTagPre)
+	{
+		// trim off indenting
+		if ([line hasPrefix:@"\t"])
+		{
+			codeLine = [line substringFromIndex:1];
+		}
+		else if ([line hasPrefix:@"    "])
+		{
+			codeLine = [line substringFromIndex:4];
+		}
+	}
+	else
+	{
+		codeLine = line;
+	}
+	
+	if (![[self _currentTag] isEqualToString:@"code"])
+	{
+		[self _pushTag:@"pre" attributes:nil];
+		[self _pushTag:@"code" attributes:nil];
+	}
+	
+	[self _reportCharacters:codeLine];
+	
+	if (isAtEndOfParagraph)
+	{
+		[self _popTag];
+		[self _popTag];
+	}
+}
+
 // header lines
 - (void)_handleHeader:(NSString *)header inRange:(NSRange)range
 {
@@ -1365,38 +1408,9 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				
 				if (lineSpecial == DTMarkdownParserSpecialTagPre || lineSpecial == DTMarkdownParserSpecialFencedPreCode)
 				{
-					NSString *codeLine;
+					[self _handlePreformattedLine:line inRange:lineRange];
 					
-					if (lineSpecial == DTMarkdownParserSpecialTagPre)
-					{
-						// trim off indenting
-						if ([line hasPrefix:@"\t"])
-						{
-							codeLine = [line substringFromIndex:1];
-						}
-						else if ([line hasPrefix:@"    "])
-						{
-							codeLine = [line substringFromIndex:4];
-						}
-					}
-					else
-					{
-						codeLine = line;
-					}
-					
-					if (![[self _currentTag] isEqualToString:@"code"])
-					{
-						[self _pushTag:@"pre" attributes:nil];
-						[self _pushTag:@"code" attributes:nil];
-					}
-					
-					[self _reportCharacters:codeLine];
-					
-					if (isAtEndOfParagraph)
-					{
-						[self _popTag];
-						[self _popTag];
-					}
+					continue;
 				}
 				
 				if (lineSpecial == DTMarkdownParserSpecialTagHeading || lineSpecial == DTMarkdownParserSpecialTagH1 || lineSpecial == DTMarkdownParserSpecialTagH2)
