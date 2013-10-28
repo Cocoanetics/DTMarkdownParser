@@ -1254,6 +1254,19 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		NSRange lineRange = [self _lineRangeContainingIndex:positionBeforeScan];
 		BOOL isAtBeginningOfLine = (lineRange.location == positionBeforeScan);
 		
+		if (isAtBeginningOfLine)
+		{
+			NSUInteger lineIndex = [self _lineIndexContainingIndex:positionBeforeScan];
+			
+			if ([_ignoredLines containsIndex:lineIndex])
+			{
+				[scanner scanUpToString:@"\n" intoString:NULL];
+				[scanner scanString:@"\n" intoString:NULL];
+				
+				continue;
+			}
+		}
+		
 		NSRange paragraphRange = [self _rangeOfParagraphAtIndex:positionBeforeScan];
 		BOOL isAtEndOfParagraph = (NSMaxRange(lineRange) == NSMaxRange(paragraphRange));
 		
@@ -1338,6 +1351,8 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 
 		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
 		{
+			[self _addParagraphOpenIfNecessary];
+
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 			[self _handleImageAttributes:linkAttributes inRange:range];
 			
@@ -1346,6 +1361,8 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		
 		if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
 		{
+			[self _addParagraphOpenIfNecessary];
+
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 			[self _handleLinkText:enclosedString attributes:linkAttributes inRange:range];
 
@@ -1357,7 +1374,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		if ([scanner scanMarkdownTextBetweenFormatMarkers:&enclosedString outermostMarker:&effectiveOpeningMarker])
 		{
 			[self _addParagraphOpenIfNecessary];
-			
 			
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 			[self _handleMarkedText:enclosedString marker:effectiveOpeningMarker inRange:range];
