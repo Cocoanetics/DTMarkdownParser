@@ -1208,6 +1208,13 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[self _popTag];
 }
 
+// horizontal rule
+- (void)_handleHorizontalRuleInRange:(NSRange)range
+{
+	[self _pushTag:@"hr" attributes:nil];
+	[self _popTag];
+}
+
 // line break
 - (void)_handleLineBreakinRange:(NSRange)range
 {
@@ -1262,7 +1269,23 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		{
 			NSUInteger lineIndex = [self _lineIndexContainingIndex:positionBeforeScan];
 			
+			BOOL skipLine = NO;
+			
 			if ([_ignoredLines containsIndex:lineIndex])
+			{
+				skipLine = YES;
+			}
+			
+			NSString *lineSpecial = _specialLines[@(lineIndex)];
+			
+			if (lineSpecial == DTMarkdownParserSpecialTagHR)
+			{
+				[self _handleHorizontalRuleInRange:lineRange];
+
+				skipLine = YES;
+			}
+			
+			if (skipLine)
 			{
 				[scanner scanUpToString:@"\n" intoString:NULL];
 				[scanner scanString:@"\n" intoString:NULL];
@@ -1394,7 +1417,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		
 		positionBeforeScan = scanner.scanLocation;
 		
-		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&partWithoutSpecialChars])
+		if ([specialChar isEqualToString:@"["] && [scanner scanUpToCharactersFromSet:specialChars intoString:&partWithoutSpecialChars])
 		{
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 			[self _handleText:partWithoutSpecialChars inRange:range allowAutodetection:NO];
