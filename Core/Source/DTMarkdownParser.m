@@ -22,6 +22,7 @@ NSString * const DTMarkdownParserSpecialFencedPreCode = @"<FENCED CODE>";
 NSString * const DTMarkdownParserSpecialFencedPreEnd = @"<FENCED END>";
 NSString * const DTMarkdownParserSpecialList = @"<LIST>";
 NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
+NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 @implementation DTMarkdownParser
 {
@@ -715,6 +716,15 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				}
 			}
 			
+			if (!didFindSpecial)
+			{
+				if ([line hasPrefix:@">"])
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagBlockquote;
+					didFindSpecial = YES;
+				}
+			}
+			
 			previousLineIndent = currentLineIndent;
 		}
 		
@@ -1099,39 +1109,11 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 // text without format markers
 - (void)_handleText:(NSString *)text inRange:(NSRange)range  allowAutodetection:(BOOL)allowAutodetection
 {
-	if (![_tagStack containsObject:@"p"] && ![_tagStack containsObject:@"li"])
-	{
-		[self _pushTag:@"p" attributes:nil];
-	}
-	
 	[self _processCharacters:text allowAutodetection:allowAutodetection];
 }
 
 - (void)_handleTextAtBeginningOfLine:(NSString *)text inRange:(NSRange)range
 {
-	if ([text hasPrefix:@">"])
-	{
-		NSRange blockQuotePrefixRange = NSMakeRange(range.location, 1);
-		range.location++;
-		range.length--;
-		
-		// blockquote
-		text = [text substringFromIndex:1];
-		
-		if ([text hasPrefix:@" "])
-		{
-			text = [text substringFromIndex:1];
-			blockQuotePrefixRange.length++;
-			range.location++;
-			range.length--;
-		}
-		
-		if (![_tagStack containsObject:@"blockquote"])
-		{
-			[self _handleBlockquoteStartInRange:blockQuotePrefixRange];
-		}
-	}
-	
 	// white space is always trimmed off at beginning of line
 	while ([text hasPrefix:@" "])
 	{
@@ -1326,9 +1308,26 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[self _popTag];
 }
 
-- (void)_handleBlockquoteStartInRange:(NSRange)range
+- (void)_handleBlockquoteLine:(NSString *)line inRange:(NSRange)lineRange
 {
-	[self _pushTag:@"blockquote" attributes:nil];
+	NSAssert([line hasPrefix:@">"], @"line should have >");
+	
+	// blockquote
+	line = [line substringFromIndex:1];
+	
+	if ([line hasPrefix:@" "])
+	{
+		line = [line substringFromIndex:1];
+	}
+	
+	if (![_tagStack containsObject:@"blockquote"])
+	{
+		[self _pushTag:@"blockquote" attributes:nil];
+		
+		[self _pushTag:@"p" attributes:nil];
+	}
+	
+	[self _handleText:line inRange:lineRange allowAutodetection:YES];
 }
 
 - (void)_addParagraphOpenIfNecessary
@@ -1501,6 +1500,14 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			NSString *lineSpecial = _specialLines[@(lineIndex)];
 			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
 			
+			if (!lineSpecial && !lineIsIgnored)
+			{
+				if (![_tagStack containsObject:@"p"] && ![_tagStack containsObject:@"li"])
+				{
+					[self _pushTag:@"p" attributes:nil];
+				}
+			}
+			
 			if (lineSpecial || lineIsIgnored)
 			{
 				NSString *line = @"";
@@ -1558,6 +1565,13 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				if (lineSpecial == DTMarkdownParserSpecialList || lineSpecial == DTMarkdownParserSpecialSubList)
 				{
 					[self _processListLineAtLineIndex:lineIndex];
+					
+					continue;
+				}
+				
+				if (lineSpecial == DTMarkdownParserSpecialTagBlockquote)
+				{
+					[self _handleBlockquoteLine:line inRange:lineRange];
 					
 					continue;
 				}
