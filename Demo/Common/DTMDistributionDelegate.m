@@ -41,29 +41,29 @@
 
 - (void)parser:(DTMarkdownParser *)parser didStartElement:(NSString *)elementName attributes:(NSDictionary *)attributeDict;
 {
-	[_subDelegates enumerateObjectsUsingBlock:^(id <DTMarkdownParserDelegate>aDelegate, NSUInteger idx, BOOL *stop) {
-		if (elementName != nil) {
+	if (elementName != nil) {
+		[_subDelegates enumerateObjectsUsingBlock:^(id <DTMarkdownParserDelegate>aDelegate, NSUInteger idx, BOOL *stop) {
 			[aDelegate parser:parser didStartElement:elementName attributes:attributeDict];
-		}
-	}];
+		}];
+	}
 }
 
 - (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
 {
-	[_subDelegates enumerateObjectsUsingBlock:^(id <DTMarkdownParserDelegate>aDelegate, NSUInteger idx, BOOL *stop) {
-		if (string != nil) {
+	if (string != nil) {
+		[_subDelegates enumerateObjectsUsingBlock:^(id <DTMarkdownParserDelegate>aDelegate, NSUInteger idx, BOOL *stop) {
 			[aDelegate parser:parser foundCharacters:string];
-		}
-	}];
+		}];
+	}
 }
 
 - (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
 {
-	[_subDelegates enumerateObjectsUsingBlock:^(id <DTMarkdownParserDelegate>aDelegate, NSUInteger idx, BOOL *stop) {
-		if (elementName != nil) {
+	if (elementName != nil) {
+		[_subDelegates enumerateObjectsUsingBlock:^(id <DTMarkdownParserDelegate>aDelegate, NSUInteger idx, BOOL *stop) {
 			[aDelegate parser:parser didEndElement:elementName];
-		}
-	}];
+		}];
+	}
 }
 
 @end
