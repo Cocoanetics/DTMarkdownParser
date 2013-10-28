@@ -1139,6 +1139,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 - (void)_handleMarkedText:(NSString *)markedText marker:(NSString *)marker inRange:(NSRange)range
 {
 	BOOL processFurtherMarkers = YES;
+	BOOL allowAutodetection = YES;
 
 	// open the tag for this marker
 	if ([marker isEqualToString:@"*"] || [marker isEqualToString:@"_"])
@@ -1157,6 +1158,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	{
 		[self _pushTag:@"code" attributes:nil];
 		processFurtherMarkers = NO;
+		allowAutodetection = NO;
 	}
 	
 	if (processFurtherMarkers)
@@ -1181,7 +1183,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	}
 	else
 	{
-		[self _handleText:markedText inRange:range allowAutodetection:YES];
+		[self _handleText:markedText inRange:range allowAutodetection:allowAutodetection];
 	}
 	
 	// close the tag for this marker
@@ -1265,37 +1267,73 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		NSRange lineRange = [self _lineRangeContainingIndex:positionBeforeScan];
 		BOOL isAtBeginningOfLine = (lineRange.location == positionBeforeScan);
 		
+		NSRange paragraphRange = [self _rangeOfParagraphAtIndex:positionBeforeScan];
+		BOOL isAtEndOfParagraph = (NSMaxRange(lineRange) == NSMaxRange(paragraphRange));
+		
 		if (isAtBeginningOfLine)
 		{
 			NSUInteger lineIndex = [self _lineIndexContainingIndex:positionBeforeScan];
 			
-			BOOL skipLine = NO;
-			
-			if ([_ignoredLines containsIndex:lineIndex])
-			{
-				skipLine = YES;
-			}
-			
 			NSString *lineSpecial = _specialLines[@(lineIndex)];
 			
-			if (lineSpecial == DTMarkdownParserSpecialTagHR)
+			if (lineSpecial || [_ignoredLines containsIndex:lineIndex])
 			{
-				[self _handleHorizontalRuleInRange:lineRange];
-
-				skipLine = YES;
-			}
-			
-			if (skipLine)
-			{
-				[scanner scanUpToString:@"\n" intoString:NULL];
-				[scanner scanString:@"\n" intoString:NULL];
+				NSString *line = @"";
+				
+				// scan entire line
+				[scanner scanUpToString:@"\n" intoString:&line];
+				
+				if ([scanner scanString:@"\n" intoString:NULL])
+				{
+					line = [line stringByAppendingString:@"\n"];
+				}
+				
+				if (lineSpecial == DTMarkdownParserSpecialTagHR)
+				{
+					[self _handleHorizontalRuleInRange:lineRange];
+					
+					continue;
+				}
+				
+				if (lineSpecial == DTMarkdownParserSpecialTagPre || lineSpecial == DTMarkdownParserSpecialFencedPreCode)
+				{
+					NSString *codeLine;
+					
+					if (lineSpecial == DTMarkdownParserSpecialTagPre)
+					{
+						// trim off indenting
+						if ([line hasPrefix:@"\t"])
+						{
+							codeLine = [line substringFromIndex:1];
+						}
+						else if ([line hasPrefix:@"    "])
+						{
+							codeLine = [line substringFromIndex:4];
+						}
+					}
+					else
+					{
+						codeLine = line;
+					}
+					
+					if (![[self _currentTag] isEqualToString:@"code"])
+					{
+						[self _pushTag:@"pre" attributes:nil];
+						[self _pushTag:@"code" attributes:nil];
+					}
+					
+					[self _reportCharacters:codeLine];
+					
+					if (isAtEndOfParagraph)
+					{
+						[self _popTag];
+						[self _popTag];
+					}
+				}
 				
 				continue;
 			}
 		}
-		
-		NSRange paragraphRange = [self _rangeOfParagraphAtIndex:positionBeforeScan];
-		BOOL isAtEndOfParagraph = (NSMaxRange(lineRange) == NSMaxRange(paragraphRange));
 		
 		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&partWithoutSpecialChars])
 		{
