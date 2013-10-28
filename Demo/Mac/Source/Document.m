@@ -39,6 +39,8 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 }
 
 
+#pragma mark Object Life Cycle
+
 - (id)init
 {
     self = [super init];
@@ -55,6 +57,8 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
     return self;
 }
 
+
+#pragma mark Ui Prep
 
 - (NSString *)windowNibName
 {
@@ -75,11 +79,15 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 }
 
 
+#pragma mark NSObject Options
+
 + (BOOL)autosavesInPlace
 {
     return YES;
 }
 
+
+#pragma mark Loading & Saving
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
 {
@@ -120,6 +128,8 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 }
 
 
+#pragma mark Parsing
+
 - (void)parseMarkdown
 {
 	NSString *markdownString = _markdownText.string;
@@ -158,6 +168,8 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 }
 
 
+#pragma mark Auto-Update
+
 - (void)textDidChange:(NSNotification *)notification
 {
 	[self triggerDelayedReparsing];
@@ -187,6 +199,8 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	[self parseMarkdown];
 }
 
+
+#pragma mark UI Actions
 
 - (IBAction)changePreviewTabIndex:(id)sender;
 {
