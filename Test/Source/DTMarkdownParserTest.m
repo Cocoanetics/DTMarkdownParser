@@ -370,9 +370,14 @@
 	NSArray *emEnds = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"em"]];
 	STAssertTrue([emEnds count] == 1, @"There should be one tag end");
 	
-	// test trimming off of blockquote prefix
+	// test trimming off of markers prefix
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Italic Words");
-	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"*Incomplete\n");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Incomplete\n");
+	
+	NSString *expected = @"<p>Normal <em>Italic Words</em> *Incomplete\nand * on next line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testEmphasisUnderline
@@ -396,7 +401,12 @@
 	
 	// test trimming off of blockquote prefix
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Italic Words");
-	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"_Incomplete\n");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Incomplete\n");
+	
+	NSString *expected = @"<p>Normal <em>Italic Words</em> _Incomplete\nand _ on next line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testStrongAsterisk
@@ -420,7 +430,12 @@
 	
 	// test trimming off of blockquote prefix
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Strong Words");
-	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"**Incomplete\n");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Incomplete\n");
+	
+	NSString *expected = @"<p>Normal <strong>Strong Words</strong> **Incomplete\nand ** on next line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testStrongUnderline
@@ -444,7 +459,12 @@
 	
 	// test trimming off of blockquote prefix
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Strong Words");
-	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"__Incomplete\n");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Incomplete\n");
+	
+	NSString *expected = @"<p>Normal <strong>Strong Words</strong> __Incomplete\nand __ on next line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testCombinedBoldAndItalics

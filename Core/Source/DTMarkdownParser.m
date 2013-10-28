@@ -1138,7 +1138,50 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 // text enclosed in formatting markers
 - (void)_handleMarkedText:(NSString *)markedText marker:(NSString *)marker inRange:(NSRange)range
 {
-	[self _processMarkedString:markedText insideMarker:marker];
+	BOOL processFurtherMarkers = YES;
+	
+	// open the tag for this marker
+	if ([marker isEqualToString:@"*"] || [marker isEqualToString:@"_"])
+	{
+		[self _pushTag:@"em" attributes:nil];
+	}
+	else if ([marker isEqualToString:@"**"] || [marker isEqualToString:@"__"])
+	{
+		[self _pushTag:@"strong" attributes:nil];
+	}
+	else if ([marker isEqualToString:@"~~"])
+	{
+		[self _pushTag:@"del" attributes:nil];
+	}
+	else if ([marker isEqualToString:@"`"])
+	{
+		[self _pushTag:@"code" attributes:nil];
+		processFurtherMarkers = NO;
+	}
+	
+	if (processFurtherMarkers)
+	{
+		NSScanner *scanner = [NSScanner scannerWithString:markedText];
+		scanner.charactersToBeSkipped = nil;
+		
+		NSString *furtherMarkedText;
+		NSString *furtherMarker;
+		
+		NSUInteger markerLength = [marker length];
+		NSRange furtherRange = NSMakeRange(range.location + markerLength, range.length - 2*markerLength);
+		
+		if ([scanner scanMarkdownTextBetweenFormatMarkers:&furtherMarkedText outermostMarker:&furtherMarker])
+		{
+			[self _handleMarkedText:furtherMarkedText marker:furtherMarker inRange:furtherRange];
+			
+			return;
+		}
+	}
+	
+	[self _handleText:markedText inRange:range];
+	
+	// close the tag for this marker
+	[self _popTag];
 }
 
 // image
@@ -1171,6 +1214,22 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 - (void)_handleBlockquoteStartInRange:(NSRange)range
 {
 	[self _pushTag:@"blockquote" attributes:nil];
+}
+
+- (void)_addParagraphOpenIfNecessary
+{
+	if (![_tagStack containsObject:@"p"])
+	{
+		[self _pushTag:@"p" attributes:nil];
+	}
+}
+
+- (void)_closeBlockIfNecessary
+{
+	while ([_tagStack containsObject:@"p"])
+	{
+		[self _popTag];
+	}
 }
 
 - (void)_parseLoop
@@ -1223,7 +1282,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 					}
 					else
 					{
-						if (!isAtEndOfParagraph)
+						if (isAtEndOfParagraph)
+						{
+							// triggers closing of paragraph
+							lineBreakRange.length = 1;
+						}
+						else
 						{
 							// just extend range to include \n
 							range.length++;
@@ -1244,7 +1308,14 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			
 			if (lineBreakRange.length)
 			{
-				[self _handleLineBreakinRange:lineBreakRange];
+				if (isAtEndOfParagraph)
+				{
+					[self _closeBlockIfNecessary];
+				}
+				else
+				{
+					[self _handleLineBreakinRange:lineBreakRange];
+				}
 			}
 			
 			continue;
@@ -1285,6 +1356,9 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		
 		if ([scanner scanMarkdownTextBetweenFormatMarkers:&enclosedString outermostMarker:&effectiveOpeningMarker])
 		{
+			[self _addParagraphOpenIfNecessary];
+			
+			
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 			[self _handleMarkedText:enclosedString marker:effectiveOpeningMarker inRange:range];
 

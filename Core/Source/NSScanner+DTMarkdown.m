@@ -275,7 +275,11 @@
 		effectiveMarker = @"`";
 	}
 	
-	NSAssert(effectiveMarker, @"Should always have an effective marker here");
+	if (!effectiveMarker)
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
 
 	self.scanLocation = startPos + [effectiveMarker length];
 	
