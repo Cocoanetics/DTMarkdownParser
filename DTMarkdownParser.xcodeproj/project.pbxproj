@@ -2606,6 +2606,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2619,6 +2620,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2632,6 +2634,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2720,6 +2723,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Core/Framework-Mac-Info.plist";
+				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = DTMarkdownParser;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
@@ -2863,6 +2867,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Core/Framework-Mac-Info.plist";
+				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = DTMarkdownParser;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
@@ -2880,6 +2885,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/Framework-Mac-Prefix.pch";
 				INFOPLIST_FILE = "Core/Framework-Mac-Info.plist";
+				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = DTMarkdownParser;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;

@@ -740,6 +740,20 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testHangingOfParagraphReturningToNonHanging
+{
+	NSString *string = @"- one\n\n two\n\nnormal";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ul><li><p>one</p>\n<p>two</p>\n</li></ul><p>normal</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 
 #pragma mark - Horizontal Rule
 
@@ -1327,6 +1341,38 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+// issue 10
+- (void)testMultipleQuotes
+{
+	NSString *string = @"    \"\"\" multiple quotes \"\"\"";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<pre><code>&quot;&quot;&quot; multiple quotes &quot;&quot;&quot;</code></pre>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+// issue 10
+- (void)testMultipleBackticks
+{
+	NSString *string = @"    ``` multiple quotes ```";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<pre><code>``` multiple quotes ```</code></pre>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 #pragma mark - Lists (1 Level)
 
 - (void)testSimpleList
@@ -1506,6 +1552,51 @@
 	
 	// no P around two/MUCH
 	NSString *expected = @"<ul><li>one<ul><li>two\nMUCH</li></ul></li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testStackedListsDashBug
+{
+	NSString *string = @"- zero\n    - one\n       - two";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	// no P around two/MUCH
+	NSString *expected = @"<ul><li>zero<ul><li>one<ul><li>two</li></ul></li></ul></li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testListFollowing
+{
+	NSString *string = @"   1. one\n     - two\n\n- bla";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	// no P around two/MUCH
+	NSString *expected = @"<ol><li>one<ul><li>two</li></ul></li></ol><ul><li>bla</li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testListWithSubItemHavingLessSpacesThanHead
+{
+	NSString *string = @"   1. one\n       - two\n - three";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	// no P around two/MUCH
+	NSString *expected = @"<ol><li>one<ul><li>two<ul><li>three</li></ul></li></ul></li></ol>";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
