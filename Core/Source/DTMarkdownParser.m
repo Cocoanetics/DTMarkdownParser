@@ -1337,9 +1337,15 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				// scan entire line
 				[scanner scanUpToString:@"\n" intoString:&line];
 				
+				// trim off Windows newline
+				if ([line hasSuffix:@"\r"])
+				{
+					line = [line substringToIndex:[line length]-1];
+				}
+				
 				if ([scanner scanString:@"\n" intoString:NULL])
 				{
-					if (!isAtEndOfParagraph)
+					if (!isAtEndOfParagraph || lineSpecial == DTMarkdownParserSpecialTagPre || lineSpecial == DTMarkdownParserSpecialFencedPreCode)
 					{
 						line = [line stringByAppendingString:@"\n"];
 					}
