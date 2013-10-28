@@ -1341,6 +1341,128 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	}
 }
 
+- (void)_handleListLine:(NSString *)line inRange:(NSRange)range
+{
+	NSString *prefix;
+	
+	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	NSString *specialTypeOfLine = _specialLines[@(lineIndex)];
+	BOOL needOpenNewListLevel = NO;
+	
+	NSUInteger currentLineIndent = 0;
+	NSUInteger previousLineIndent = 0;
+	
+	if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
+	{
+		// we know there is a list prefix, but we need to eliminate the indentation first
+		line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+		
+		NSUInteger prevousListItem = [self _lineIndexOfListItemBeforeLineIndex:lineIndex];
+		
+		currentLineIndent = [self _listLevelForLineAtIndex:lineIndex];
+		previousLineIndent = [self _listLevelForLineAtIndex:prevousListItem];
+		
+		if (currentLineIndent > previousLineIndent)
+		{
+			needOpenNewListLevel = YES;
+		}
+	}
+	else if (specialTypeOfLine == DTMarkdownParserSpecialList)
+	{
+		// close all lists this is a new one
+		while ([_tagStack containsObject:@"ul"] || [_tagStack containsObject:@"ol"])
+		{
+			[self _popTag];
+		}
+	}
+	
+	NSScanner *scanner = [NSScanner scannerWithString:line];
+	scanner.charactersToBeSkipped = nil;
+	
+	[scanner scanMarkdownLineListPrefix:&prefix];
+	
+	NSAssert(prefix, @"Cannot process line, no list prefix");
+	
+	NSAssert(![[self _currentTag] isEqualToString:@"p"], @"There should never be an open P tag in %s", __PRETTY_FUNCTION__);
+	
+	// cut off prefix
+	line = [line substringFromIndex:scanner.scanLocation];
+	
+	if (specialTypeOfLine == DTMarkdownParserSpecialList)
+	{
+		if (![_tagStack containsObject:@"ul"] && ![_tagStack containsObject:@"ol"])
+		{
+			// first line of list opens only if no list present
+			needOpenNewListLevel = YES;
+		}
+	}
+	
+	if (currentLineIndent<previousLineIndent)
+	{
+		NSInteger level = previousLineIndent;
+		
+		// close any number of list levels
+		while (level>currentLineIndent)
+		{
+			NSString *tagToPop = [self _currentTag];
+			
+			[self _popTag];
+			
+			if ([tagToPop isEqualToString:@"ul"] || [tagToPop isEqualToString:@"ol"])
+			{
+				level--;
+			}
+		}
+	}
+	
+	if (needOpenNewListLevel)
+	{
+		// need to open list
+		if ([prefix hasSuffix:@"."])
+		{
+			// ordered list
+			[self _pushTag:@"ol" attributes:nil];
+		}
+		else
+		{
+			// unordered list
+			[self _pushTag:@"ul" attributes:nil];
+		}
+	}
+	
+	if ([[self _currentTag] isEqualToString:@"li"])
+	{
+		[self _popTag]; // previous li
+	}
+	
+	[self _pushTag:@"li" attributes:nil];
+	
+	BOOL hasHangingParagraphs = [self _hasHangingParagraphsForListItemBeginningAtLineIndex:lineIndex];
+	
+	if (hasHangingParagraphs)
+	{
+		[self _pushTag:@"p" attributes:nil];
+	}
+	
+	// process line as normal without prefix
+	[self _processLine:line withIndex:lineIndex allowAutoDetection:YES];
+	
+	if (hasHangingParagraphs)
+	{
+		return;
+	}
+	
+	if ([self _shouldCloseListItemAfterLineAtIndex:lineIndex])
+	{
+		[self _popTag]; // li
+		
+		if ([_ignoredLines containsIndex:lineIndex+1])
+		{
+			[self _popTag];
+		}
+	}
+}
+
 - (void)_parseLoop
 {
 	[self _findAndMarkSpecialLines];
@@ -1416,6 +1538,13 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				if (lineSpecial == DTMarkdownParserSpecialTagHeading || lineSpecial == DTMarkdownParserSpecialTagH1 || lineSpecial == DTMarkdownParserSpecialTagH2)
 				{
 					[self _handleHeader:line inRange:lineRange];
+					
+					continue;
+				}
+				
+				if (lineSpecial == DTMarkdownParserSpecialList || lineSpecial == DTMarkdownParserSpecialSubList)
+				{
+					[self _processListLineAtLineIndex:lineIndex];
 					
 					continue;
 				}
