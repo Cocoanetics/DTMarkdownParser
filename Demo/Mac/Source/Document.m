@@ -38,6 +38,7 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	SimpleHTMLGenerator *		_HTMLGenerator;
 }
 
+
 - (id)init
 {
     self = [super init];
@@ -53,6 +54,7 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	
     return self;
 }
+
 
 - (NSString *)windowNibName
 {
@@ -72,10 +74,12 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	[self parseMarkdown]; // Necessary, because reparseMarkdown is not triggered by replacing the text storage above.
 }
 
+
 + (BOOL)autosavesInPlace
 {
     return YES;
 }
+
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
 {
@@ -115,6 +119,7 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	return result;
 }
 
+
 - (void)parseMarkdown
 {
 	NSString *markdownString = _markdownText.string;
@@ -152,6 +157,7 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 										baseURL:[self fileURL]];
 }
 
+
 - (void)textDidChange:(NSNotification *)notification
 {
 	[self triggerDelayedReparsing];
@@ -180,6 +186,7 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	//NSLog(@"Re-parsing Markdown.");
 	[self parseMarkdown];
 }
+
 
 - (IBAction)changePreviewTabIndex:(id)sender;
 {
