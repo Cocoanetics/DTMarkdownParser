@@ -1210,6 +1210,59 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[self _popTag];
 }
 
+// header lines
+- (void)_handleHeader:(NSString *)header inRange:(NSRange)range
+{
+	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	NSString *lineSpecial = _specialLines[@(lineIndex)];
+
+	NSUInteger headerLevel = 0;
+	
+	while ([header hasPrefix:@"#"])
+	{
+		headerLevel++;
+		
+		header = [header substringFromIndex:1];
+	}
+	
+	// trim off leading spaces
+	while ([header hasPrefix:@" "])
+	{
+		header = [header substringFromIndex:1];
+	}
+	
+	// trim off trailing hashes
+	while ([header hasSuffix:@"#"] || [header hasSuffix:@"#\n"])
+	{
+		header = [header substringToIndex:[header length]-1];
+	}
+	
+	// trim off trailing spaces
+	while ([header hasSuffix:@" "])
+	{
+		header = [header substringToIndex:[header length]-1];
+	}
+	
+	if (lineSpecial == DTMarkdownParserSpecialTagH1)
+	{
+		headerLevel = 1;
+	}
+	else if (lineSpecial == DTMarkdownParserSpecialTagH2)
+	{
+		headerLevel = 2;
+	}
+	
+	NSAssert(headerLevel, @"There should always be a header level here");
+	
+	NSString *tag = [NSString stringWithFormat:@"h%d", (int)headerLevel];
+	
+	[self _pushTag:tag attributes:nil];
+	
+	[self _processCharacters:header allowAutodetection:YES];
+	
+	[self _popTag];
+}
+
 // horizontal rule
 - (void)_handleHorizontalRuleInRange:(NSRange)range
 {
@@ -1275,8 +1328,9 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			NSUInteger lineIndex = [self _lineIndexContainingIndex:positionBeforeScan];
 			
 			NSString *lineSpecial = _specialLines[@(lineIndex)];
+			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
 			
-			if (lineSpecial || [_ignoredLines containsIndex:lineIndex])
+			if (lineSpecial || lineIsIgnored)
 			{
 				NSString *line = @"";
 				
@@ -1285,7 +1339,15 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				
 				if ([scanner scanString:@"\n" intoString:NULL])
 				{
-					line = [line stringByAppendingString:@"\n"];
+					if (!isAtEndOfParagraph)
+					{
+						line = [line stringByAppendingString:@"\n"];
+					}
+				}
+				
+				if (lineIsIgnored)
+				{
+					continue;
 				}
 				
 				if (lineSpecial == DTMarkdownParserSpecialTagHR)
@@ -1329,6 +1391,13 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 						[self _popTag];
 						[self _popTag];
 					}
+				}
+				
+				if (lineSpecial == DTMarkdownParserSpecialTagHeading || lineSpecial == DTMarkdownParserSpecialTagH1 || lineSpecial == DTMarkdownParserSpecialTagH2)
+				{
+					[self _handleHeader:line inRange:lineRange];
+					
+					continue;
 				}
 				
 				continue;
