@@ -1426,6 +1426,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		
 		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&partWithoutSpecialChars])
 		{
+			// remove Windows newline character
+			if ([partWithoutSpecialChars hasSuffix:@"\r"])
+			{
+				partWithoutSpecialChars = [partWithoutSpecialChars substringToIndex:[partWithoutSpecialChars length]-1];
+			}
+			
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 
 			lineBreakRange.location = scanner.scanLocation;
