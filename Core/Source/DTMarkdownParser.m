@@ -187,62 +187,6 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 	[self _popTag];
 }
 
-- (void)_processCharacters:(NSString *)string allowAutodetection:(BOOL)allowAutodetection
-{
-	if (!allowAutodetection || !_dataDetector)
-	{
-		[self _reportCharacters:string];
-		return;
-	}
-	
-	NSArray *matches = [_dataDetector matchesInString:string options:0 range:NSMakeRange(0, [string length])];
-	
-	NSUInteger outputChars = 0;
-	
-	for (NSTextCheckingResult *match in matches)
-	{
-		if (match.range.location > outputChars)
-		{
-			// need to output part before match
-			NSString *substring = [string substringWithRange:NSMakeRange(outputChars, match.range.location - outputChars)];
-			[self _reportCharacters:substring];
-		}
-		
-		NSString *urlString = [string substringWithRange:match.range];
-		
-		// get URL from match if possible
-		NSURL *URL = [match URL];
-		
-#if TARGET_OS_IPHONE
-		if ([[URL scheme] isEqualToString:@"tel"])
-		{
-			// output as is
-			NSString *substring = [string substringWithRange:match.range];
-			[self _reportCharacters:substring];
-		}
-		else
-#endif
-		{
-			NSDictionary *attributes = @{@"href": [URL absoluteString]};
-			[self _pushTag:@"a" attributes:attributes];
-			[self _reportCharacters:urlString];
-			[self _popTag];
-		}
-		
-		outputChars = NSMaxRange(match.range);
-	}
-	
-	// output reset after last hyperlink
-	NSRange restRange = NSMakeRange(outputChars, [string length] - outputChars);
-	
-	if (restRange.length>0)
-	{
-		// need to output part before match
-		NSString *substring = [string substringWithRange:restRange];
-		[self _reportCharacters:substring];
-	}
-}
-
 - (void)_processLine:(NSString *)line withIndex:(NSUInteger)lineIndex allowAutoDetection:(BOOL)allowAutoDetection
 {
 	BOOL needsBR = NO;
@@ -1096,15 +1040,71 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 
 #pragma mark - Parsing
 
+- (void)_processCharacters:(NSString *)string allowAutodetection:(BOOL)allowAutodetection
+{
+	if (!allowAutodetection || !_dataDetector)
+	{
+		[self _reportCharacters:string];
+		return;
+	}
+	
+	NSArray *matches = [_dataDetector matchesInString:string options:0 range:NSMakeRange(0, [string length])];
+	
+	NSUInteger outputChars = 0;
+	
+	for (NSTextCheckingResult *match in matches)
+	{
+		if (match.range.location > outputChars)
+		{
+			// need to output part before match
+			NSString *substring = [string substringWithRange:NSMakeRange(outputChars, match.range.location - outputChars)];
+			[self _reportCharacters:substring];
+		}
+		
+		NSString *urlString = [string substringWithRange:match.range];
+		
+		// get URL from match if possible
+		NSURL *URL = [match URL];
+		
+#if TARGET_OS_IPHONE
+		if ([[URL scheme] isEqualToString:@"tel"])
+		{
+			// output as is
+			NSString *substring = [string substringWithRange:match.range];
+			[self _reportCharacters:substring];
+		}
+		else
+#endif
+		{
+			NSDictionary *attributes = @{@"href": [URL absoluteString]};
+			[self _pushTag:@"a" attributes:attributes];
+			[self _reportCharacters:urlString];
+			[self _popTag];
+		}
+		
+		outputChars = NSMaxRange(match.range);
+	}
+	
+	// output reset after last hyperlink
+	NSRange restRange = NSMakeRange(outputChars, [string length] - outputChars);
+	
+	if (restRange.length>0)
+	{
+		// need to output part before match
+		NSString *substring = [string substringWithRange:restRange];
+		[self _reportCharacters:substring];
+	}
+}
+
 // text without format markers
-- (void)_handleText:(NSString *)text inRange:(NSRange)range
+- (void)_handleText:(NSString *)text inRange:(NSRange)range  allowAutodetection:(BOOL)allowAutodetection
 {
 	if (![_tagStack containsObject:@"p"])
 	{
 		[self _pushTag:@"p" attributes:nil];
 	}
 	
-	[self _reportCharacters:text];
+	[self _processCharacters:text allowAutodetection:allowAutodetection];
 }
 
 - (void)_handleTextAtBeginningOfLine:(NSString *)text inRange:(NSRange)range
@@ -1132,7 +1132,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		}
 	}
 	
-	[self _handleText:text inRange:range];
+	[self _handleText:text inRange:range allowAutodetection:YES];
 }
 
 // text enclosed in formatting markers
@@ -1176,12 +1176,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		}
 		else
 		{
-			[self _handleText:markedText inRange:range];
+			[self _handleText:markedText inRange:range allowAutodetection:YES];
 		}
 	}
 	else
 	{
-		[self _handleText:markedText inRange:range];
+		[self _handleText:markedText inRange:range allowAutodetection:YES];
 	}
 	
 	// close the tag for this marker
@@ -1320,7 +1320,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 			}
 			else
 			{
-				[self _handleText:partWithoutSpecialChars inRange:range];
+				[self _handleText:partWithoutSpecialChars inRange:range allowAutodetection:YES];
 			}
 			
 			if (lineBreakRange.length)
@@ -1389,8 +1389,16 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		NSRange range = NSMakeRange(scanner.scanLocation, 1);
 		NSString *specialChar = [scanner.string substringWithRange:NSMakeRange(scanner.scanLocation, 1)];
 		scanner.scanLocation ++;
-
-		[self _handleText:specialChar inRange:range];
+		
+		[self _handleText:specialChar inRange:range allowAutodetection:NO];
+		
+		positionBeforeScan = scanner.scanLocation;
+		
+		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&partWithoutSpecialChars])
+		{
+			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
+			[self _handleText:partWithoutSpecialChars inRange:range allowAutodetection:NO];
+		}
 		
 		continue;
 	}
