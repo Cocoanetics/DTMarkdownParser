@@ -1099,7 +1099,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 // text without format markers
 - (void)_handleText:(NSString *)text inRange:(NSRange)range  allowAutodetection:(BOOL)allowAutodetection
 {
-	if (![_tagStack containsObject:@"p"])
+	if (![_tagStack containsObject:@"p"] && ![_tagStack containsObject:@"li"])
 	{
 		[self _pushTag:@"p" attributes:nil];
 	}
@@ -1130,6 +1130,12 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		{
 			[self _handleBlockquoteStartInRange:blockQuotePrefixRange];
 		}
+	}
+	
+	// white space is always trimmed off at beginning of line
+	while ([text hasPrefix:@" "])
+	{
+		text = [text substringFromIndex:1];
 	}
 	
 	[self _handleText:text inRange:range allowAutodetection:YES];
