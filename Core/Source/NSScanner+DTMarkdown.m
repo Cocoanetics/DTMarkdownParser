@@ -413,29 +413,34 @@
 	
 	NSCharacterSet *stopChars = [NSCharacterSet characterSetWithCharactersInString:@"![]"];
 	
+	NSUInteger startPos = self.scanLocation;
+	
 	while (![self isAtEnd])
 	{
+		// skip image
+		NSUInteger posBeforeImage = self.scanLocation;
+
 		NSString *part;
 		
 		if ([self scanUpToCharactersFromSet:stopChars intoString:&part])
 		{
 			[tmpString appendString:part];
 		}
-		
-		// skip image
-		NSUInteger posBeforeImage = self.scanLocation;
-		
-		if ([self scanMarkdownImageAttributes:NULL references:nil])
+		else if ([self scanMarkdownImageAttributes:NULL references:nil])
 		{
 			// append image markdown
 			NSRange imgRange = NSMakeRange(posBeforeImage, self.scanLocation-posBeforeImage);
 			[tmpString appendString:[self.string substringWithRange:imgRange]];
 		}
-		
-		if ([self scanString:@"]" intoString:NULL])
+		else if ([self scanString:@"]" intoString:NULL])
 		{
 			self.scanLocation --;
 			break;
+		}
+		else
+		{
+			self.scanLocation = startPos;
+			return NO;
 		}
 	}
 	
@@ -556,6 +561,13 @@
 			if (![self scanUpToString:@"]" intoString:&refId])
 			{
 				refId = [enclosedPart lowercaseString];
+			}
+			
+			// reference id may not contain whitespace
+			if ([refId rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] options:0].location != NSNotFound)
+			{
+				self.scanLocation = startPos;
+				return NO;
 			}
 			
 			NSDictionary *reference = references[[refId lowercaseString]];

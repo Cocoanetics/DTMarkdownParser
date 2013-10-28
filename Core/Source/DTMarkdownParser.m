@@ -1139,7 +1139,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 - (void)_handleMarkedText:(NSString *)markedText marker:(NSString *)marker inRange:(NSRange)range
 {
 	BOOL processFurtherMarkers = YES;
-	
+
 	// open the tag for this marker
 	if ([marker isEqualToString:@"*"] || [marker isEqualToString:@"_"])
 	{
@@ -1173,12 +1173,16 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 		if ([scanner scanMarkdownTextBetweenFormatMarkers:&furtherMarkedText outermostMarker:&furtherMarker])
 		{
 			[self _handleMarkedText:furtherMarkedText marker:furtherMarker inRange:furtherRange];
-			
-			return;
+		}
+		else
+		{
+			[self _handleText:markedText inRange:range];
 		}
 	}
-	
-	[self _handleText:markedText inRange:range];
+	else
+	{
+		[self _handleText:markedText inRange:range];
+	}
 	
 	// close the tag for this marker
 	[self _popTag];
