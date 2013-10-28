@@ -1115,19 +1115,38 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 - (void)_handleTextAtBeginningOfLine:(NSString *)text inRange:(NSRange)range
 {
 	// white space is always trimmed off at beginning of line
+	BOOL hasIndent = NO;
+	
 	while ([text hasPrefix:@" "])
 	{
 		text = [text substringFromIndex:1];
+		hasIndent = YES;
 	}
 	
 	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	NSRange lineRange = [self _lineRangeContainingIndex:range.location];
+	NSRange paragraphRange = [self _rangeOfParagraphAtIndex:range.location];
+	
+	BOOL isAtBeginOfParagraph = paragraphRange.location == lineRange.location;
 	
 	if (lineIndex)
 	{
+		NSString *specialCurrentLine = _specialLines[@(lineIndex)];
 		NSString *specialPreviousLine = _specialLines[@(lineIndex-1)];
 		
-		if (!specialPreviousLine)
+		if (!specialPreviousLine && isAtBeginOfParagraph && !specialCurrentLine)
 		{
+			if (!hasIndent)
+			{
+				if ([_tagStack containsObject:@"li"])
+				{
+					while ([_tagStack count])
+					{
+						[self _popTag];
+					}
+				}
+			}
+			
 			if (![_tagStack containsObject:@"p"])
 			{
 				[self _pushTag:@"p" attributes:nil];
