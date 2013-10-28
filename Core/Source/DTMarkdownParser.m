@@ -1099,7 +1099,7 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 // text without format markers
 - (void)_handleText:(NSString *)text inRange:(NSRange)range  allowAutodetection:(BOOL)allowAutodetection
 {
-	if (![_tagStack containsObject:@"p"] && ![_tagStack containsObject:@"li"])
+	if (![_tagStack containsObject:@"p"])
 	{
 		[self _pushTag:@"p" attributes:nil];
 	}
@@ -1524,6 +1524,13 @@ NSString * const DTMarkdownParserSpecialSubList = @"<SUBLIST>";
 				
 				if (lineIsIgnored)
 				{
+					// empty line, terminates a multi-P in LI
+					
+					while ([_tagStack containsObject:@"p"])
+					{
+						[self _popTag];
+					}
+					
 					continue;
 				}
 				
