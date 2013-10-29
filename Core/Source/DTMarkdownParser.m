@@ -1693,7 +1693,10 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		
 		if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
 		{
-			[self _addParagraphOpenIfNecessary];
+			if (![_tagStack containsObject:@"li"])
+			{
+				[self _addParagraphOpenIfNecessary];
+			}
 
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 			[self _handleLinkText:enclosedString attributes:linkAttributes inRange:range];

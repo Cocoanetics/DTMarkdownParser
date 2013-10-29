@@ -1247,6 +1247,22 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+// issue 6
+- (void)testLinkWithNewlineInTextInListItem
+{
+	NSString *string = @"- [Patch\nDemo](http://foo.bar/demo.html)";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ul><li><a href=\"http://foo.bar/demo.html\">Patch\nDemo</a></li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 #pragma mark - Images
 
 - (void)testInlineImage
