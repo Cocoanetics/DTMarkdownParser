@@ -726,7 +726,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 #pragma mark - Parsing
 
-- (void)_processMarkedString:(NSString *)markedString insideMarker:(NSString *)marker
+- (void)_processMarkedString:(NSString *)markedString insideMarker:(NSString *)marker inRange:(NSRange)range
 {
 	NSAssert([markedString hasPrefix:marker] && [markedString hasSuffix:marker], @"Processed string has to have the marker at beginning and end");
 	
@@ -766,7 +766,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		
 		if ([scanner scanMarkdownBeginMarker:&furtherMarker] && [markedString hasSuffix:furtherMarker])
 		{
-			[self _processMarkedString:markedString insideMarker:furtherMarker];
+			NSUInteger markerLength = [marker length];
+			[self _processMarkedString:markedString insideMarker:furtherMarker inRange:NSMakeRange(range.location + markerLength, range.length - 2*markerLength)];
 		}
 		else
 		{
@@ -883,7 +884,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 					markedRange.length = scanner.scanLocation - markedRange.location;
 					NSString *markedString = [line substringWithRange:markedRange];
 					
-					[self _processMarkedString:markedString insideMarker:effectiveOpeningMarker];
+					[self _processMarkedString:markedString insideMarker:effectiveOpeningMarker inRange:markedRange];
 				}
 				else
 				{
