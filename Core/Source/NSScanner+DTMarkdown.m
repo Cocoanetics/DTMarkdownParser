@@ -275,7 +275,11 @@
 		effectiveMarker = @"`";
 	}
 	
-	NSAssert(effectiveMarker, @"Should always have an effective marker here");
+	if (!effectiveMarker)
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
 
 	self.scanLocation = startPos + [effectiveMarker length];
 	
@@ -409,29 +413,34 @@
 	
 	NSCharacterSet *stopChars = [NSCharacterSet characterSetWithCharactersInString:@"![]"];
 	
+	NSUInteger startPos = self.scanLocation;
+	
 	while (![self isAtEnd])
 	{
+		// skip image
+		NSUInteger posBeforeImage = self.scanLocation;
+
 		NSString *part;
 		
 		if ([self scanUpToCharactersFromSet:stopChars intoString:&part])
 		{
 			[tmpString appendString:part];
 		}
-		
-		// skip image
-		NSUInteger posBeforeImage = self.scanLocation;
-		
-		if ([self scanMarkdownImageAttributes:NULL references:nil])
+		else if ([self scanMarkdownImageAttributes:NULL references:nil])
 		{
 			// append image markdown
 			NSRange imgRange = NSMakeRange(posBeforeImage, self.scanLocation-posBeforeImage);
 			[tmpString appendString:[self.string substringWithRange:imgRange]];
 		}
-		
-		if ([self scanString:@"]" intoString:NULL])
+		else if ([self scanString:@"]" intoString:NULL])
 		{
 			self.scanLocation --;
 			break;
+		}
+		else
+		{
+			self.scanLocation = startPos;
+			return NO;
 		}
 	}
 	
@@ -554,6 +563,13 @@
 				refId = [enclosedPart lowercaseString];
 			}
 			
+			// reference id may not contain whitespace
+			if ([refId rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] options:0].location != NSNotFound)
+			{
+				self.scanLocation = startPos;
+				return NO;
+			}
+			
 			NSDictionary *reference = references[[refId lowercaseString]];
 			
 			if (!reference)
@@ -601,6 +617,66 @@
 	if (encosedString)
 	{
 		*encosedString = enclosedPart;
+	}
+	
+	return YES;
+}
+
+- (BOOL)scanMarkdownTextBetweenFormatMarkers:(NSString **)text outermostMarker:(NSString **)outermostMarker
+{
+	NSUInteger startPos = self.scanLocation;
+	
+	NSString *marker;
+	
+	if (![self scanMarkdownBeginMarker:&marker])
+	{
+		return NO;
+	}
+	
+	NSString *enclosedPart;
+		
+	if (![self scanUpToString:marker intoString:&enclosedPart])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// there has to be a closing marker as well
+	if (![self scanString:marker intoString:NULL])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// enclosed part cannot begin with whitespace
+	if ([[NSCharacterSet whitespaceAndNewlineCharacterSet] characterIsMember:[enclosedPart characterAtIndex:0]])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// enclosed part cannot end with whitespace
+	if ([[NSCharacterSet whitespaceAndNewlineCharacterSet] characterIsMember:[enclosedPart characterAtIndex:[enclosedPart length]-1]])
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	// enclosed part cannot contain a newline
+	if ([enclosedPart rangeOfString:@"\n"].location != NSNotFound)
+	{
+		self.scanLocation = startPos;
+		return NO;
+	}
+	
+	if (text)
+	{
+		*text = enclosedPart;
+	}
+	
+	if (outermostMarker)
+	{
+		*outermostMarker = marker;
 	}
 	
 	return YES;
