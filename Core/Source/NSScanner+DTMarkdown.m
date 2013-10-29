@@ -648,13 +648,6 @@
 		return NO;
 	}
 	
-	// enclosed part cannot begin with whitespace
-	if ([[NSCharacterSet whitespaceAndNewlineCharacterSet] characterIsMember:[enclosedPart characterAtIndex:0]])
-	{
-		self.scanLocation = startPos;
-		return NO;
-	}
-	
 	// enclosed part cannot end with whitespace
 	if ([[NSCharacterSet whitespaceAndNewlineCharacterSet] characterIsMember:[enclosedPart characterAtIndex:[enclosedPart length]-1]])
 	{
