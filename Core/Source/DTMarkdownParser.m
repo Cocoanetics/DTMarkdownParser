@@ -774,63 +774,38 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		
 		// scan marker
 		NSString *effectiveOpeningMarker;
-		
-		NSRange markedRange = NSMakeRange(scanner.scanLocation, 0);
-		
 		NSDictionary *linkAttributes;
-		
+		positionBeforeScan = scanner.scanLocation;
+
 		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
 		{
-			[self _pushTag:@"img" attributes:linkAttributes];
-			[self _popTag];
+			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
+			[self _handleImageAttributes:linkAttributes inRange:range];
+			
+			continue;
 		}
-		else if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
+		
+		if ([scanner scanMarkdownTextBetweenFormatMarkers:&part outermostMarker:&effectiveOpeningMarker])
 		{
-			NSString *enclosedPart;
+			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
+			[self _handleMarkedText:part marker:effectiveOpeningMarker inRange:range];
 			
-			if ([scanner scanUpToString:effectiveOpeningMarker intoString:&enclosedPart])
-			{
-				// there has to be a closing marker as well
-				if ([scanner scanString:effectiveOpeningMarker intoString:NULL])
-				{
-					NSUInteger markerLength = [effectiveOpeningMarker length];
-					markedRange.length = scanner.scanLocation - markedRange.location - 2*markerLength;
-					markedRange.location += markerLength;
-					NSString *markedString = [text substringWithRange:markedRange];
-					
-					[self _handleMarkedText:markedString marker:effectiveOpeningMarker inRange:markedRange];
-				}
-				else
-				{
-					// output as is, not enclosed
-					NSString *joined = [effectiveOpeningMarker stringByAppendingString:enclosedPart];
-					
-					[self _reportCharacters:joined];
-				}
-			}
-			else
-			{
-				// did not enclose anything
-				[self _reportCharacters:effectiveOpeningMarker];
-				scanner.scanLocation = markedRange.location + [effectiveOpeningMarker length];
-			}
+			continue;
 		}
-		else
+		
+		// single special character, just output
+		NSRange range = NSMakeRange(scanner.scanLocation, 1);
+		NSString *specialChar = [scanner.string substringWithRange:NSMakeRange(scanner.scanLocation, 1)];
+		scanner.scanLocation ++;
+		
+		[self _handleText:specialChar inRange:range allowAutodetection:NO];
+		
+		positionBeforeScan = scanner.scanLocation;
+		
+		if ([specialChar isEqualToString:@"["] && [scanner scanUpToCharactersFromSet:specialChars intoString:&part])
 		{
-			// single special character, just output
-			NSString *specialChar = [scanner.string substringWithRange:NSMakeRange(scanner.scanLocation, 1)];
-			
-			[self _reportCharacters:specialChar];
-			scanner.scanLocation ++;
-			
-			NSUInteger positionBeforeScan = scanner.scanLocation;
-			
-			// scan part until next special character
-			if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
-			{
-				// output part before markers
-				[self _processCharacters:part inRange:NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan) allowAutodetection:NO];
-			}
+			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
+			[self _handleText:part inRange:range allowAutodetection:NO];
 		}
 	}
 }
@@ -1498,8 +1473,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 			[self _handleText:partWithoutSpecialChars inRange:range allowAutodetection:NO];
 		}
-		
-		continue;
 	}
 	
 	// pop all remaining open tags
