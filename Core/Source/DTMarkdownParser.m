@@ -726,6 +726,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 #pragma mark - Parsing
 
+// process a string that has a formatting marker at the begin and end
 - (void)_processMarkedString:(NSString *)markedString insideMarker:(NSString *)marker inRange:(NSRange)range
 {
 	NSAssert([markedString hasPrefix:marker] && [markedString hasSuffix:marker], @"Processed string has to have the marker at beginning and end");
@@ -783,49 +784,11 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	[self _popTag];
 }
 
-- (void)_processLine:(NSString *)line withIndex:(NSUInteger)lineIndex allowAutoDetection:(BOOL)allowAutoDetection
+// process the text between the [] of a hyperlink, this is similar to the parse loop, but with several key differences
+- (void)_processHyperlinkEnclosedText:(NSString *)text withIndex:(NSUInteger)lineIndex allowAutoDetection:(BOOL)allowAutoDetection
 {
-	BOOL needsBR = NO;
-	BOOL allowLineBreak = [self _shouldAllowLineBreakAfterLineAtIndex:lineIndex];
-	
-	if (allowLineBreak)
-	{
-		line = [line stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
-		
-		if ([line hasSuffix:@"\n"] && (_options && DTMarkdownParserOptionGitHubLineBreaks))
-		{
-			line = [line substringToIndex:[line length]-1];
-			needsBR = YES;
-			
-		}
-		else if ([line hasSuffix:@"  \n"])
-		{
-			needsBR = YES;
-			
-			line = [line substringToIndex:[line length]-3];
-		}
-	}
-	else
-	{
-		if ([line hasSuffix:@"\n"])
-		{
-			line = [line substringToIndex:[line length]-1];
-		}
-		
-		if ([line hasSuffix:@"\r"])
-		{
-			line = [line substringToIndex:[line length]-1];
-		}
-	}
-	
-	NSScanner *scanner = [NSScanner scannerWithString:line];
+	NSScanner *scanner = [NSScanner scannerWithString:text];
 	scanner.charactersToBeSkipped = nil;
-	
-	// ingore leading whitespace characters for non PRE
-	if (!_specialLines[@(lineIndex)])
-	{
-		[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
-	}
 	
 	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
 	
@@ -856,20 +819,10 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		NSRange markedRange = NSMakeRange(scanner.scanLocation, 0);
 		
 		NSDictionary *linkAttributes;
-		NSString *enclosedString;
 		
 		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
 		{
 			[self _pushTag:@"img" attributes:linkAttributes];
-			[self _popTag];
-		}
-		else if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
-		{
-			[self _pushTag:@"a" attributes:linkAttributes];
-			
-			// might contain further markdown/images
-			[self _processLine:enclosedString withIndex:lineIndex allowAutoDetection:NO];
-			
 			[self _popTag];
 		}
 		else if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
@@ -882,7 +835,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				if ([scanner scanString:effectiveOpeningMarker intoString:NULL])
 				{
 					markedRange.length = scanner.scanLocation - markedRange.location;
-					NSString *markedString = [line substringWithRange:markedRange];
+					NSString *markedString = [text substringWithRange:markedRange];
 					
 					[self _processMarkedString:markedString insideMarker:effectiveOpeningMarker inRange:markedRange];
 				}
@@ -919,14 +872,9 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			}
 		}
 	}
-	
-	if (needsBR)
-	{
-		[self _pushTag:@"br" attributes:nil];
-		[self _popTag];
-	}
 }
 
+// process characters and optionally auto-detect links
 - (void)_processCharacters:(NSString *)string inRange:(NSRange)range allowAutodetection:(BOOL)allowAutodetection
 {
 	if (!allowAutodetection || !_dataDetector)
@@ -989,6 +937,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	[self _processCharacters:text inRange:range allowAutodetection:allowAutodetection];
 }
 
+// process text with the additional info that we are at the beginning of a line
 - (void)_handleTextAtBeginningOfLine:(NSString *)text inRange:(NSRange)range
 {
 	// white space is always trimmed off at beginning of line
@@ -1106,7 +1055,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
 	
 	// might contain further markdown/images
-	[self _processLine:linkText withIndex:lineIndex allowAutoDetection:NO];
+	[self _processHyperlinkEnclosedText:linkText withIndex:lineIndex allowAutoDetection:NO];
 	
 	[self _popTag];
 }
