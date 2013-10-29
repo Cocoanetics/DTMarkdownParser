@@ -365,6 +365,19 @@
 	[self _testScanMarkedRangeBeginningsInString:@"`Code`" expectedMarker:@"`"];
 }
 
+- (void)testMarkdownTextBetweenMarkersWithNewline
+{
+	NSScanner *scanner = [NSScanner scannerWithString:@"*space\nnewline*"];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *marker;
+	NSString *text;
+	BOOL b = [scanner scanMarkdownTextBetweenFormatMarkers:&text outermostMarker:&marker];
+	
+	STAssertFalse(b, @"Should not be able to scan formatted text with newline in it");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+}
+
 #pragma mark - Link Scanning
 
 - (void)testScanImage
