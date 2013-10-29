@@ -157,47 +157,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	return spacesCount;
 }
 
-- (BOOL)_shouldCloseListItemAfterLineAtIndex:(NSUInteger)lineIndex
-{
-	NSString *specialTypeOfFollowingLine = _specialLines[@(lineIndex+1)];
-
-	// following line is a sub list, indent does not matter because we deal with opening/closing separately
-	if (specialTypeOfFollowingLine == DTMarkdownParserSpecialSubList)
-	{
-		return NO;
-	}
-
-	// normal paragraph follows
-	if (!specialTypeOfFollowingLine && ![_ignoredLines containsIndex:lineIndex+1])
-	{
-		return NO;
-	}
-
-	return YES;
-}
-
-- (BOOL)_shouldAllowLineBreakAfterLineAtIndex:(NSUInteger)lineIndex
-{
-	NSRange lineRange = [_lineRanges[lineIndex] rangeValue];
-	NSRange paragraphRange = [self _rangeOfParagraphAtIndex:lineRange.location];
-	
-	BOOL lineIsLastInParagraph = (NSMaxRange(lineRange) == NSMaxRange(paragraphRange));
-	
-	if (lineIsLastInParagraph)
-	{
-		return NO;
-	}
-	
-	NSString *specialLineTypeOfFollowingLine = _specialLines[@(lineIndex+1)];
-	
-	if (![_ignoredLines containsIndex:lineIndex+1] && !specialLineTypeOfFollowingLine)
-	{
-		return YES;
-	}
-	
-	return NO;
-}
-
 - (void)_findAndMarkSpecialLines
 {
 	_ignoredLines = [NSMutableIndexSet new];
@@ -561,38 +520,38 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 - (NSInteger)_lineIndexContainingIndex:(NSUInteger)index
 {
-	NSUInteger lineIndex = 0;
-	for (NSValue *value in _lineRanges)
-	{
+	__block NSUInteger lineIndex = NSNotFound;
+	
+	[_lineRanges enumerateObjectsUsingBlock:^(NSValue *value, NSUInteger idx, BOOL *stop) {
+		
 		NSRange range = [value rangeValue];
 		
 		if (NSLocationInRange(index, range))
 		{
-			return lineIndex;
+			lineIndex = idx;
+			*stop = YES;
 		}
-		
-		lineIndex++;
-	}
+	}];
 	
-	return NSNotFound;
+	return lineIndex;
 }
 
 - (NSRange)_lineRangeContainingIndex:(NSUInteger)index
 {
-	NSUInteger lineIndex = 0;
-	for (NSValue *value in _lineRanges)
-	{
+	__block NSRange lineRange = NSMakeRange(NSNotFound, 0);
+	
+	[_lineRanges enumerateObjectsUsingBlock:^(NSValue *value, NSUInteger idx, BOOL *stop) {
+		
 		NSRange range = [value rangeValue];
 		
 		if (NSLocationInRange(index, range))
 		{
-			return range;
+			lineRange = range;
+			*stop = YES;
 		}
-		
-		lineIndex++;
-	}
+	}];
 	
-	return NSMakeRange(NSNotFound, 0);
+	return lineRange;
 }
 
 - (BOOL)_isSubListAtLineIndex:(NSUInteger)lineIndex
