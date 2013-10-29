@@ -1281,20 +1281,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	}
 }
 
-- (void)_addParagraphOpenIfNecessary
-{
-	// do not add p when inside a list item, this handles it separately
-	if ([_tagStack containsObject:@"li"])
-	{
-		return;
-	}
-	
-	if (![_tagStack containsObject:@"p"])
-	{
-		[self _pushTag:@"p" attributes:nil];
-	}
-}
-
 - (void)_closeBlockIfNecessary
 {
 	while ([_tagStack containsObject:@"p"])
@@ -1507,8 +1493,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			continue;
 		}
 
-		[self _addParagraphOpenIfNecessary];
-		
 		NSDictionary *linkAttributes;
 		NSString *enclosedString;
 		positionBeforeScan = scanner.scanLocation;
