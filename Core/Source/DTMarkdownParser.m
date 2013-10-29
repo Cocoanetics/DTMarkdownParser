@@ -616,7 +616,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		
 		BOOL currentLineIsIgnored = [_ignoredLines containsIndex:lineIndex];
 		BOOL currentLineIsHR = _specialLines[@(lineIndex)] == DTMarkdownParserSpecialTagHR || _specialLines[@(lineIndex)] == DTMarkdownParserSpecialTagHeading;
-		BOOL currentLineBeginsList = (_specialLines[@(lineIndex)] == DTMarkdownParserSpecialList);
+		BOOL currentLineBeginsList = (_specialLines[@(lineIndex)] == DTMarkdownParserSpecialList) || (_specialLines[@(lineIndex)] == DTMarkdownParserSpecialSubList);
 
 		if (currentLineIsIgnored || [scanner isAtEnd] || currentLineIsHR || currentLineBeginsList)
 		{
@@ -1239,6 +1239,95 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	[self _handleText:line inRange:lineRange allowAutodetection:YES];
 }
 
+- (void)_handleListItemPrefix:(NSString *)prefix inRange:(NSRange)range
+{
+	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	NSString *specialTypeOfLine = _specialLines[@(lineIndex)];
+	BOOL needOpenNewListLevel = NO;
+	
+	NSUInteger currentLineIndent = 0;
+	NSUInteger previousLineIndent = 0;
+	
+	if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
+	{
+		NSUInteger prevousListItem = [self _lineIndexOfListItemBeforeLineIndex:lineIndex];
+		
+		currentLineIndent = [self _listLevelForLineAtIndex:lineIndex];
+		previousLineIndent = [self _listLevelForLineAtIndex:prevousListItem];
+		
+		if (currentLineIndent > previousLineIndent)
+		{
+			needOpenNewListLevel = YES;
+		}
+	}
+	else if (specialTypeOfLine == DTMarkdownParserSpecialList)
+	{
+		// close all lists this is a new one
+		while ([_tagStack containsObject:@"ul"] || [_tagStack containsObject:@"ol"])
+		{
+			[self _popTag];
+		}
+	}
+	
+	NSAssert(![[self _currentTag] isEqualToString:@"p"], @"There should never be an open P tag in %s", __PRETTY_FUNCTION__);
+	
+	if (specialTypeOfLine == DTMarkdownParserSpecialList)
+	{
+		if (![_tagStack containsObject:@"ul"] && ![_tagStack containsObject:@"ol"])
+		{
+			// first line of list opens only if no list present
+			needOpenNewListLevel = YES;
+		}
+	}
+	
+	if (currentLineIndent<previousLineIndent)
+	{
+		NSInteger level = previousLineIndent;
+		
+		// close any number of list levels
+		while (level>currentLineIndent)
+		{
+			NSString *tagToPop = [self _currentTag];
+			
+			[self _popTag];
+			
+			if ([tagToPop isEqualToString:@"ul"] || [tagToPop isEqualToString:@"ol"])
+			{
+				level--;
+			}
+		}
+	}
+	
+	if (needOpenNewListLevel)
+	{
+		// need to open list
+		if ([prefix hasSuffix:@"."])
+		{
+			// ordered list
+			[self _pushTag:@"ol" attributes:nil];
+		}
+		else
+		{
+			// unordered list
+			[self _pushTag:@"ul" attributes:nil];
+		}
+	}
+	
+	if ([[self _currentTag] isEqualToString:@"li"])
+	{
+		[self _popTag]; // previous li
+	}
+	
+	[self _pushTag:@"li" attributes:nil];
+	
+	BOOL hasHangingParagraphs = [self _hasHangingParagraphsForListItemBeginningAtLineIndex:lineIndex];
+	
+	if (hasHangingParagraphs)
+	{
+		[self _pushTag:@"p" attributes:nil];
+	}
+}
+
 - (void)_addParagraphOpenIfNecessary
 {
 	if (![_tagStack containsObject:@"p"])
@@ -1409,6 +1498,22 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			NSString *lineSpecial = _specialLines[@(lineIndex)];
 			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
 			
+			if (lineSpecial == DTMarkdownParserSpecialSubList || lineSpecial == DTMarkdownParserSpecialList)
+			{
+				// skip the spaces
+				
+				[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
+				
+				NSString *prefix;
+				
+				if ([scanner scanMarkdownLineListPrefix:&prefix])
+				{
+					[self _handleListItemPrefix:prefix inRange:NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan)];
+				}
+				
+				continue;
+			}
+			
 			if (!lineSpecial && !lineIsIgnored)
 			{
 				if (![_tagStack containsObject:@"p"] && ![_tagStack containsObject:@"li"])
@@ -1484,6 +1589,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 					
 					continue;
 				}
+				
+				NSAssert(lineSpecial == DTMarkdownParserSpecialList && lineSpecial != DTMarkdownParserSpecialSubList, @"Should never get here, those are dealt with via the prefix");
 				
 				continue;
 			}
