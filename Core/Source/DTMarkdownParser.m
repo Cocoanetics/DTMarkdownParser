@@ -132,203 +132,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	return [_tagStack lastObject];
 }
 
-- (void)_processMarkedString:(NSString *)markedString insideMarker:(NSString *)marker
-{
-	NSAssert([markedString hasPrefix:marker] && [markedString hasSuffix:marker], @"Processed string has to have the marker at beginning and end");
-	
-	NSUInteger markerLength = [marker length];
-	NSRange insideMarkedRange = NSMakeRange(markerLength, markedString.length - 2*markerLength);
-	
-	// trim off prefix and suffix marker
-	markedString = [markedString substringWithRange:insideMarkedRange];
-	
-	BOOL processFurtherMarkers = YES;
-	
-	// open the tag for this marker
-	if ([marker isEqualToString:@"*"] || [marker isEqualToString:@"_"])
-	{
-		[self _pushTag:@"em" attributes:nil];
-	}
-	else if ([marker isEqualToString:@"**"] || [marker isEqualToString:@"__"])
-	{
-		[self _pushTag:@"strong" attributes:nil];
-	}
-	else if ([marker isEqualToString:@"~~"])
-	{
-		[self _pushTag:@"del" attributes:nil];
-	}
-	else if ([marker isEqualToString:@"`"])
-	{
-		[self _pushTag:@"code" attributes:nil];
-		processFurtherMarkers = NO;
-	}
-	
-	if (processFurtherMarkers)
-	{
-		NSScanner *scanner = [NSScanner scannerWithString:markedString];
-		scanner.charactersToBeSkipped = nil;
-		
-		NSString *furtherMarker;
-		
-		if ([scanner scanMarkdownBeginMarker:&furtherMarker] && [markedString hasSuffix:furtherMarker])
-		{
-			[self _processMarkedString:markedString insideMarker:furtherMarker];
-		}
-		else
-		{
-			[self _reportCharacters:markedString];
-		}
-	}
-	else
-	{
-		[self _reportCharacters:markedString];
-	}
-	
-	// close the tag for this marker
-	[self _popTag];
-}
-
-- (void)_processLine:(NSString *)line withIndex:(NSUInteger)lineIndex allowAutoDetection:(BOOL)allowAutoDetection
-{
-	BOOL needsBR = NO;
-	BOOL allowLineBreak = [self _shouldAllowLineBreakAfterLineAtIndex:lineIndex];
-	
-	if (allowLineBreak)
-	{
-		line = [line stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
-		
-		if ([line hasSuffix:@"\n"] && (_options && DTMarkdownParserOptionGitHubLineBreaks))
-		{
-			line = [line substringToIndex:[line length]-1];
-			needsBR = YES;
-			
-		}
-		else if ([line hasSuffix:@"  \n"])
-		{
-			needsBR = YES;
-			
-			line = [line substringToIndex:[line length]-3];
-		}
-	}
-	else
-	{
-		if ([line hasSuffix:@"\n"])
-		{
-			line = [line substringToIndex:[line length]-1];
-		}
-		
-		if ([line hasSuffix:@"\r"])
-		{
-			line = [line substringToIndex:[line length]-1];
-		}
-	}
-	
-	NSScanner *scanner = [NSScanner scannerWithString:line];
-	scanner.charactersToBeSkipped = nil;
-
-	// ingore leading whitespace characters for non PRE
-	if (!_specialLines[@(lineIndex)])
-	{
-		[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
-	}
-	
-	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
-	
-	while (![scanner isAtEnd])
-	{
-		NSString *part;
-		
-		// scan part until next special character
-		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
-		{
-			// output part before markers
-			[self _processCharacters:part allowAutodetection:allowAutoDetection];
-			
-			// re-enable detection, this might have been a faulty string containing a href
-			allowAutoDetection = YES;
-		}
-		
-		// stop scanning if done
-		if ([scanner isAtEnd])
-		{
-			break;
-		}
-		
-		// scan marker
-		NSString *effectiveOpeningMarker;
-		
-		NSRange markedRange = NSMakeRange(scanner.scanLocation, 0);
-		
-		NSDictionary *linkAttributes;
-		NSString *enclosedString;
-		
-		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
-		{
-			[self _pushTag:@"img" attributes:linkAttributes];
-			[self _popTag];
-		}
-		else if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
-		{
-			[self _pushTag:@"a" attributes:linkAttributes];
-			
-			// might contain further markdown/images
-			[self _processLine:enclosedString withIndex:lineIndex allowAutoDetection:NO];
-			
-			[self _popTag];
-		}
-		else if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
-		{
-			NSString *enclosedPart;
-			
-			if ([scanner scanUpToString:effectiveOpeningMarker intoString:&enclosedPart])
-			{
-				// there has to be a closing marker as well
-				if ([scanner scanString:effectiveOpeningMarker intoString:NULL])
-				{
-					markedRange.length = scanner.scanLocation - markedRange.location;
-					NSString *markedString = [line substringWithRange:markedRange];
-					
-					[self _processMarkedString:markedString insideMarker:effectiveOpeningMarker];
-				}
-				else
-				{
-					// output as is, not enclosed
-					NSString *joined = [effectiveOpeningMarker stringByAppendingString:enclosedPart];
-					
-					[self _reportCharacters:joined];
-				}
-			}
-			else
-			{
-				// did not enclose anything
-				[self _reportCharacters:effectiveOpeningMarker];
-				scanner.scanLocation = markedRange.location + [effectiveOpeningMarker length];
-			}
-		}
-		else
-		{
-			// single special character, just output
-			NSString *specialChar = [scanner.string substringWithRange:NSMakeRange(scanner.scanLocation, 1)];
-			
-			[self _reportCharacters:specialChar];
-			scanner.scanLocation ++;
-			
-			// scan part until next special character
-			if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
-			{
-				// output part before markers
-				[self _processCharacters:part allowAutodetection:NO];
-			}
-		}
-	}
-	
-	if (needsBR)
-	{
-		[self _pushTag:@"br" attributes:nil];
-		[self _popTag];
-	}
-}
-
 - (NSUInteger)_numberOfLeadingSpacesForLine:(NSString *)line
 {
 	NSUInteger spacesCount = 0;
@@ -923,6 +726,203 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 #pragma mark - Parsing
 
+- (void)_processMarkedString:(NSString *)markedString insideMarker:(NSString *)marker
+{
+	NSAssert([markedString hasPrefix:marker] && [markedString hasSuffix:marker], @"Processed string has to have the marker at beginning and end");
+	
+	NSUInteger markerLength = [marker length];
+	NSRange insideMarkedRange = NSMakeRange(markerLength, markedString.length - 2*markerLength);
+	
+	// trim off prefix and suffix marker
+	markedString = [markedString substringWithRange:insideMarkedRange];
+	
+	BOOL processFurtherMarkers = YES;
+	
+	// open the tag for this marker
+	if ([marker isEqualToString:@"*"] || [marker isEqualToString:@"_"])
+	{
+		[self _pushTag:@"em" attributes:nil];
+	}
+	else if ([marker isEqualToString:@"**"] || [marker isEqualToString:@"__"])
+	{
+		[self _pushTag:@"strong" attributes:nil];
+	}
+	else if ([marker isEqualToString:@"~~"])
+	{
+		[self _pushTag:@"del" attributes:nil];
+	}
+	else if ([marker isEqualToString:@"`"])
+	{
+		[self _pushTag:@"code" attributes:nil];
+		processFurtherMarkers = NO;
+	}
+	
+	if (processFurtherMarkers)
+	{
+		NSScanner *scanner = [NSScanner scannerWithString:markedString];
+		scanner.charactersToBeSkipped = nil;
+		
+		NSString *furtherMarker;
+		
+		if ([scanner scanMarkdownBeginMarker:&furtherMarker] && [markedString hasSuffix:furtherMarker])
+		{
+			[self _processMarkedString:markedString insideMarker:furtherMarker];
+		}
+		else
+		{
+			[self _reportCharacters:markedString];
+		}
+	}
+	else
+	{
+		[self _reportCharacters:markedString];
+	}
+	
+	// close the tag for this marker
+	[self _popTag];
+}
+
+- (void)_processLine:(NSString *)line withIndex:(NSUInteger)lineIndex allowAutoDetection:(BOOL)allowAutoDetection
+{
+	BOOL needsBR = NO;
+	BOOL allowLineBreak = [self _shouldAllowLineBreakAfterLineAtIndex:lineIndex];
+	
+	if (allowLineBreak)
+	{
+		line = [line stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+		
+		if ([line hasSuffix:@"\n"] && (_options && DTMarkdownParserOptionGitHubLineBreaks))
+		{
+			line = [line substringToIndex:[line length]-1];
+			needsBR = YES;
+			
+		}
+		else if ([line hasSuffix:@"  \n"])
+		{
+			needsBR = YES;
+			
+			line = [line substringToIndex:[line length]-3];
+		}
+	}
+	else
+	{
+		if ([line hasSuffix:@"\n"])
+		{
+			line = [line substringToIndex:[line length]-1];
+		}
+		
+		if ([line hasSuffix:@"\r"])
+		{
+			line = [line substringToIndex:[line length]-1];
+		}
+	}
+	
+	NSScanner *scanner = [NSScanner scannerWithString:line];
+	scanner.charactersToBeSkipped = nil;
+	
+	// ingore leading whitespace characters for non PRE
+	if (!_specialLines[@(lineIndex)])
+	{
+		[scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
+	}
+	
+	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<"];
+	
+	while (![scanner isAtEnd])
+	{
+		NSString *part;
+		
+		// scan part until next special character
+		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
+		{
+			// output part before markers
+			[self _processCharacters:part allowAutodetection:allowAutoDetection];
+			
+			// re-enable detection, this might have been a faulty string containing a href
+			allowAutoDetection = YES;
+		}
+		
+		// stop scanning if done
+		if ([scanner isAtEnd])
+		{
+			break;
+		}
+		
+		// scan marker
+		NSString *effectiveOpeningMarker;
+		
+		NSRange markedRange = NSMakeRange(scanner.scanLocation, 0);
+		
+		NSDictionary *linkAttributes;
+		NSString *enclosedString;
+		
+		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
+		{
+			[self _pushTag:@"img" attributes:linkAttributes];
+			[self _popTag];
+		}
+		else if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
+		{
+			[self _pushTag:@"a" attributes:linkAttributes];
+			
+			// might contain further markdown/images
+			[self _processLine:enclosedString withIndex:lineIndex allowAutoDetection:NO];
+			
+			[self _popTag];
+		}
+		else if ([scanner scanMarkdownBeginMarker:&effectiveOpeningMarker])
+		{
+			NSString *enclosedPart;
+			
+			if ([scanner scanUpToString:effectiveOpeningMarker intoString:&enclosedPart])
+			{
+				// there has to be a closing marker as well
+				if ([scanner scanString:effectiveOpeningMarker intoString:NULL])
+				{
+					markedRange.length = scanner.scanLocation - markedRange.location;
+					NSString *markedString = [line substringWithRange:markedRange];
+					
+					[self _processMarkedString:markedString insideMarker:effectiveOpeningMarker];
+				}
+				else
+				{
+					// output as is, not enclosed
+					NSString *joined = [effectiveOpeningMarker stringByAppendingString:enclosedPart];
+					
+					[self _reportCharacters:joined];
+				}
+			}
+			else
+			{
+				// did not enclose anything
+				[self _reportCharacters:effectiveOpeningMarker];
+				scanner.scanLocation = markedRange.location + [effectiveOpeningMarker length];
+			}
+		}
+		else
+		{
+			// single special character, just output
+			NSString *specialChar = [scanner.string substringWithRange:NSMakeRange(scanner.scanLocation, 1)];
+			
+			[self _reportCharacters:specialChar];
+			scanner.scanLocation ++;
+			
+			// scan part until next special character
+			if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
+			{
+				// output part before markers
+				[self _processCharacters:part allowAutodetection:NO];
+			}
+		}
+	}
+	
+	if (needsBR)
+	{
+		[self _pushTag:@"br" attributes:nil];
+		[self _popTag];
+	}
+}
+
 - (void)_processCharacters:(NSString *)string allowAutodetection:(BOOL)allowAutodetection
 {
 	if (!allowAutodetection || !_dataDetector)
@@ -1344,128 +1344,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	}
 }
 
-- (void)_handleListLine:(NSString *)line inRange:(NSRange)range
-{
-	NSString *prefix;
-	
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
-	NSString *specialTypeOfLine = _specialLines[@(lineIndex)];
-	BOOL needOpenNewListLevel = NO;
-	
-	NSUInteger currentLineIndent = 0;
-	NSUInteger previousLineIndent = 0;
-	
-	if (specialTypeOfLine == DTMarkdownParserSpecialSubList)
-	{
-		// we know there is a list prefix, but we need to eliminate the indentation first
-		line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-		
-		NSUInteger prevousListItem = [self _lineIndexOfListItemBeforeLineIndex:lineIndex];
-		
-		currentLineIndent = [self _listLevelForLineAtIndex:lineIndex];
-		previousLineIndent = [self _listLevelForLineAtIndex:prevousListItem];
-		
-		if (currentLineIndent > previousLineIndent)
-		{
-			needOpenNewListLevel = YES;
-		}
-	}
-	else if (specialTypeOfLine == DTMarkdownParserSpecialList)
-	{
-		// close all lists this is a new one
-		while ([_tagStack containsObject:@"ul"] || [_tagStack containsObject:@"ol"])
-		{
-			[self _popTag];
-		}
-	}
-	
-	NSScanner *scanner = [NSScanner scannerWithString:line];
-	scanner.charactersToBeSkipped = nil;
-	
-	[scanner scanMarkdownLineListPrefix:&prefix];
-	
-	NSAssert(prefix, @"Cannot process line, no list prefix");
-	
-	NSAssert(![[self _currentTag] isEqualToString:@"p"], @"There should never be an open P tag in %s", __PRETTY_FUNCTION__);
-	
-	// cut off prefix
-	line = [line substringFromIndex:scanner.scanLocation];
-	
-	if (specialTypeOfLine == DTMarkdownParserSpecialList)
-	{
-		if (![_tagStack containsObject:@"ul"] && ![_tagStack containsObject:@"ol"])
-		{
-			// first line of list opens only if no list present
-			needOpenNewListLevel = YES;
-		}
-	}
-	
-	if (currentLineIndent<previousLineIndent)
-	{
-		NSInteger level = previousLineIndent;
-		
-		// close any number of list levels
-		while (level>currentLineIndent)
-		{
-			NSString *tagToPop = [self _currentTag];
-			
-			[self _popTag];
-			
-			if ([tagToPop isEqualToString:@"ul"] || [tagToPop isEqualToString:@"ol"])
-			{
-				level--;
-			}
-		}
-	}
-	
-	if (needOpenNewListLevel)
-	{
-		// need to open list
-		if ([prefix hasSuffix:@"."])
-		{
-			// ordered list
-			[self _pushTag:@"ol" attributes:nil];
-		}
-		else
-		{
-			// unordered list
-			[self _pushTag:@"ul" attributes:nil];
-		}
-	}
-	
-	if ([[self _currentTag] isEqualToString:@"li"])
-	{
-		[self _popTag]; // previous li
-	}
-	
-	[self _pushTag:@"li" attributes:nil];
-	
-	BOOL hasHangingParagraphs = [self _hasHangingParagraphsForListItemBeginningAtLineIndex:lineIndex];
-	
-	if (hasHangingParagraphs)
-	{
-		[self _pushTag:@"p" attributes:nil];
-	}
-	
-	// process line as normal without prefix
-	[self _processLine:line withIndex:lineIndex allowAutoDetection:YES];
-	
-	if (hasHangingParagraphs)
-	{
-		return;
-	}
-	
-	if ([self _shouldCloseListItemAfterLineAtIndex:lineIndex])
-	{
-		[self _popTag]; // li
-		
-		if ([_ignoredLines containsIndex:lineIndex+1])
-		{
-			[self _popTag];
-		}
-	}
-}
-
 - (void)_parseLoop
 {
 	[self _findAndMarkSpecialLines];
@@ -1572,13 +1450,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				if (lineSpecial == DTMarkdownParserSpecialTagHeading || lineSpecial == DTMarkdownParserSpecialTagH1 || lineSpecial == DTMarkdownParserSpecialTagH2)
 				{
 					[self _handleHeader:line inRange:lineRange];
-					
-					continue;
-				}
-				
-				if (lineSpecial == DTMarkdownParserSpecialList || lineSpecial == DTMarkdownParserSpecialSubList)
-				{
-					[self _handleListLine:line inRange:lineRange];
 					
 					continue;
 				}
