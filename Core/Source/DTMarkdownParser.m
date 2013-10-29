@@ -686,62 +686,62 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 #pragma mark - Parsing
 
 // process a string that has a formatting marker at the begin and end
-- (void)_processMarkedString:(NSString *)markedString insideMarker:(NSString *)marker inRange:(NSRange)range
-{
-	NSAssert([markedString hasPrefix:marker] && [markedString hasSuffix:marker], @"Processed string has to have the marker at beginning and end");
-	
-	NSUInteger markerLength = [marker length];
-	NSRange insideMarkedRange = NSMakeRange(markerLength, markedString.length - 2*markerLength);
-	
-	// trim off prefix and suffix marker
-	markedString = [markedString substringWithRange:insideMarkedRange];
-	
-	BOOL processFurtherMarkers = YES;
-	
-	// open the tag for this marker
-	if ([marker isEqualToString:@"*"] || [marker isEqualToString:@"_"])
-	{
-		[self _pushTag:@"em" attributes:nil];
-	}
-	else if ([marker isEqualToString:@"**"] || [marker isEqualToString:@"__"])
-	{
-		[self _pushTag:@"strong" attributes:nil];
-	}
-	else if ([marker isEqualToString:@"~~"])
-	{
-		[self _pushTag:@"del" attributes:nil];
-	}
-	else if ([marker isEqualToString:@"`"])
-	{
-		[self _pushTag:@"code" attributes:nil];
-		processFurtherMarkers = NO;
-	}
-	
-	if (processFurtherMarkers)
-	{
-		NSScanner *scanner = [NSScanner scannerWithString:markedString];
-		scanner.charactersToBeSkipped = nil;
-		
-		NSString *furtherMarker;
-		
-		if ([scanner scanMarkdownBeginMarker:&furtherMarker] && [markedString hasSuffix:furtherMarker])
-		{
-			NSUInteger markerLength = [marker length];
-			[self _processMarkedString:markedString insideMarker:furtherMarker inRange:NSMakeRange(range.location + markerLength, range.length - 2*markerLength)];
-		}
-		else
-		{
-			[self _reportCharacters:markedString];
-		}
-	}
-	else
-	{
-		[self _reportCharacters:markedString];
-	}
-	
-	// close the tag for this marker
-	[self _popTag];
-}
+//- (void)_processMarkedString2:(NSString *)markedString insideMarker:(NSString *)marker inRange:(NSRange)range
+//{
+//	NSAssert([markedString hasPrefix:marker] && [markedString hasSuffix:marker], @"Processed string has to have the marker at beginning and end");
+//	
+//	NSUInteger markerLength = [marker length];
+//	NSRange insideMarkedRange = NSMakeRange(markerLength, markedString.length - 2*markerLength);
+//	
+//	// trim off prefix and suffix marker
+//	markedString = [markedString substringWithRange:insideMarkedRange];
+//	
+//	BOOL processFurtherMarkers = YES;
+//	
+//	// open the tag for this marker
+//	if ([marker isEqualToString:@"*"] || [marker isEqualToString:@"_"])
+//	{
+//		[self _pushTag:@"em" attributes:nil];
+//	}
+//	else if ([marker isEqualToString:@"**"] || [marker isEqualToString:@"__"])
+//	{
+//		[self _pushTag:@"strong" attributes:nil];
+//	}
+//	else if ([marker isEqualToString:@"~~"])
+//	{
+//		[self _pushTag:@"del" attributes:nil];
+//	}
+//	else if ([marker isEqualToString:@"`"])
+//	{
+//		[self _pushTag:@"code" attributes:nil];
+//		processFurtherMarkers = NO;
+//	}
+//	
+//	if (processFurtherMarkers)
+//	{
+//		NSScanner *scanner = [NSScanner scannerWithString:markedString];
+//		scanner.charactersToBeSkipped = nil;
+//		
+//		NSString *furtherMarker;
+//		
+//		if ([scanner scanMarkdownBeginMarker:&furtherMarker] && [markedString hasSuffix:furtherMarker])
+//		{
+//			NSUInteger markerLength = [marker length];
+//			[self _processMarkedString:markedString insideMarker:furtherMarker inRange:NSMakeRange(range.location + markerLength, range.length - 2*markerLength)];
+//		}
+//		else
+//		{
+//			[self _reportCharacters:markedString];
+//		}
+//	}
+//	else
+//	{
+//		[self _reportCharacters:markedString];
+//	}
+//	
+//	// close the tag for this marker
+//	[self _popTag];
+//}
 
 // process the text between the [] of a hyperlink, this is similar to the parse loop, but with several key differences
 - (void)_processHyperlinkEnclosedText:(NSString *)text withIndex:(NSUInteger)lineIndex allowAutoDetection:(BOOL)allowAutoDetection
@@ -793,10 +793,12 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				// there has to be a closing marker as well
 				if ([scanner scanString:effectiveOpeningMarker intoString:NULL])
 				{
-					markedRange.length = scanner.scanLocation - markedRange.location;
+					NSUInteger markerLength = [effectiveOpeningMarker length];
+					markedRange.length = scanner.scanLocation - markedRange.location - 2*markerLength;
+					markedRange.location += markerLength;
 					NSString *markedString = [text substringWithRange:markedRange];
 					
-					[self _processMarkedString:markedString insideMarker:effectiveOpeningMarker inRange:markedRange];
+					[self _handleMarkedText:markedString marker:effectiveOpeningMarker inRange:markedRange];
 				}
 				else
 				{
