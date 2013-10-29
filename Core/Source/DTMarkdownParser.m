@@ -1136,6 +1136,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		
 		if (!specialPreviousLine && isAtBeginOfParagraph && !specialCurrentLine)
 		{
+			
+			// a new normal paragraph without indentation terminates previous list
 			if (!hasIndent)
 			{
 				if ([_tagStack containsObject:@"li"])
