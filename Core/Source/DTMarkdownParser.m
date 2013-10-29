@@ -831,12 +831,13 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	while (![scanner isAtEnd])
 	{
 		NSString *part;
+		NSUInteger positionBeforeScan = scanner.scanLocation;
 		
 		// scan part until next special character
 		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
 		{
 			// output part before markers
-			[self _processCharacters:part allowAutodetection:allowAutoDetection];
+			[self _processCharacters:part inRange:NSMakeRange(positionBeforeScan, positionBeforeScan-scanner.scanLocation) allowAutodetection:allowAutoDetection];
 			
 			// re-enable detection, this might have been a faulty string containing a href
 			allowAutoDetection = YES;
@@ -907,11 +908,13 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			[self _reportCharacters:specialChar];
 			scanner.scanLocation ++;
 			
+			NSUInteger positionBeforeScan = scanner.scanLocation;
+			
 			// scan part until next special character
 			if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
 			{
 				// output part before markers
-				[self _processCharacters:part allowAutodetection:NO];
+				[self _processCharacters:part inRange:NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan) allowAutodetection:NO];
 			}
 		}
 	}
@@ -923,7 +926,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	}
 }
 
-- (void)_processCharacters:(NSString *)string allowAutodetection:(BOOL)allowAutodetection
+- (void)_processCharacters:(NSString *)string inRange:(NSRange)range allowAutodetection:(BOOL)allowAutodetection
 {
 	if (!allowAutodetection || !_dataDetector)
 	{
@@ -982,7 +985,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 // text without format markers
 - (void)_handleText:(NSString *)text inRange:(NSRange)range  allowAutodetection:(BOOL)allowAutodetection
 {
-	[self _processCharacters:text allowAutodetection:allowAutodetection];
+	[self _processCharacters:text inRange:range allowAutodetection:allowAutodetection];
 }
 
 - (void)_handleTextAtBeginningOfLine:(NSString *)text inRange:(NSRange)range
@@ -1198,7 +1201,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	
 	[self _pushTag:tag attributes:nil];
 	
-	[self _processCharacters:header allowAutodetection:YES];
+	[self _processCharacters:header inRange:range allowAutodetection:YES];
 	
 	[self _popTag];
 }
