@@ -1330,6 +1330,12 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 - (void)_addParagraphOpenIfNecessary
 {
+	// do not add p when inside a list item, this handles it separately
+	if ([_tagStack containsObject:@"li"])
+	{
+		return;
+	}
+	
 	if (![_tagStack containsObject:@"p"])
 	{
 		[self _pushTag:@"p" attributes:nil];
@@ -1547,6 +1553,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			// end of line
 			continue;
 		}
+
+		[self _addParagraphOpenIfNecessary];
 		
 		NSDictionary *linkAttributes;
 		NSString *enclosedString;
@@ -1554,8 +1562,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
 		{
-			[self _addParagraphOpenIfNecessary];
-
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 			[self _handleImageAttributes:linkAttributes inRange:range];
 			
@@ -1564,11 +1570,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		
 		if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
 		{
-			if (![_tagStack containsObject:@"li"])
-			{
-				[self _addParagraphOpenIfNecessary];
-			}
-
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 			[self _handleLinkText:enclosedString attributes:linkAttributes inRange:range];
 
@@ -1579,8 +1580,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		
 		if ([scanner scanMarkdownTextBetweenFormatMarkers:&enclosedString outermostMarker:&effectiveOpeningMarker])
 		{
-			[self _addParagraphOpenIfNecessary];
-			
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
 			[self _handleMarkedText:enclosedString marker:effectiveOpeningMarker inRange:range];
 
