@@ -158,6 +158,63 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	return spacesCount;
 }
 
+- (void)_fixNewlinesInCodeBlocks
+{
+	__block BOOL inFencedBlock = NO;
+	
+	[_lineRanges enumerateObjectsUsingBlock:^(NSValue *valueRange, NSUInteger lineIndex, BOOL *stop) {
+		
+		NSString *lineSpecial = _specialLines[@(lineIndex)];
+		BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
+		
+		if (lineSpecial == DTMarkdownParserSpecialFencedPreStart)
+		{
+			if (inFencedBlock)
+			{
+				// incorrect begin, this is an end
+				inFencedBlock = NO;
+				
+				_specialLines[@(lineIndex)] = DTMarkdownParserSpecialFencedPreEnd;
+			}
+			else
+			{
+				inFencedBlock = YES;
+			}
+		}
+		else if (lineSpecial == DTMarkdownParserSpecialFencedPreEnd)
+		{
+			inFencedBlock = NO;
+		}
+		else if (!lineSpecial)
+		{
+			if (inFencedBlock)
+			{
+				if (lineIsIgnored)
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialFencedPreCode;
+					[_ignoredLines removeIndex:lineIndex];
+				}
+				else
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialFencedPreCode;
+				}
+			}
+			else
+			{
+				NSUInteger indentBefore = lineIndex?[_lineIndentLevel[@(lineIndex-1)] integerValue]:0;
+				NSUInteger indentAfter = [_lineIndentLevel[@(lineIndex+1)] integerValue];
+				
+				if (lineIsIgnored && indentBefore>=4 && indentAfter>=4)
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagPre;
+					[_ignoredLines removeIndex:lineIndex];
+				}
+			}
+		}
+	}];
+}
+
+
 - (void)_findAndMarkSpecialLines
 {
 	_ignoredLines = [NSMutableIndexSet new];
@@ -822,10 +879,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			{
 				if ([_tagStack containsObject:@"li"])
 				{
-					while ([_tagStack count])
-					{
-						[self _popTag];
-					}
+					[self _closeAllIfNecessary];
 				}
 			}
 			
@@ -922,9 +976,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
 	NSString *lineSpecial = _specialLines[@(lineIndex)];
 	
-	NSRange paragraphRange = [_paragraphRanges rangeContainingIndex:range.location];
-	BOOL isAtEndOfParagraph = (NSMaxRange(range) == NSMaxRange(paragraphRange));
-
 	if (lineSpecial == DTMarkdownParserSpecialTagPre)
 	{
 		// trim off indenting
@@ -935,6 +986,10 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		else if ([line hasPrefix:@"    "])
 		{
 			codeLine = [line substringFromIndex:4];
+		}
+		else
+		{
+			codeLine = line;
 		}
 	}
 	else
@@ -947,10 +1002,12 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		[self _pushTag:@"pre" attributes:nil];
 		[self _pushTag:@"code" attributes:nil];
 	}
-	
+
 	[self _reportCharacters:codeLine];
 	
-	if (isAtEndOfParagraph)
+	NSString *followingLineSpecial = _specialLines[@(lineIndex+1)];
+	
+	if (!followingLineSpecial || [_ignoredLines containsIndex:lineIndex+1])
 	{
 		[self _popTag];
 		[self _popTag];
@@ -1143,9 +1200,18 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	}
 }
 
+- (void)_closeAllIfNecessary
+{
+	while ([_tagStack count])
+	{
+		[self _popTag];
+	}
+}
+
 - (void)_parseLoop
 {
 	[self _findAndMarkSpecialLines];
+	[self _fixNewlinesInCodeBlocks];
 	
 	_tagStack = [NSMutableArray new];
 
@@ -1234,6 +1300,11 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				
 				if (lineSpecial == DTMarkdownParserSpecialTagHR)
 				{
+					if (![line hasPrefix:@" "])
+					{
+						[self _closeAllIfNecessary];
+					}
+					
 					[self _handleHorizontalRuleInRange:lineRange];
 					
 					continue;
@@ -1248,6 +1319,11 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				
 				if (lineSpecial == DTMarkdownParserSpecialTagHeading || lineSpecial == DTMarkdownParserSpecialTagH1 || lineSpecial == DTMarkdownParserSpecialTagH2)
 				{
+					if (![line hasPrefix:@" "])
+					{
+						[self _closeAllIfNecessary];
+					}
+					
 					[self _handleHeader:line inRange:lineRange];
 					
 					continue;
@@ -1382,11 +1458,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		}
 	}
 	
-	// pop all remaining open tags
-	while ([_tagStack count])
-	{
-		[self _popTag];
-	}
+	[self _closeAllIfNecessary];
 }
 
 - (BOOL)parse
