@@ -263,6 +263,16 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 			BOOL rangesAreEqual = NSEqualRanges(rangeContaining, expectedRange);
 			STAssertTrue(rangesAreEqual, @"Range containing %lu should be %@.", (unsigned long)idx, NSStringFromRange(expectedRange));
 		}
+		
+		if (rangeIdx == testRangeArrayOf4Count-1) {
+			NSRange notFoundRange = NSMakeRange(NSNotFound, 0);
+			
+			NSUInteger idx = NSMaxRange(expectedRange);
+			NSRange rangeContaining = [rangeArray rangeContainingIndex:idx];
+			
+			BOOL rangesAreEqual = NSEqualRanges(rangeContaining, notFoundRange);
+			STAssertTrue(rangesAreEqual, @"There should be no range containing %lu.", (unsigned long)idx);
+		}
 	}
 }
 
