@@ -17,7 +17,6 @@
 		3DF16ACA18212473005A46A9 /* JXRangeArrayTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF16AC818212473005A46A9 /* JXRangeArrayTest.m */; };
 		3DF16AD31821627C005A46A9 /* JXRangeArray+Privat.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF16AD11821627C005A46A9 /* JXRangeArray+Privat.h */; };
 		3DF16AD41821627C005A46A9 /* JXRangeArray+Privat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF16AD21821627C005A46A9 /* JXRangeArray+Privat.m */; };
-		3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */; };
 		3DFFAE7118184C1A00EE245D /* TagTreeOutlineController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */; };
 		3DFFAE7218184C7E00EE245D /* SimpleTreeGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */; };
 		3DFFAE731818577C00EE245D /* DTMarkdownParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
@@ -1563,7 +1562,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */,
 				A7BF26001811385A0013D8D7 /* DTMarkdownParser.h in Headers */,
 				3DF16AC11820EA08005A46A9 /* JXRangeArray.h in Headers */,
 				3DF16AD31821627C005A46A9 /* JXRangeArray+Privat.h in Headers */,
