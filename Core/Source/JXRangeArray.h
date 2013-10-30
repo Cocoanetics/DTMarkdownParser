@@ -21,7 +21,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface JXRangeArray : NSObject {
+@interface JXRangeArray : NSObject <NSCopying> {
 	NSUInteger _count, _capacity;
 	NSRange  *_ranges;
 }

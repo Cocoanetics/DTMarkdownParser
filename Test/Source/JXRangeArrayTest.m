@@ -284,4 +284,14 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 	}
 }
 
+- (void)testNSCopyingSupport
+{
+	JXRangeArray *original = [[JXRangeArray alloc] initWithRanges:(NSRange *)&testRangeArrayOf4
+															count:testRangeArrayOf4Count];
+	
+	JXRangeArray *copy = [original copy];
+	
+	STAssertEqualObjects(original, copy, @"A copy of a range array should be identically to the original.");
+}
+
 @end

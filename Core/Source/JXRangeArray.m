@@ -288,6 +288,15 @@ const NSUInteger JXRangeArrayGrowthFactor = 2;
 }
 
 
+- (id)copyWithZone:(NSZone *)zone
+{
+	id newRangeArray = [[[self class] allocWithZone:zone] initWithRanges:_ranges
+																   count:_count];
+	
+	return newRangeArray;
+}
+
+
 - (NSString *)description
 {
 	return [self descriptionWithLocale:nil indent:0];
