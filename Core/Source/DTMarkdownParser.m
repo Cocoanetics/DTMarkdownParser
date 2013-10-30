@@ -574,27 +574,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	return lineIndex;
 }
 
-- (NSRange)_lineRangeContainingIndex:(NSUInteger)index
-{
-	__block NSRange lineRange = NSMakeRange(NSNotFound, 0);
-	
-	NSRange *lineRanges = _lineRanges.ranges;
-	NSUInteger lineRangesCount = _lineRanges.count;
-	
-	for (NSUInteger i = 0; i < lineRangesCount; i++)
-	{
-		NSRange range = lineRanges[i];
-		
-		if (NSLocationInRange(index, range))
-		{
-			lineRange = range;
-			break;
-		}
-	}
-	
-	return lineRange;
-}
-
 - (BOOL)_isSubListAtLineIndex:(NSUInteger)lineIndex
 {
 	NSString *lineSpecial = _specialLines[@(lineIndex)];
@@ -860,8 +839,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		hasIndent = YES;
 	}
 	
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
-	NSRange lineRange = [self _lineRangeContainingIndex:range.location];
+	NSUInteger lineIndex;
+	NSRange lineRange = [_lineRanges rangeContainingIndex:range.location foundArrayIndex:&lineIndex];
 	NSRange paragraphRange = [_paragraphRanges rangeContainingIndex:range.location];
 	
 	BOOL isAtBeginOfParagraph = paragraphRange.location == lineRange.location;
@@ -960,7 +939,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 {
 	[self _pushTag:@"a" attributes:attributes];
 	
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	NSUInteger lineIndex = [_lineRanges arrayIndexForRangeContainingIndex:range.location];
 	
 	// might contain further markdown/images
 	[self _processHyperlinkEnclosedText:linkText withIndex:lineIndex allowAutoDetection:NO];
@@ -973,7 +952,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 {
 	NSString *codeLine;
 	
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	NSUInteger lineIndex = [_lineRanges arrayIndexForRangeContainingIndex:range.location];
 	NSString *lineSpecial = _specialLines[@(lineIndex)];
 	
 	if (lineSpecial == DTMarkdownParserSpecialTagPre)
@@ -1017,7 +996,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 // header lines
 - (void)_handleHeader:(NSString *)header inRange:(NSRange)range
 {
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	NSUInteger lineIndex = [_lineRanges arrayIndexForRangeContainingIndex:range.location];
 	NSString *lineSpecial = _specialLines[@(lineIndex)];
 
 	NSUInteger headerLevel = 0;
@@ -1105,7 +1084,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 - (void)_handleListItemPrefix:(NSString *)prefix inRange:(NSRange)range
 {
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
+	NSUInteger lineIndex = [_lineRanges arrayIndexForRangeContainingIndex:range.location];
 	NSString *specialTypeOfLine = _specialLines[@(lineIndex)];
 	BOOL needOpenNewListLevel = NO;
 	
@@ -1228,7 +1207,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		positionBeforeScan = scanner.scanLocation;
 		NSRange lineBreakRange = NSMakeRange(scanner.scanLocation, 0);
 		
-		NSRange lineRange = [self _lineRangeContainingIndex:positionBeforeScan];
+		NSRange lineRange = [_lineRanges rangeContainingIndex:positionBeforeScan];
 		BOOL isAtBeginningOfLine = (lineRange.location == positionBeforeScan);
 		
 		NSRange paragraphRange = [_paragraphRanges rangeContainingIndex:positionBeforeScan];
@@ -1236,7 +1215,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		
 		if (isAtBeginningOfLine)
 		{
-			NSUInteger lineIndex = [self _lineIndexContainingIndex:positionBeforeScan];
+			NSUInteger lineIndex = [_lineRanges arrayIndexForRangeContainingIndex:positionBeforeScan];
 			
 			NSString *lineSpecial = _specialLines[@(lineIndex)];
 			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
