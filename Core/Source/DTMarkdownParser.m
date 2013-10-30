@@ -838,10 +838,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			{
 				if ([_tagStack containsObject:@"li"])
 				{
-					while ([_tagStack count])
-					{
-						[self _popTag];
-					}
+					[self _closeAllIfNecessary];
 				}
 			}
 			
@@ -1159,6 +1156,14 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	}
 }
 
+- (void)_closeAllIfNecessary
+{
+	while ([_tagStack count])
+	{
+		[self _popTag];
+	}
+}
+
 - (void)_parseLoop
 {
 	[self _findAndMarkSpecialLines];
@@ -1264,6 +1269,11 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				
 				if (lineSpecial == DTMarkdownParserSpecialTagHeading || lineSpecial == DTMarkdownParserSpecialTagH1 || lineSpecial == DTMarkdownParserSpecialTagH2)
 				{
+					if (![line hasPrefix:@" "])
+					{
+						[self _closeAllIfNecessary];
+					}
+					
 					[self _handleHeader:line inRange:lineRange];
 					
 					continue;
@@ -1398,11 +1408,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		}
 	}
 	
-	// pop all remaining open tags
-	while ([_tagStack count])
-	{
-		[self _popTag];
-	}
+	[self _closeAllIfNecessary];
 }
 
 - (BOOL)parse

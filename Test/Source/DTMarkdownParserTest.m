@@ -723,7 +723,36 @@
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
 
+- (void)testHeadingFollowingListNonIndented
+{
+	NSString *string = @"6. List\n\nHeader\n------\n\nParagraph";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:DTMarkdownParserOptionGitHubLineBreaks];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ol><li>List</li></ol><h2>Header</h2>\n<p>Paragraph</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testHeadingFollowingListIndented
+{
+	NSString *string = @"6. List\n\n Header\n------\n\nParagraph";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:DTMarkdownParserOptionGitHubLineBreaks];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ol><li>List<h2>Header</h2>\n</li></ol><p>Paragraph</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 #pragma mark - Line Break
