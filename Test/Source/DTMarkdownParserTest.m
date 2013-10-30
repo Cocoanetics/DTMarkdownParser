@@ -1523,7 +1523,7 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
- // issue 11
+// issue 11
 - (void)testPreformattedWithNewline
 {
 	NSString *string = @"```\nLine1\n\nLine2\n```";
@@ -1533,7 +1533,23 @@
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
 	
-   NSString *expected = @"<pre><code>Line1\n\nLine2\n</code></pre>\n";
+	NSString *expected = @"<pre><code>Line1\n\nLine2\n</code></pre>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+// issue 11
+- (void)testPreformattedWithNewlineSpaces
+{
+	NSString *string = @"Normal\n\n    Line 1\n\n    Line 2\n\nNormal";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>Normal</p>\n<pre><code>Line 1\n\nLine 2\n</code></pre>\n<p>Normal</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");

@@ -198,6 +198,17 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialFencedPreCode;
 				}
 			}
+			else
+			{
+				NSUInteger indentBefore = lineIndex?[_lineIndentLevel[@(lineIndex-1)] integerValue]:0;
+				NSUInteger indentAfter = [_lineIndentLevel[@(lineIndex+1)] integerValue];
+				
+				if (lineIsIgnored && indentBefore>=4 && indentAfter>=4)
+				{
+					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialTagPre;
+					[_ignoredLines removeIndex:lineIndex];
+				}
+			}
 		}
 	}];
 }
@@ -991,6 +1002,10 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		else if ([line hasPrefix:@"    "])
 		{
 			codeLine = [line substringFromIndex:4];
+		}
+		else
+		{
+			codeLine = line;
 		}
 	}
 	else
