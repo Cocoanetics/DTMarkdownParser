@@ -1255,6 +1255,11 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				
 				if (lineSpecial == DTMarkdownParserSpecialTagHR)
 				{
+					if (![line hasPrefix:@" "])
+					{
+						[self _closeAllIfNecessary];
+					}
+					
 					[self _handleHorizontalRuleInRange:lineRange];
 					
 					continue;
