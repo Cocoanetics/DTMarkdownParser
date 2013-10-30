@@ -1523,7 +1523,6 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
-/*
  // issue 11
 - (void)testPreformattedWithNewline
 {
@@ -1534,12 +1533,11 @@
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
 	
-   NSString *expected = @"<pre><code>Line1\n\nLine2</code></pre>\n";
+   NSString *expected = @"<pre><code>Line1\n\nLine2\n</code></pre>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
- */
 
 // issue 10
 - (void)testMultipleBackticks
