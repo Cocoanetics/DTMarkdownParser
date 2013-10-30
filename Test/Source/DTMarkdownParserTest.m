@@ -249,6 +249,27 @@
 	STAssertTrue(result, @"Parser should return YES");
 
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown");
+	
+	NSString *expected = @"<p>Hello Markdown</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testSimpleLineEndingInNewline
+{
+	NSString *string = @"Hello Markdown\n";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown");
+	
+	NSString *expected = @"<p>Hello Markdown</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testMultipleLines
@@ -262,6 +283,11 @@
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown\n");
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A second line\n");
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"A third line");
+	
+	NSString *expected = @"<p>Hello Markdown\nA second line\nA third line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testParagraphBeginEnd
@@ -278,7 +304,21 @@
 
 #pragma mark - Block Quotes
 
-- (void)testBlockquote
+- (void)testBlockquoteSingleLine
+{
+	NSString *string = @"> A Quote\n";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<blockquote><p>A Quote</p>\n</blockquote>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testBlockquoteMultiLine
 {
 	NSString *string = @"> A Quote\n> With multiple lines\n";
 	DTMarkdownParser *parser = [self _parserForString:string options:0];
@@ -296,15 +336,15 @@
 	
 	// there should be only a single tag even though there are two \n
 	NSArray *tagStarts = [_recorder invocationsMatchingSelector:@selector(parser:didStartElement:attributes:)];
-	STAssertTrue([tagStarts count] == 1, @"There should be one tag start");
+	STAssertTrue([tagStarts count] == 2, @"There should two tag starts, p and blockquote");
 	
 	NSArray *tagEnds = [_recorder invocationsMatchingSelector:@selector(parser:didEndElement:)];
-	STAssertTrue([tagEnds count] == 1, @"There should be one tag end");
+	STAssertTrue([tagEnds count] == 2, @"There should be two tag ends, p and blockquote");
 	
-//	NSString *expected = @"<blockquote><p>A Quote\nWith multiple lines</p>\n</blockquote>\n";
-//	NSString *actual = [self _HTMLFromInvocations];
-//	
-//	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+	NSString *expected = @"<blockquote><p>A Quote\nWith multiple lines</p>\n</blockquote>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 /*
@@ -346,9 +386,14 @@
 	NSArray *emEnds = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"em"]];
 	STAssertTrue([emEnds count] == 1, @"There should be one tag end");
 	
-	// test trimming off of blockquote prefix
+	// test trimming off of markers prefix
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Italic Words");
-	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"*Incomplete\n");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Incomplete\n");
+	
+	NSString *expected = @"<p>Normal <em>Italic Words</em> *Incomplete\nand * on next line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testEmphasisUnderline
@@ -372,7 +417,12 @@
 	
 	// test trimming off of blockquote prefix
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Italic Words");
-	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"_Incomplete\n");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Incomplete\n");
+	
+	NSString *expected = @"<p>Normal <em>Italic Words</em> _Incomplete\nand _ on next line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testStrongAsterisk
@@ -396,7 +446,12 @@
 	
 	// test trimming off of blockquote prefix
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Strong Words");
-	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"**Incomplete\n");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Incomplete\n");
+	
+	NSString *expected = @"<p>Normal <strong>Strong Words</strong> **Incomplete\nand ** on next line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testStrongUnderline
@@ -420,7 +475,12 @@
 	
 	// test trimming off of blockquote prefix
 	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Strong Words");
-	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"__Incomplete\n");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Incomplete\n");
+	
+	NSString *expected = @"<p>Normal <strong>Strong Words</strong> __Incomplete\nand __ on next line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
 - (void)testCombinedBoldAndItalics
@@ -1182,6 +1242,53 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<p>Mail me at &lt;abc def&gt;.</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+// issue 6
+- (void)testLinkWithNewlineInText
+{
+	NSString *string = @"This: [Patch\nDemo](http://foo.bar/demo.html)";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>This: <a href=\"http://foo.bar/demo.html\">Patch\nDemo</a></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+// issue 6
+- (void)testLinkWithNewlineInTextInListItem
+{
+	NSString *string = @"- [Patch\nDemo](http://foo.bar/demo.html)";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<ul><li><a href=\"http://foo.bar/demo.html\">Patch\nDemo</a></li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testLinkWithSingleSpecialChar
+{
+	NSString *string = @"[Patch * Demo](http://foo.bar/demo.html)";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p><a href=\"http://foo.bar/demo.html\">Patch * Demo</a></p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
