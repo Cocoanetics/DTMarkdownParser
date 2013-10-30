@@ -314,7 +314,7 @@ const NSUInteger JXRangeArrayGrowthFactor = 2;
 	NSString *indentationString = @"    ";
 	NSUInteger indentationStringLength = indentationString.length;
 	
-	NSUInteger indentationDepth = (level+1) * indentationStringLength;
+	NSUInteger indentationDepth = level * indentationStringLength;
 	
 	NSString *indentation = [@"" stringByPaddingToLength:indentationDepth withString:indentationString startingAtIndex:0];
 	
