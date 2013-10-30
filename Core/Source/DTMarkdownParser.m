@@ -162,7 +162,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 {
 	__block BOOL inFencedBlock = NO;
 	
-	[_lineRanges enumerateObjectsUsingBlock:^(NSValue *valueRange, NSUInteger lineIndex, BOOL *stop) {
+	[_lineRanges enumerateRangesUsingBlock:^(NSRange valueRange, NSUInteger lineIndex, BOOL *stop) {
 		
 		NSString *lineSpecial = _specialLines[@(lineIndex)];
 		BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
