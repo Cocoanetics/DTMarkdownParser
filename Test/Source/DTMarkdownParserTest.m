@@ -256,6 +256,22 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testSimpleLineEndingInNewline
+{
+	NSString *string = @"Hello Markdown\n";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Hello Markdown");
+	
+	NSString *expected = @"<p>Hello Markdown</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 - (void)testMultipleLines
 {
 	NSString *string = @"Hello Markdown\nA second line\nA third line";
@@ -1258,6 +1274,21 @@
 	STAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = @"<ul><li><a href=\"http://foo.bar/demo.html\">Patch\nDemo</a></li></ul>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+- (void)testLinkWithSingleSpecialChar
+{
+	NSString *string = @"[Patch * Demo](http://foo.bar/demo.html)";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p><a href=\"http://foo.bar/demo.html\">Patch * Demo</a></p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");

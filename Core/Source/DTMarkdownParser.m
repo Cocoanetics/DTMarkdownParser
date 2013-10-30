@@ -799,14 +799,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		scanner.scanLocation ++;
 		
 		[self _handleText:specialChar inRange:range allowAutodetection:NO];
-		
-		positionBeforeScan = scanner.scanLocation;
-		
-		if ([specialChar isEqualToString:@"["] && [scanner scanUpToCharactersFromSet:specialChars intoString:&part])
-		{
-			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
-			[self _handleText:part inRange:range allowAutodetection:NO];
-		}
 	}
 }
 
@@ -1335,14 +1327,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 					continue;
 				}
 				
-				if (lineSpecial == DTMarkdownParserSpecialTagBlockquote)
-				{
-					[self _handleBlockquoteLine:line inRange:lineRange];
-					
-					continue;
-				}
-				
-				NSAssert(lineSpecial == DTMarkdownParserSpecialList && lineSpecial != DTMarkdownParserSpecialSubList, @"Should never get here, those are dealt with via the prefix");
+				// DTMarkdownParserSpecialTagBlockquote
+				[self _handleBlockquoteLine:line inRange:lineRange];
 				
 				continue;
 			}
@@ -1416,11 +1402,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			}
 			
 			continue;
-		}
-		
-		if ([scanner isAtEnd])
-		{
-			break;
 		}
 		
 		if ([scanner scanString:@"\n" intoString:NULL])
