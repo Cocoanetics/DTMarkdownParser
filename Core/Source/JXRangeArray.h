@@ -48,6 +48,8 @@
 						usingBlock:(void (^)(NSRange range, NSUInteger idx, BOOL *stop))block; // Supports NSEnumerationReverse.
 
 - (NSRange)rangeContainingIndex:(NSUInteger)idx;
+- (NSRange)rangeContainingIndex:(NSUInteger)idx foundArrayIndex:(NSUInteger *)foundRangeIndex;
+- (NSUInteger)arrayIndexForRangeContainingIndex:(NSUInteger)idx;
 
 - (NSString *)descriptionWithLocale:(id)locale;
 - (NSString *)descriptionWithLocale:(id)locale indent:(NSUInteger)level;

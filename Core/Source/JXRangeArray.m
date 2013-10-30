@@ -229,6 +229,11 @@ const NSUInteger JXRangeArrayGrowthFactor = 2;
 
 - (NSRange)rangeContainingIndex:(NSUInteger)idx;
 {
+	return [self rangeContainingIndex:idx foundArrayIndex:NULL];
+}
+
+- (NSRange)rangeContainingIndex:(NSUInteger)idx foundArrayIndex:(NSUInteger *)foundRangeIndex;
+{
 	// Assumes that contents of the array is in ascending sorted order.
 	
 	int (^comparator)(const void *, const void *);
@@ -255,12 +260,31 @@ const NSUInteger JXRangeArrayGrowthFactor = 2;
 	                        comparator);		// the comparator
 
 	if (found == NULL) {
+		if (foundRangeIndex != NULL) {
+			*foundRangeIndex = NSNotFound;
+		}
+		
 		return NSMakeRange(NSNotFound, 0);
 	} else {
+		NSUInteger matchIndex = ((found - (void *)_ranges) / sizeof(NSRange));
+		
+		if (foundRangeIndex != NULL) {
+			*foundRangeIndex = matchIndex;
+		}
+		
 		NSRange foundRange = *(NSRange *)found;
 		
 		return foundRange;
 	}
+}
+
+- (NSUInteger)arrayIndexForRangeContainingIndex:(NSUInteger)idx;
+{
+	NSUInteger matchIndex;
+	
+	[self rangeContainingIndex:idx foundArrayIndex:&matchIndex];
+	
+	return matchIndex;
 }
 
 

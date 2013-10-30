@@ -253,18 +253,23 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 	JXRangeArray *rangeArray = [[JXRangeArray alloc] initWithRanges:(NSRange *)&testRangeArrayOf4
 															  count:testRangeArrayOf4Count];
 	
+	NSUInteger lastTestRangeIndex = testRangeArrayOf4Count - 1;
+	
 	for (NSUInteger rangeIdx = 0; rangeIdx < testRangeArrayOf4Count; rangeIdx++) {
 		NSRange expectedRange = testRangeArrayOf4[rangeIdx];
 		
 		for (NSUInteger idx = expectedRange.location; idx < NSMaxRange(expectedRange); idx++) {
-			
-			NSRange rangeContaining = [rangeArray rangeContainingIndex:idx];
+			NSUInteger matchIndex;
+
+			NSRange rangeContaining = [rangeArray rangeContainingIndex:idx foundArrayIndex:&matchIndex];
 			
 			BOOL rangesAreEqual = NSEqualRanges(rangeContaining, expectedRange);
 			STAssertTrue(rangesAreEqual, @"Range containing %lu should be %@.", (unsigned long)idx, NSStringFromRange(expectedRange));
+			
+			STAssertEquals(matchIndex, rangeIdx, @"The index of the containing range and the matching range need to be identical.");
 		}
 		
-		if (rangeIdx == testRangeArrayOf4Count-1) {
+		if (rangeIdx == lastTestRangeIndex) {
 			NSRange notFoundRange = NSMakeRange(NSNotFound, 0);
 			
 			NSUInteger idx = NSMaxRange(expectedRange);
@@ -272,6 +277,9 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 			
 			BOOL rangesAreEqual = NSEqualRanges(rangeContaining, notFoundRange);
 			STAssertTrue(rangesAreEqual, @"There should be no range containing %lu.", (unsigned long)idx);
+			
+			NSUInteger matchIndex = [rangeArray arrayIndexForRangeContainingIndex:idx];
+			STAssertEquals(matchIndex, NSNotFound, @"There should be no range for an index (%lu) not covered by the ranges in the array.", (unsigned long)idx);
 		}
 	}
 }
