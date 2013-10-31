@@ -45,7 +45,7 @@ const NSUInteger JXRangeArrayGrowthFactor = 2;
 	if (self) {
 		_count = count;
 		
-		// Calculate _capacity by rounding _count to nearest greater power of 2.
+		// Calculate _capacity by rounding _count to nearest equal or greater power of 2.
 		double log2OfCount = log2(_count);
 		double bestCapacity = exp2(ceil(log2OfCount));
 		_capacity = (NSUInteger)bestCapacity;
