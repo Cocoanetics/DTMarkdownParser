@@ -335,25 +335,4 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 	STAssertEqualObjects(original, copy, @"A copy of a range array should be identically to the original.");
 }
 
-- (void)testDescription
-{
-	JXRangeArray *rangeArray = [[JXRangeArray alloc] initWithRanges:(NSRange *)&testRangeArrayOf4
-															  count:testRangeArrayOf4Count];
-	
-	NSString *expectedDescription = [NSString stringWithFormat:
-									 @"<JXRangeArray %p>(\n"
-									 "{0, 1},\n"
-									 "{1, 2},\n"
-									 "{3, 4},\n"
-									 "{7, 8}\n"
-									 ")",
-									 rangeArray
-									 ];
-	
-	NSString *description = [rangeArray description];
-	//NSLog(@"%@", description);
-	
-	STAssertEqualObjects(description, expectedDescription, @"A copy of a range array should be identically to the original.");
-}
-
 @end
