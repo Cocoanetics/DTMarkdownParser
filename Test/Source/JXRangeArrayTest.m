@@ -161,9 +161,9 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 
 	STAssertEqualObjects(rangeArray1, rangeArray2, @"Two range arrays should be equal after parity is achieved.");
 
-	// Test falling back to “-addObject:”.
-	[rangeArray1 insertRange:testRangeArrayOf4[3] atIndex:(testRangeArrayOf4Count - 1)];
-	[rangeArray2 insertRange:testRangeArrayOf4[3] atIndex:(testRangeArrayOf4Count - 1)];
+	// Test falling back to “-addRange:”.
+	[rangeArray1 insertRange:testRangeArrayOf4[3] atIndex:testRangeArrayOf4Count];
+	[rangeArray2 insertRange:testRangeArrayOf4[3] atIndex:testRangeArrayOf4Count];
 
 	STAssertEqualObjects(rangeArray1, rangeArray2, @"Two range arrays should be equal after parity is achieved.");
 }
