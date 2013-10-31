@@ -553,27 +553,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	return lineIndex;
 }
 
-- (NSInteger)_lineIndexContainingIndex:(NSUInteger)index
-{
-	__block NSUInteger lineIndex = NSNotFound;
-	
-	NSRange *lineRanges = _lineRanges.ranges;
-	NSUInteger lineRangesCount = _lineRanges.count;
-	
-	for (NSUInteger i = 0; i < lineRangesCount; i++)
-	{
-		NSRange range = lineRanges[i];
-		
-		if (NSLocationInRange(index, range))
-		{
-			lineIndex = i;
-			break;
-		}
-	}
-	
-	return lineIndex;
-}
-
 - (BOOL)_isSubListAtLineIndex:(NSUInteger)lineIndex
 {
 	NSString *lineSpecial = _specialLines[@(lineIndex)];
