@@ -140,6 +140,18 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 	
 	// Test reciprocity.
 	STAssertEqualObjects(rangeArray2, rangeArray1, @"Two range arrays should be equal after parity is achieved.");
+	
+	// Trigger reallocation.
+	[rangeArray1 insertRange:testRangeArrayOf4[1] atIndex:1];
+	[rangeArray2 insertRange:testRangeArrayOf4[1] atIndex:1];
+
+	STAssertEqualObjects(rangeArray1, rangeArray2, @"Two range arrays should be equal after parity is achieved.");
+
+	// Test falling back to “-addObject:”.
+	[rangeArray1 insertRange:testRangeArrayOf4[3] atIndex:(testRangeArrayOf4Count - 1)];
+	[rangeArray2 insertRange:testRangeArrayOf4[3] atIndex:(testRangeArrayOf4Count - 1)];
+
+	STAssertEqualObjects(rangeArray1, rangeArray2, @"Two range arrays should be equal after parity is achieved.");
 }
 
 - (void)testRemoveLastRange
@@ -185,6 +197,8 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 	[rangeArray2 addRange:testRangeArrayOf4[2]];
 	[rangeArray2 addRange:testRangeArrayOf4[2]];
 	[rangeArray2 addRange:testRangeArrayOf4[3]];
+	
+	STAssertFalse([rangeArray1 isEqual:rangeArray2], @"A range array should not be equal to an object with differing entries.");
 	
 	[rangeArray2 replaceRangeAtIndex:1 withRange:testRangeArrayOf4[1]];
 
