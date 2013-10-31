@@ -123,6 +123,20 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 	STAssertFalse([rangeArray1 isEqual:rangeArray2], @"A range array should not be equal to another with a different clas.");
 }
 
+- (void)testHash
+{
+	JXRangeArray *rangeArray1 = [[JXRangeArray alloc] initWithRanges:(NSRange *)&testRangeArrayOf4
+															   count:testRangeArrayOf4Count];
+	
+	JXRangeArray *rangeArray2 = [rangeArray1 copy];
+	
+	STAssertTrue([rangeArray1 hash] == [rangeArray2 hash], @"Two range arrays with the same data should have the same hash.");
+	
+	[rangeArray2 removeLastRange];
+	
+	STAssertFalse([rangeArray1 hash] == [rangeArray2 hash], @"Two range arrays with different data should have different hashes.");
+}
+
 - (void)testInsertRange
 {
 	JXRangeArray *rangeArray1 = [[JXRangeArray alloc] initWithRanges:(NSRange *)&testRangeArrayOf4
