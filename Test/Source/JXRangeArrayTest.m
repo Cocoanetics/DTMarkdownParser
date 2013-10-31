@@ -75,7 +75,9 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 
 	STAssertEqualObjects(rangeArray, rangeArray, @"Two identically range arrays should be equal.");
 	
-	STAssertFalse([rangeArray isEqual:anObject], @"A range array should not be equal to an object with a different clas.");
+	STAssertTrue([rangeArray isEqual:rangeArray], @"Two identically range arrays should be equal."); // The above test appears to filter out the rangeArray == rangeArray case.
+
+	STAssertFalse([rangeArray isEqual:anObject], @"A range array should not be equal to an object with a different class.");
 }
 
 - (void)testEquality1
@@ -108,6 +110,17 @@ const NSUInteger testRangeArrayOf4Count = sizeof(testRangeArrayOf4)/sizeof(testR
 	
 	// Test reciprocity.
 	STAssertEqualObjects(rangeArray2, rangeArray1, @"Two range arrays with the same data should be equal.");
+}
+
+- (void)testEquality3
+{
+	JXRangeArray *rangeArray1 = [[JXRangeArray alloc] initWithRanges:(NSRange *)&testRangeArrayOf4
+															   count:testRangeArrayOf4Count];
+	
+	JXRangeArray *rangeArray2 = [rangeArray1 copy];
+	[rangeArray2 removeLastRange];
+	
+	STAssertFalse([rangeArray1 isEqual:rangeArray2], @"A range array should not be equal to another with a different clas.");
 }
 
 - (void)testInsertRange
