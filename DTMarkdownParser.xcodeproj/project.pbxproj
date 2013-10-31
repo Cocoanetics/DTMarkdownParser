@@ -10,7 +10,13 @@
 		3D285247181A9D3E000C44EC /* DTMDistributionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */; };
 		3D4308411819754500B8C024 /* SimpleHTMLGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */; };
 		3DD93598181805DA0010AA87 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DD93597181805DA0010AA87 /* WebKit.framework */; };
-		3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */; };
+		3DF16ABF1820EA08005A46A9 /* JXRangeArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF16ABD1820EA08005A46A9 /* JXRangeArray.m */; };
+		3DF16AC01820EA08005A46A9 /* JXRangeArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF16ABD1820EA08005A46A9 /* JXRangeArray.m */; };
+		3DF16AC11820EA08005A46A9 /* JXRangeArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF16ABE1820EA08005A46A9 /* JXRangeArray.h */; };
+		3DF16AC918212473005A46A9 /* JXRangeArrayTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF16AC818212473005A46A9 /* JXRangeArrayTest.m */; };
+		3DF16ACA18212473005A46A9 /* JXRangeArrayTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF16AC818212473005A46A9 /* JXRangeArrayTest.m */; };
+		3DF16AD31821627C005A46A9 /* JXRangeArray+Privat.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF16AD11821627C005A46A9 /* JXRangeArray+Privat.h */; };
+		3DF16AD41821627C005A46A9 /* JXRangeArray+Privat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF16AD21821627C005A46A9 /* JXRangeArray+Privat.m */; };
 		3DFFAE7118184C1A00EE245D /* TagTreeOutlineController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */; };
 		3DFFAE7218184C7E00EE245D /* SimpleTreeGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */; };
 		3DFFAE731818577C00EE245D /* DTMarkdownParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
@@ -669,6 +675,11 @@
 		3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHTMLGenerator.m; sourceTree = "<group>"; };
 		3D4308401819754500B8C024 /* SimpleHTMLGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHTMLGenerator.h; sourceTree = "<group>"; };
 		3DD93597181805DA0010AA87 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		3DF16ABD1820EA08005A46A9 /* JXRangeArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JXRangeArray.m; sourceTree = "<group>"; };
+		3DF16ABE1820EA08005A46A9 /* JXRangeArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JXRangeArray.h; sourceTree = "<group>"; };
+		3DF16AC818212473005A46A9 /* JXRangeArrayTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JXRangeArrayTest.m; sourceTree = "<group>"; };
+		3DF16AD11821627C005A46A9 /* JXRangeArray+Privat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JXRangeArray+Privat.h"; sourceTree = "<group>"; };
+		3DF16AD21821627C005A46A9 /* JXRangeArray+Privat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JXRangeArray+Privat.m"; sourceTree = "<group>"; };
 		3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleTreeGenerator.h; sourceTree = "<group>"; };
 		3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleTreeGenerator.m; sourceTree = "<group>"; };
 		3DFFAE6F18184C1A00EE245D /* TagTreeOutlineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagTreeOutlineController.h; sourceTree = "<group>"; };
@@ -1048,6 +1059,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3DD33DB518227A14006B607C /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				3DF16ABE1820EA08005A46A9 /* JXRangeArray.h */,
+				3DF16ABD1820EA08005A46A9 /* JXRangeArray.m */,
+				3DF16AD11821627C005A46A9 /* JXRangeArray+Privat.h */,
+				3DF16AD21821627C005A46A9 /* JXRangeArray+Privat.m */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		3DD33DBA18227A1C006B607C /* RangeArray */ = {
+			isa = PBXGroup;
+			children = (
+				3DD33DB518227A14006B607C /* Source */,
+				3DD33DBB18227A32006B607C /* Test */,
+			);
+			path = RangeArray;
+			sourceTree = "<group>";
+		};
+		3DD33DBB18227A32006B607C /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				3DF16AC818212473005A46A9 /* JXRangeArrayTest.m */,
+			);
+			path = Test;
+			sourceTree = "<group>";
+		};
 		3DD93599181805F70010AA87 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1425,6 +1464,7 @@
 				A7870DBF1817FE4900E39311 /* Demo */,
 				A7D7DF2418156DE700F4377D /* Documentation */,
 				A7BF253E1811352D0013D8D7 /* Externals */,
+				3DD33DBA18227A1C006B607C /* RangeArray */,
 				A7BF253318112C8B0013D8D7 /* Test */,
 				A7BF250A18112A3B0013D8D7 /* Frameworks */,
 				A7BF250918112A3B0013D8D7 /* Products */,
@@ -1546,8 +1586,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */,
 				A7BF26001811385A0013D8D7 /* DTMarkdownParser.h in Headers */,
+				3DF16AC11820EA08005A46A9 /* JXRangeArray.h in Headers */,
+				3DF16AD31821627C005A46A9 /* JXRangeArray+Privat.h in Headers */,
 				A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2323,6 +2364,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7870C5A1817F70700E39311 /* NSScanner+DTMarkdown.m in Sources */,
+				3DF16AC01820EA08005A46A9 /* JXRangeArray.m in Sources */,
 				A7870C591817F70700E39311 /* DTMarkdownParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2337,6 +2379,7 @@
 				A7870C731817F7D800E39311 /* DTInvocationRecorder.m in Sources */,
 				A7870C781817F7D800E39311 /* NSScannerDTMarkdownTest.m in Sources */,
 				A7870C751817F7D800E39311 /* NSInvocation+DTFoundation.m in Sources */,
+				3DF16AC918212473005A46A9 /* JXRangeArrayTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2363,6 +2406,7 @@
 				A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */,
 				A7BF25C8181136530013D8D7 /* DTMarkdownParserTest.m in Sources */,
 				A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */,
+				3DF16ACA18212473005A46A9 /* JXRangeArrayTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2371,7 +2415,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A78EAACD18151EF800650426 /* NSScanner+DTMarkdown.m in Sources */,
+				3DF16ABF1820EA08005A46A9 /* JXRangeArray.m in Sources */,
 				A7BF26011811385A0013D8D7 /* DTMarkdownParser.m in Sources */,
+				3DF16AD41821627C005A46A9 /* JXRangeArray+Privat.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

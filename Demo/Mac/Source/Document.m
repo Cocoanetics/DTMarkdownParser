@@ -36,7 +36,12 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	DTMDistributionDelegate *	_distributionDelegate;
 	SimpleTreeGenerator *		_treeGenerator;
 	SimpleHTMLGenerator *		_HTMLGenerator;
+	
+	BOOL					_gitHubMode;
 }
+
+
+#pragma mark Object Life Cycle
 
 - (id)init
 {
@@ -49,10 +54,15 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 		_markdownText = [[NSTextStorage alloc] init];
 
 		_HTMLText = [[NSTextStorage alloc] init];
+
+		_gitHubMode = YES;
 	}
 	
     return self;
 }
+
+
+#pragma mark Ui Prep
 
 - (NSString *)windowNibName
 {
@@ -72,10 +82,16 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	[self parseMarkdown]; // Necessary, because reparseMarkdown is not triggered by replacing the text storage above.
 }
 
+
+#pragma mark NSObject Options
+
 + (BOOL)autosavesInPlace
 {
     return YES;
 }
+
+
+#pragma mark Loading & Saving
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
 {
@@ -115,6 +131,9 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	return result;
 }
 
+
+#pragma mark Parsing
+
 - (void)parseMarkdown
 {
 	NSString *markdownString = _markdownText.string;
@@ -130,7 +149,7 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	}
 	
 	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:markdownString
-																options:DTMarkdownParserOptionGitHubLineBreaks];
+																options:_gitHubMode ? DTMarkdownParserOptionGitHubLineBreaks : 0];
 	
 	parser.delegate = _distributionDelegate;
 	
@@ -151,6 +170,9 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	[[_previewWebView mainFrame] loadHTMLString:_HTMLText.string
 										baseURL:[self fileURL]];
 }
+
+
+#pragma mark Auto-Update
 
 - (void)textDidChange:(NSNotification *)notification
 {
@@ -180,6 +202,25 @@ const NSTimeInterval kMarkdownDocumentReparseDelay = 0.2;
 	//NSLog(@"Re-parsing Markdown.");
 	[self parseMarkdown];
 }
+
+
+#pragma mark Properties
+
+- (BOOL)gitHubMode
+{
+	return _gitHubMode;
+}
+
+- (void)setGitHubMode:(BOOL)gitHubMode
+{
+	if (_gitHubMode != gitHubMode) {
+		_gitHubMode = gitHubMode;
+		[self reparseMarkdown];
+	}
+}
+
+
+#pragma mark UI Actions
 
 - (IBAction)changePreviewTabIndex:(id)sender;
 {

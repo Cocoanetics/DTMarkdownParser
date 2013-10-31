@@ -29,6 +29,91 @@ NSString * const kHTMLFooter = @""
 "</html>\n";
 
 
+void escapeAndAppend(NSString *string, NSMutableString *HTMLString, BOOL escapeQuotes)
+{
+	// Parse string for escaping and append piecemeal.
+	
+	NSUInteger stringLength = string.length;
+	
+#define ESCAPE_BUFFER_SIZE 64
+	NSRange checkedRange = NSMakeRange(0, 0);
+	
+	NSRange rangeInString = NSMakeRange(0, ESCAPE_BUFFER_SIZE);
+	
+	while (rangeInString.location < stringLength) {
+		unichar buffer[ESCAPE_BUFFER_SIZE];
+		
+		// Limit character fetching to length of string.
+		if (NSMaxRange(rangeInString) > stringLength) {
+			rangeInString.length = stringLength - rangeInString.location;
+		}
+		
+		[string getCharacters:buffer
+						range:rangeInString];
+		
+		// Check every character in the buffer for whether it is invalid in HTML text.
+		for (NSUInteger i = 0; i < rangeInString.length; i++) {
+			unichar c = buffer[i];
+			
+			NSString *replacementString;
+			
+			switch  (c) {
+				case '<':
+					replacementString = @"&lt;";
+					break;
+					
+				case '>':
+					replacementString = @"&gt;";
+					break;
+					
+				case '&':
+					replacementString = @"&amp;";
+					break;
+					
+				case '"':
+					if (escapeQuotes) {
+						replacementString = @"&quot;";
+					} else {
+						replacementString = nil;
+					}
+					break;
+					
+				default:
+					replacementString = nil;
+					break;
+			}
+			
+			// Escape if necessary.
+			if (replacementString != nil) {
+				if (checkedRange.length > 0) {
+					[HTMLString appendString:[string substringWithRange:checkedRange]];
+				}
+				
+				[HTMLString appendString:replacementString];
+				
+				checkedRange.location = i + 1; // Skip over the character we just replaced.
+				checkedRange.length = 0;
+			}
+			else {
+				checkedRange.length++;
+			}
+		}
+		
+		rangeInString.location += ESCAPE_BUFFER_SIZE;
+	}
+	
+	if (checkedRange.length == stringLength) {
+		// We went all the way through string without anything to escape.
+		[HTMLString appendString:string];
+	} else {
+		// Append the remainder.
+		if (checkedRange.length > 0) {
+			[HTMLString appendString:[string substringWithRange:checkedRange]];
+		}
+	}
+}
+
+
 @implementation SimpleHTMLGenerator {
 	NSString *_immediateOpeningTagName;
 	
@@ -92,23 +177,29 @@ NSString * const kHTMLFooter = @""
 
 - (void)parser:(DTMarkdownParser *)parser didStartElement:(NSString *)elementName attributes:(NSDictionary *)attributeDict;
 {
-	NSMutableString *elementTag = [NSMutableString string];
-	[elementTag appendString:@"<"];
-	[elementTag appendString:elementName];
+	NSUInteger tagStartIndex;
+	
+	if (_verbose)  tagStartIndex = _HTMLString.length;
+
+	[_HTMLString appendString:@"<"];
+	[_HTMLString appendString:elementName];
 
 	[attributeDict enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, NSString *attribute, BOOL *stop) {
-		[elementTag appendString:@" "];
-		[elementTag appendString:attributeName];
-		[elementTag appendString:@"=\""];
-		[elementTag appendString:attribute];
-		[elementTag appendString:@"\""];
+		[_HTMLString appendString:@" "];
+		[_HTMLString appendString:attributeName];
+		[_HTMLString appendString:@"=\""];
+		escapeAndAppend(attribute, _HTMLString, YES);
+		[_HTMLString appendString:@"\""];
 	}];
 	
-	[elementTag appendString:@">"];
+	[_HTMLString appendString:@">"];
 	
-	if (_verbose)  NSLog(@"%@", elementTag);
-	
-	[_HTMLString appendString:elementTag];
+	if (_verbose) {
+		NSUInteger tagEndIndex = _HTMLString.length;
+		NSRange tagRange = NSMakeRange(tagStartIndex, (tagEndIndex - tagStartIndex));
+		NSString *elementTag = [_HTMLString substringWithRange:tagRange];
+		NSLog(@"%@", elementTag);
+	}
 	
 	_immediateOpeningTagName = elementName;
 }
@@ -116,35 +207,33 @@ NSString * const kHTMLFooter = @""
 - (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
 {
 	if (_verbose)  NSLog(@"%@", string);
-
-	[_HTMLString appendString:string];
+	
+	escapeAndAppend(string, _HTMLString, NO);
 	
 	_immediateOpeningTagName = nil;
 }
 
 - (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
 {
-	NSMutableString *elementTag = [NSMutableString string];
-	[elementTag appendString:@"</"];
-	[elementTag appendString:elementName];
-	[elementTag appendString:@">"];
-	
-	if (_verbose)  NSLog(@"%@", elementTag);
+	if (_verbose)  NSLog(@"</%@>", elementName);
 	
 	BOOL isSelfClosingTag = (_immediateOpeningTagName != nil) && [_immediateOpeningTagName isEqualToString:elementName];
 	
 	if (isSelfClosingTag) {
+		// Rewrite the previous tag to be self-closing.
 		NSUInteger lastCharacterIndex = _HTMLString.length - 1;
 		NSRange closingAngleBracketRange = NSMakeRange(lastCharacterIndex, 1);
 		[_HTMLString replaceCharactersInRange:closingAngleBracketRange
 								   withString:@" />"];
 	}
 	else {
-		if ([[[self class] blockLevelElements] containsObject:elementName]) {
-			[elementTag appendString:@"\n\n"];
-		}
+		[_HTMLString appendString:@"</"];
+		[_HTMLString appendString:elementName];
+		[_HTMLString appendString:@">"];
 		
-		[_HTMLString appendString:elementTag];
+		if ([[[self class] blockLevelElements] containsObject:elementName]) {
+			[_HTMLString appendString:@"\n\n"];
+		}
 	}
 }
 
