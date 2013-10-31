@@ -1059,6 +1059,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3DD33DB518227A14006B607C /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				3DF16ABE1820EA08005A46A9 /* JXRangeArray.h */,
+				3DF16ABD1820EA08005A46A9 /* JXRangeArray.m */,
+				3DF16AD11821627C005A46A9 /* JXRangeArray+Privat.h */,
+				3DF16AD21821627C005A46A9 /* JXRangeArray+Privat.m */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		3DD33DBA18227A1C006B607C /* RangeArray */ = {
+			isa = PBXGroup;
+			children = (
+				3DD33DB518227A14006B607C /* Source */,
+				3DD33DBB18227A32006B607C /* Test */,
+			);
+			path = RangeArray;
+			sourceTree = "<group>";
+		};
+		3DD33DBB18227A32006B607C /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				3DF16AC818212473005A46A9 /* JXRangeArrayTest.m */,
+			);
+			path = Test;
+			sourceTree = "<group>";
+		};
 		3DD93599181805F70010AA87 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1436,6 +1464,7 @@
 				A7870DBF1817FE4900E39311 /* Demo */,
 				A7D7DF2418156DE700F4377D /* Documentation */,
 				A7BF253E1811352D0013D8D7 /* Externals */,
+				3DD33DBA18227A1C006B607C /* RangeArray */,
 				A7BF253318112C8B0013D8D7 /* Test */,
 				A7BF250A18112A3B0013D8D7 /* Frameworks */,
 				A7BF250918112A3B0013D8D7 /* Products */,
@@ -1496,10 +1525,6 @@
 				A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */,
 				A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */,
 				A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */,
-				3DF16ABE1820EA08005A46A9 /* JXRangeArray.h */,
-				3DF16ABD1820EA08005A46A9 /* JXRangeArray.m */,
-				3DF16AD11821627C005A46A9 /* JXRangeArray+Privat.h */,
-				3DF16AD21821627C005A46A9 /* JXRangeArray+Privat.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1522,7 +1547,6 @@
 				A7A244CE1817BE5C00FDB3FC /* Utilities */,
 				A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */,
 				A7D7DF261815740000F4377D /* NSScannerDTMarkdownTest.m */,
-				3DF16AC818212473005A46A9 /* JXRangeArrayTest.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
