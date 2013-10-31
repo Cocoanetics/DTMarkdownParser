@@ -51,7 +51,9 @@
 - (NSRange)rangeContainingIndex:(NSUInteger)idx foundArrayIndex:(NSUInteger *)foundRangeIndex;
 - (NSUInteger)arrayIndexForRangeContainingIndex:(NSUInteger)idx;
 
+#ifndef COVERAGE
 - (NSString *)descriptionWithLocale:(id)locale;
 - (NSString *)descriptionWithLocale:(id)locale indent:(NSUInteger)level;
+#endif
 
 @end

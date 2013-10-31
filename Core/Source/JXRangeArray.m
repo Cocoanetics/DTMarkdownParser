@@ -296,6 +296,8 @@ const NSUInteger JXRangeArrayGrowthFactor = 2;
 	return newRangeArray;
 }
 
+#ifndef COVERAGE
+// not visible to coverage
 
 - (NSString *)description
 {
@@ -339,5 +341,7 @@ const NSUInteger JXRangeArrayGrowthFactor = 2;
 
 	return description;
 }
+
+#endif
 
 @end
