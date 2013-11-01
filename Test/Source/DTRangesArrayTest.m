@@ -146,4 +146,25 @@
 	STAssertEquals(count, (NSUInteger)110, @"Wrong count");
 }
 
+- (void)testEnumerationStop
+{
+	DTRangesArray *array = [self _rangesArrayWithNumberItems:110];
+	
+	__block NSUInteger count = 0;
+	[array enumerateLineRangesUsingBlock:^(NSRange range, NSUInteger idx, BOOL *stop) {
+		
+		NSRange testRange = [array rangeAtIndex:idx];
+		
+		STAssertEquals(testRange, range, @"Range not equal");
+		count++;
+		
+		if (idx==9)
+		{
+			*stop = YES;
+		}
+	}];
+	
+	STAssertEquals(count, (NSUInteger)10, @"Wrong count");
+}
+
 @end
