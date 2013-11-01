@@ -307,6 +307,9 @@
 		A7870DCE1817FF3800E39311 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7870DCB1817FF3800E39311 /* MainMenu.xib */; };
 		A7870DCF1817FF3800E39311 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = A7870DCC1817FF3800E39311 /* Credits.rtf */; };
 		A7870DD61817FFCE00E39311 /* DTMarkdownParser.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
+		A78CE5121823D6D000CEF9C7 /* DTRangeDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = A78CE5101823D6D000CEF9C7 /* DTRangeDictionary.h */; };
+		A78CE5131823D6D000CEF9C7 /* DTRangeDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = A78CE5111823D6D000CEF9C7 /* DTRangeDictionary.m */; };
+		A78CE5141823D6D000CEF9C7 /* DTRangeDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = A78CE5111823D6D000CEF9C7 /* DTRangeDictionary.m */; };
 		A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */ = {isa = PBXBuildFile; fileRef = A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */; };
 		A78EAACD18151EF800650426 /* NSScanner+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */; };
 		A7ABD3E41811BEEB00494DA5 /* auto_link.html in Resources */ = {isa = PBXBuildFile; fileRef = A7ABD2DC1811BEEB00494DA5 /* auto_link.html */; };
@@ -701,6 +704,8 @@
 		A7870DCA1817FF3800E39311 /* Document.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Document.xib; sourceTree = "<group>"; };
 		A7870DCB1817FF3800E39311 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		A7870DCC1817FF3800E39311 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
+		A78CE5101823D6D000CEF9C7 /* DTRangeDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRangeDictionary.h; sourceTree = "<group>"; };
+		A78CE5111823D6D000CEF9C7 /* DTRangeDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRangeDictionary.m; sourceTree = "<group>"; };
 		A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSScanner+DTMarkdown.h"; sourceTree = "<group>"; };
 		A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSScanner+DTMarkdown.m"; sourceTree = "<group>"; };
 		A7ABD2DC1811BEEB00494DA5 /* auto_link.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = auto_link.html; sourceTree = "<group>"; };
@@ -1485,6 +1490,8 @@
 				A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */,
 				A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */,
 				A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */,
+				A78CE5101823D6D000CEF9C7 /* DTRangeDictionary.h */,
+				A78CE5111823D6D000CEF9C7 /* DTRangeDictionary.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1546,6 +1553,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A78CE5121823D6D000CEF9C7 /* DTRangeDictionary.h in Headers */,
 				3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */,
 				A7BF26001811385A0013D8D7 /* DTMarkdownParser.h in Headers */,
 				A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */,
@@ -2324,6 +2332,7 @@
 			files = (
 				A7870C5A1817F70700E39311 /* NSScanner+DTMarkdown.m in Sources */,
 				A7870C591817F70700E39311 /* DTMarkdownParser.m in Sources */,
+				A78CE5141823D6D000CEF9C7 /* DTRangeDictionary.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2372,6 +2381,7 @@
 			files = (
 				A78EAACD18151EF800650426 /* NSScanner+DTMarkdown.m in Sources */,
 				A7BF26011811385A0013D8D7 /* DTMarkdownParser.m in Sources */,
+				A78CE5131823D6D000CEF9C7 /* DTRangeDictionary.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

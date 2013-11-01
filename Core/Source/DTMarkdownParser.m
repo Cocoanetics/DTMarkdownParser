@@ -8,6 +8,7 @@
 
 #import "DTMarkdownParser.h"
 #import "NSScanner+DTMarkdown.h"
+#import "DTRangeDictionary.h"
 
 #import <tgmath.h>
 
@@ -47,8 +48,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	NSMutableIndexSet *_ignoredLines;
 	NSMutableDictionary *_references;
 	NSMutableDictionary *_lineIndentLevel;
-	NSMutableArray *_lineRanges;
-	NSMutableArray *_paragraphRanges;
+	DTRangeDictionary *_lineRanges;
+	DTRangeDictionary *_paragraphRanges;
 	
 	NSDataDetector *_dataDetector;
 }
@@ -161,8 +162,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 {
 	__block BOOL inFencedBlock = NO;
 	
-	[_lineRanges enumerateObjectsUsingBlock:^(NSValue *valueRange, NSUInteger lineIndex, BOOL *stop) {
-		
+	for (NSUInteger lineIndex=0; lineIndex<[_lineRanges count]; lineIndex++)
+	{
 		NSString *lineSpecial = _specialLines[@(lineIndex)];
 		BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
 		
@@ -210,7 +211,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				}
 			}
 		}
-	}];
+	};
 }
 
 
@@ -220,8 +221,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	_specialLines = [NSMutableDictionary new];
 	_references = [NSMutableDictionary new];
 	_lineIndentLevel = [NSMutableDictionary new];
-	_lineRanges = [NSMutableArray new];
-	_paragraphRanges = [NSMutableArray new];
+	_lineRanges = [DTRangeDictionary new];
+	_paragraphRanges = [DTRangeDictionary new];
 	
 	NSScanner *scanner = [NSScanner scannerWithString:_string];
 	scanner.charactersToBeSkipped = nil;
@@ -448,12 +449,12 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 			if (netParagraphRange.length)
 			{
-				[_paragraphRanges addObject:[NSValue valueWithRange:netParagraphRange]];
+				[_paragraphRanges addRange:netParagraphRange];
 			}
 
 			if (currentLineIsIgnored || currentLineIsHR)
 			{
-				[_paragraphRanges addObject:[NSValue valueWithRange:lineRange]];
+				[_paragraphRanges addRange:lineRange];
 				paragraphRange = NSMakeRange(paragraphRange.location + paragraphRange.length, 0);
 			}
 			else
@@ -462,35 +463,11 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			}
 		}
 		
-		[_lineRanges addObject:[NSValue valueWithRange:lineRange]];
+		[_paragraphRanges addRange:lineRange];
 		
 		lineIndex++;
 	}
 }
-
-
-- (NSRange)_rangeOfParagraphAtIndex:(NSUInteger)index
-{
-	for (NSValue *value in _paragraphRanges)
-	{
-		NSRange range = [value rangeValue];
-		
-		if (NSLocationInRange(index, range))
-		{
-			return range;
-		}
-	}
-	
-	return NSMakeRange(NSNotFound, 0);
-}
-
-- (NSRange)_rangeOfLineAtLineIndex:(NSUInteger)lineIndex
-{
-	NSValue *value = _lineRanges[lineIndex];
-	
-	return [value rangeValue];
-}
-
 
 - (BOOL)_hasHangingParagraphsForListItemBeginningAtLineIndex:(NSUInteger)lineIndex
 {
@@ -514,7 +491,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			return NO;
 		}
 		
-		lineRange = [self _rangeOfLineAtLineIndex:lineIndex];
+		lineRange = [_lineRanges rangeAtIndex:lineIndex];
 		NSString *line = [_string substringWithRange:lineRange];
 		
 		NSUInteger leadingSpaces = [self _numberOfLeadingSpacesForLine:line];
@@ -573,42 +550,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	NSAssert(foundPreviousListItem, @"Error, you called %s without there being a previous list item", __PRETTY_FUNCTION__);
 	
 	return lineIndex;
-}
-
-- (NSInteger)_lineIndexContainingIndex:(NSUInteger)index
-{
-	__block NSUInteger lineIndex = NSNotFound;
-	
-	[_lineRanges enumerateObjectsUsingBlock:^(NSValue *value, NSUInteger idx, BOOL *stop) {
-		
-		NSRange range = [value rangeValue];
-		
-		if (NSLocationInRange(index, range))
-		{
-			lineIndex = idx;
-			*stop = YES;
-		}
-	}];
-	
-	return lineIndex;
-}
-
-- (NSRange)_lineRangeContainingIndex:(NSUInteger)index
-{
-	__block NSRange lineRange = NSMakeRange(NSNotFound, 0);
-	
-	[_lineRanges enumerateObjectsUsingBlock:^(NSValue *value, NSUInteger idx, BOOL *stop) {
-		
-		NSRange range = [value rangeValue];
-		
-		if (NSLocationInRange(index, range))
-		{
-			lineRange = range;
-			*stop = YES;
-		}
-	}];
-	
-	return lineRange;
 }
 
 - (BOOL)_isSubListAtLineIndex:(NSUInteger)lineIndex
@@ -865,7 +806,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 }
 
 // process text with the additional info that we are at the beginning of a line
-- (void)_handleTextAtBeginningOfLine:(NSString *)text inRange:(NSRange)range
+- (void)_handleTextAtBeginningOfLine:(NSString *)text inRange:(NSRange)range lineIndex:(NSUInteger)lineIndex
 {
 	// white space is always trimmed off at beginning of line
 	BOOL hasIndent = NO;
@@ -876,9 +817,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		hasIndent = YES;
 	}
 	
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
-	NSRange lineRange = [self _lineRangeContainingIndex:range.location];
-	NSRange paragraphRange = [self _rangeOfParagraphAtIndex:range.location];
+	NSRange lineRange = [_lineRanges rangeContainingLocation:range.location];
+	NSRange paragraphRange = [_paragraphRanges rangeContainingLocation:range.location];
 	
 	BOOL isAtBeginOfParagraph = paragraphRange.location == lineRange.location;
 	
@@ -972,11 +912,9 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 }
 
 // hyperlink
-- (void)_handleLinkText:(NSString *)linkText attributes:(NSDictionary *)attributes inRange:(NSRange)range
+- (void)_handleLinkText:(NSString *)linkText attributes:(NSDictionary *)attributes inRange:(NSRange)range lineIndex:(NSUInteger)lineIndex
 {
 	[self _pushTag:@"a" attributes:attributes];
-	
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
 	
 	// might contain further markdown/images
 	[self _processHyperlinkEnclosedText:linkText withIndex:lineIndex allowAutoDetection:NO];
@@ -985,11 +923,9 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 }
 
 // code blocks
-- (void)_handlePreformattedLine:(NSString *)line inRange:(NSRange)range
+- (void)_handlePreformattedLine:(NSString *)line inRange:(NSRange)range lineIndex:(NSUInteger)lineIndex
 {
 	NSString *codeLine;
-	
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
 	NSString *lineSpecial = _specialLines[@(lineIndex)];
 	
 	if (lineSpecial == DTMarkdownParserSpecialTagPre)
@@ -1031,11 +967,9 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 }
 
 // header lines
-- (void)_handleHeader:(NSString *)header inRange:(NSRange)range
+- (void)_handleHeader:(NSString *)header inRange:(NSRange)range lineIndex:(NSUInteger)lineIndex
 {
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
 	NSString *lineSpecial = _specialLines[@(lineIndex)];
-
 	NSUInteger headerLevel = 0;
 	
 	while ([header hasPrefix:@"#"])
@@ -1119,12 +1053,10 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	[self _handleText:line inRange:lineRange allowAutodetection:YES];
 }
 
-- (void)_handleListItemPrefix:(NSString *)prefix inRange:(NSRange)range
+- (void)_handleListItemPrefix:(NSString *)prefix inRange:(NSRange)range lineIndex:(NSUInteger)lineIndex
 {
-	NSUInteger lineIndex = [self _lineIndexContainingIndex:range.location];
 	NSString *specialTypeOfLine = _specialLines[@(lineIndex)];
 	BOOL needOpenNewListLevel = NO;
-	
 	NSUInteger currentLineIndent = 0;
 	NSUInteger previousLineIndent = 0;
 	
@@ -1243,16 +1175,16 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		NSString *partWithoutSpecialChars;
 		positionBeforeScan = scanner.scanLocation;
 		NSRange lineBreakRange = NSMakeRange(scanner.scanLocation, 0);
-		
-		NSRange lineRange = [self _lineRangeContainingIndex:positionBeforeScan];
+
+		NSUInteger lineIndex = [_lineRanges indexOfRangeContainingLocation:positionBeforeScan];
+		NSRange lineRange = [_lineRanges rangeContainingLocation:positionBeforeScan];
 		BOOL isAtBeginningOfLine = (lineRange.location == positionBeforeScan);
 		
-		NSRange paragraphRange = [self _rangeOfParagraphAtIndex:positionBeforeScan];
+		NSRange paragraphRange = [_paragraphRanges rangeContainingLocation:positionBeforeScan];
 		BOOL isAtEndOfParagraph = (NSMaxRange(lineRange) == NSMaxRange(paragraphRange));
 		
 		if (isAtBeginningOfLine)
 		{
-			NSUInteger lineIndex = [self _lineIndexContainingIndex:positionBeforeScan];
 			
 			NSString *lineSpecial = _specialLines[@(lineIndex)];
 			BOOL lineIsIgnored = [_ignoredLines containsIndex:lineIndex];
@@ -1267,7 +1199,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				
 				if ([scanner scanMarkdownLineListPrefix:&prefix])
 				{
-					[self _handleListItemPrefix:prefix inRange:NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan)];
+					[self _handleListItemPrefix:prefix inRange:NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan) lineIndex:lineIndex];
 				}
 				
 				continue;
@@ -1328,7 +1260,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				
 				if (lineSpecial == DTMarkdownParserSpecialTagPre || lineSpecial == DTMarkdownParserSpecialFencedPreCode)
 				{
-					[self _handlePreformattedLine:line inRange:lineRange];
+					[self _handlePreformattedLine:line inRange:lineRange lineIndex:lineIndex];
 					
 					continue;
 				}
@@ -1340,7 +1272,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 						[self _closeAllIfNecessary];
 					}
 					
-					[self _handleHeader:line inRange:lineRange];
+					[self _handleHeader:line inRange:lineRange lineIndex:lineIndex];
 					
 					continue;
 				}
@@ -1400,7 +1332,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			
 			if (isAtBeginningOfLine)
 			{
-				[self _handleTextAtBeginningOfLine:partWithoutSpecialChars inRange:range];
+				[self _handleTextAtBeginningOfLine:partWithoutSpecialChars inRange:range lineIndex:lineIndex];
 			}
 			else
 			{
@@ -1443,7 +1375,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		if ([scanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
 		{
 			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
-			[self _handleLinkText:enclosedString attributes:linkAttributes inRange:range];
+			[self _handleLinkText:enclosedString attributes:linkAttributes inRange:range lineIndex:lineIndex];
 
 			continue;
 		}
