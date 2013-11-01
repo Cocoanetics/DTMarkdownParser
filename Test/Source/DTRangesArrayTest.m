@@ -90,4 +90,28 @@
 	STAssertEquals(found3, range1, @"Wrong range");
 }
 
+- (void)testInvalidRange
+{
+	DTRangesArray *array = [[DTRangesArray alloc] init];
+	
+	NSRange range1 = NSMakeRange(0, 10);
+	[array addRange:range1];
+	
+	NSUInteger index = [array indexOfRangeContainingLocation:11];
+	
+	STAssertEquals(index, NSNotFound, @"should not work");
+}
+
+- (void)testInvalidLocation
+{
+	DTRangesArray *array = [[DTRangesArray alloc] init];
+	
+	NSRange range1 = NSMakeRange(0, 10);
+	[array addRange:range1];
+	
+	NSRange range = [array rangeContainingLocation:11];
+	
+	STAssertEquals(range, NSMakeRange(NSNotFound, 0), @"should not work");
+}
+
 @end
