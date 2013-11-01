@@ -87,17 +87,17 @@
 {
 	int (^comparator)(const void *, const void *);
 	
-	comparator = ^(const void *key, const void *entry) {
+	comparator = ^(const void *locationPtr, const void *rangePtr) {
 		
-		NSUInteger keyIndex = *(NSUInteger *)key;
-		NSRange range = *(NSRange *)entry;
+		NSUInteger location = *(NSUInteger *)locationPtr;
+		NSRange range = *(NSRange *)rangePtr;
 		
-		if (keyIndex < range.location)
+		if (location < range.location)
 		{
 			return -1;
 		}
 		
-		if (keyIndex >= NSMaxRange(range))
+		if (location >= NSMaxRange(range))
 		{
 			return 1;
 		}

@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ A specialized lookup table to find locations in ranges
+ */
+
 @interface DTRangesArray : NSObject
 
 /**
