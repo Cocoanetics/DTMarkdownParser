@@ -20,6 +20,8 @@
 	free(_ranges);
 }
 
+#pragma mark - Enumerating Ranges
+
 - (void)enumerateLineRangesUsingBlock:(void(^)(NSRange range, NSUInteger idx, BOOL *stop))block
 {
 	NSParameterAssert(block);
@@ -38,10 +40,14 @@
 	}
 }
 
+#pragma mark - Getting Information
+
 - (NSUInteger)count
 {
 	return _count;
 }
+
+#pragma mark - Modifying the Array
 
 - (void)_extendCapacity
 {
@@ -68,6 +74,8 @@
 	_count++;
 }
 
+#pragma mark - Finding Ranges
+
 - (NSRange)rangeAtIndex:(NSUInteger)index
 {
 	NSAssert(index<_count, @"Cannot retrieve index %lu which is outside of number of ranges %lu", (unsigned long)index, (unsigned long)_count);
@@ -77,9 +85,7 @@
 
 - (NSRange *)_rangeInRangesContainingLocation:(NSUInteger)location
 {
-	int (^comparator)(const void *, const void *);
-	
-	comparator = ^(const void *locationPtr, const void *rangePtr) {
+	int (^comparator)(const void *, const void *) = ^(const void *locationPtr, const void *rangePtr) {
 		
 		NSUInteger location = *(NSUInteger *)locationPtr;
 		NSRange range = *(NSRange *)rangePtr;
@@ -97,7 +103,7 @@
 		return 0;
 	};
 	
-	return bsearch_b(&location, _ranges, _count,	sizeof(NSRange), comparator);
+	return bsearch_b(&location, _ranges, _count, sizeof(NSRange), comparator);
 }
 
 
