@@ -130,6 +130,21 @@
 	STAssertEquals(range, NSMakeRange(NSNotFound, 0), @"should not work");
 }
 
+- (void)testCapacityExtensionTransfer
+{
+	DTRangesArray *array = [self _rangesArrayWithNumberItems:100];
+	
+	NSRange firstRange = [array rangeAtIndex:0];
+	NSRange lastRange = [array rangeAtIndex:99];
+	lastRange.location = NSMaxRange(lastRange);
+	
+	[array addRange:lastRange];
+	
+	NSRange firstRangeAfterExtend = [array rangeAtIndex:0];
+	
+	STAssertEquals(firstRange, firstRangeAfterExtend, @"Values were not transferred");
+}
+
 - (void)testEnumeration
 {
 	DTRangesArray *array = [self _rangesArrayWithNumberItems:110];
