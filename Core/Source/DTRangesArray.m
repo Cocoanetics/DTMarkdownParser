@@ -45,24 +45,16 @@
 
 - (void)_extendCapacity
 {
-	if (!_capacity)
+	if (_capacity)
+	{
+		_capacity = _capacity*2;
+		_ranges = realloc(_ranges, _capacity * sizeof(NSRange));
+	}
+	else
 	{
 		_capacity = 100;
-		_ranges = calloc(_capacity, sizeof(NSRange));
-		return;
+		_ranges = malloc(_capacity * sizeof(NSRange));
 	}
-	
-	// double capacity
-	NSUInteger newCapacity = _capacity*2;
-	NSRange *newRanges = calloc(newCapacity, sizeof(NSRange));
-	
-	// copy old
-	memcpy(newRanges, _ranges, _capacity);
-	
-	// move to new block
-	free(_ranges);
-	_ranges = newRanges;
-	_capacity = newCapacity;
 }
 
 - (void)addRange:(NSRange)range
