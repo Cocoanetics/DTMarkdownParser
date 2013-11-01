@@ -96,14 +96,13 @@
 		{
 			return -1;
 		}
-		else if (keyIndex >= NSMaxRange(range))
+		
+		if (keyIndex >= NSMaxRange(range))
 		{
 			return 1;
 		}
-		else
-		{
-			return 0;
-		}
+		
+		return 0;
 	};
 	
 	return bsearch_b(&location, _ranges, _count,	sizeof(NSRange), comparator);
