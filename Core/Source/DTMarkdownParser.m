@@ -8,7 +8,7 @@
 
 #import "DTMarkdownParser.h"
 #import "NSScanner+DTMarkdown.h"
-#import "DTRangeDictionary.h"
+#import "DTRangesArray.h"
 
 #import <tgmath.h>
 
@@ -48,8 +48,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	NSMutableIndexSet *_ignoredLines;
 	NSMutableDictionary *_references;
 	NSMutableDictionary *_lineIndentLevel;
-	DTRangeDictionary *_lineRanges;
-	DTRangeDictionary *_paragraphRanges;
+	DTRangesArray *_lineRanges;
+	DTRangesArray *_paragraphRanges;
 	
 	NSDataDetector *_dataDetector;
 }
@@ -221,8 +221,8 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	_specialLines = [NSMutableDictionary new];
 	_references = [NSMutableDictionary new];
 	_lineIndentLevel = [NSMutableDictionary new];
-	_lineRanges = [DTRangeDictionary new];
-	_paragraphRanges = [DTRangeDictionary new];
+	_lineRanges = [DTRangesArray new];
+	_paragraphRanges = [DTRangesArray new];
 	
 	NSScanner *scanner = [NSScanner scannerWithString:_string];
 	scanner.charactersToBeSkipped = nil;
