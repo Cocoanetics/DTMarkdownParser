@@ -83,12 +83,7 @@
 	return _ranges[index];
 }
 
-- (NSUInteger)indexOfRangeContainingLocation:(NSUInteger)location
-{
-	return 0;
-}
-
-- (NSRange)rangeContainingLocation:(NSUInteger)location
+- (NSRange *)_rangeInRangesContainingLocation:(NSUInteger)location
 {
 	int (^comparator)(const void *, const void *);
 	
@@ -110,11 +105,25 @@
 		}
 	};
 	
-	NSRange *found = bsearch_b(&location,				// the searched value
-										_ranges,			// the searched array
-										_count,				// the length of array
-										sizeof(NSRange),	// the size of the values
-										comparator);		// the comparator
+	return bsearch_b(&location, _ranges, _count,	sizeof(NSRange), comparator);
+}
+
+
+- (NSUInteger)indexOfRangeContainingLocation:(NSUInteger)location
+{
+	NSRange *found = [self _rangeInRangesContainingLocation:location];
+	
+	if (found)
+	{
+		return found - _ranges; // calc index
+	}
+	
+	return NSNotFound;
+}
+
+- (NSRange)rangeContainingLocation:(NSUInteger)location
+{
+	NSRange *found = [self _rangeInRangesContainingLocation:location];
 	
 	if (found)
 	{
