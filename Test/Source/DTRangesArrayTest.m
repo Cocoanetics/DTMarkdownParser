@@ -26,6 +26,22 @@
     [super tearDown];
 }
 
+- (DTRangesArray *)_rangesArrayWithNumberItems:(NSUInteger)numberItems
+{
+	DTRangesArray *array = [DTRangesArray new];
+
+	NSRange range = NSMakeRange(0, 13);
+
+	for (NSUInteger i = 0; i<numberItems; i++)
+	{
+		[array addRange:range];
+		
+		range.location = NSMaxRange(range);
+	}
+	
+	return array;
+}
+
 - (void)testCreate
 {
 	DTRangesArray *array = [[DTRangesArray alloc] init];
@@ -112,6 +128,22 @@
 	NSRange range = [array rangeContainingLocation:11];
 	
 	STAssertEquals(range, NSMakeRange(NSNotFound, 0), @"should not work");
+}
+
+- (void)testEnumeration
+{
+	DTRangesArray *array = [self _rangesArrayWithNumberItems:110];
+	
+	__block NSUInteger count = 0;
+	[array enumerateLineRangesUsingBlock:^(NSRange range, NSUInteger idx, BOOL *stop) {
+
+		NSRange testRange = [array rangeAtIndex:idx];
+		
+		STAssertEquals(testRange, range, @"Range not equal");
+		count++;
+	}];
+	
+	STAssertEquals(count, (NSUInteger)110, @"Wrong count");
 }
 
 @end
