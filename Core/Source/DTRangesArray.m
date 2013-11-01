@@ -88,6 +88,7 @@
 	int (^comparator)(const void *, const void *);
 	
 	comparator = ^(const void *key, const void *entry) {
+		
 		NSUInteger keyIndex = *(NSUInteger *)key;
 		NSRange range = *(NSRange *)entry;
 		
