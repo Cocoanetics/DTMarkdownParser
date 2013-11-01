@@ -463,7 +463,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			}
 		}
 		
-		[_paragraphRanges addRange:lineRange];
+		[_lineRanges addRange:lineRange];
 		
 		lineIndex++;
 	}
