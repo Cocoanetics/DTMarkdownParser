@@ -259,7 +259,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		
 		NSRange lineRange = NSMakeRange(scanner.scanLocation, 0);
 		
-		if ([scanner scanUpToString:@"\n" intoString:&line])
+		if ([scanner scanUpToString:@"\n" intoString:&line] && ![_ignoredLines containsIndex:lineIndex])
 		{
 			lineRange.length = scanner.scanLocation - lineRange.location;
 			paragraphRange = NSUnionRange(paragraphRange, lineRange);
@@ -321,22 +321,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 					}
 					
 					// block it from further special detection
-					didFindSpecial = YES;
-				}
-			}
-			
-			// look for lines with references
-			if (!didFindSpecial)
-			{
-				NSString *ref;
-				NSString *link;
-				NSString *title;
-				
-				NSScanner *lineScanner = [NSScanner scannerWithString:line];
-				lineScanner.charactersToBeSkipped = nil;
-				
-				if ([lineScanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&link title:&title])
-				{
 					didFindSpecial = YES;
 				}
 			}
