@@ -1164,7 +1164,7 @@
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
 	
-	NSString *expected = @"<p>This is a link to <a href=\"http://foo.com\">http://foo.com</a></p>\n";
+	NSString *expected = @"<p>This is a link to <a href=\"http://foo.bar\" title=\"Optional Title Here\">something</a></p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");

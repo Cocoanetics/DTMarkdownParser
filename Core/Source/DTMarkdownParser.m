@@ -158,6 +158,34 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	return spacesCount;
 }
 
+- (void)_setupParsing
+{
+	_ignoredLines = [NSMutableIndexSet new];
+	_specialLines = [NSMutableDictionary new];
+	_lineIndentLevel = [NSMutableDictionary new];
+	_paragraphRanges = [DTRangesArray new];
+	_references = [NSMutableDictionary new];
+	
+	[self _determineLineRanges];
+	[self _findAndHandleReferenceLines];
+	[self _findAndMarkSpecialLines];
+	[self _fixNewlinesInCodeBlocks];
+	
+	_tagStack = [NSMutableArray new];
+}
+
+- (void)_determineLineRanges
+{
+	_lineRanges = [DTRangesArray new];
+	
+	NSRange entireString = NSMakeRange(0, [_string length]);
+	[_string enumerateSubstringsInRange:entireString options:NSStringEnumerationByLines usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+		
+		[_lineRanges addRange:enclosingRange];
+	}];
+}
+
+
 - (void)_fixNewlinesInCodeBlocks
 {
 	__block BOOL inFencedBlock = NO;
@@ -217,13 +245,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 - (void)_findAndMarkSpecialLines
 {
-	_ignoredLines = [NSMutableIndexSet new];
-	_specialLines = [NSMutableDictionary new];
-	_references = [NSMutableDictionary new];
-	_lineIndentLevel = [NSMutableDictionary new];
-	_lineRanges = [DTRangesArray new];
-	_paragraphRanges = [DTRangesArray new];
-	
 	NSScanner *scanner = [NSScanner scannerWithString:_string];
 	scanner.charactersToBeSkipped = nil;
 	
@@ -316,21 +337,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				
 				if ([lineScanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&link title:&title])
 				{
-					NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
-					
-					if (link)
-					{
-						[tmpDict setObject:link forKey:@"href"];
-					}
-					
-					if (title)
-					{
-						[tmpDict setObject:title forKey:@"title"];
-					}
-					
-					[_references setObject:tmpDict forKey:ref];
-					
-					[_ignoredLines addIndex:lineIndex];
 					didFindSpecial = YES;
 				}
 			}
@@ -463,10 +469,52 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			}
 		}
 		
-		[_lineRanges addRange:lineRange];
-		
 		lineIndex++;
 	}
+}
+
+- (void)_findAndHandleReferenceLines
+{
+	NSScanner *scanner = [NSScanner scannerWithString:_string];
+	scanner.charactersToBeSkipped = nil;
+	
+	[_lineRanges enumerateLineRangesUsingBlock:^(NSRange range, NSUInteger idx, BOOL *stop) {
+		
+		if ([_ignoredLines containsIndex:idx])
+		{
+			return;
+		}
+		
+		scanner.scanLocation = range.location;
+		
+		NSString *ref;
+		NSString *link;
+		NSString *title;
+		
+		if ([scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&link title:&title])
+		{
+			NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
+			
+			if (link)
+			{
+				[tmpDict setObject:link forKey:@"href"];
+			}
+			
+			if (title)
+			{
+				[tmpDict setObject:title forKey:@"title"];
+			}
+			
+			[_references setObject:tmpDict forKey:ref];
+			
+			[_ignoredLines addIndex:idx];
+			
+			if (scanner.scanLocation>NSMaxRange(range))
+			{
+				[_ignoredLines addIndex:idx+1];
+			}
+		}
+	}];
 }
 
 - (BOOL)_hasHangingParagraphsForListItemBeginningAtLineIndex:(NSUInteger)lineIndex
@@ -1158,11 +1206,6 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 - (void)_parseLoop
 {
-	[self _findAndMarkSpecialLines];
-	[self _fixNewlinesInCodeBlocks];
-	
-	_tagStack = [NSMutableArray new];
-
 	NSScanner *scanner = [NSScanner scannerWithString:_string];
 	scanner.charactersToBeSkipped = nil;
 	
@@ -1418,6 +1461,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	
 	[self _reportBeginOfDocument];
 
+	[self _setupParsing];
 	[self _parseLoop];
 	
 	[self _reportEndOfDocument];
