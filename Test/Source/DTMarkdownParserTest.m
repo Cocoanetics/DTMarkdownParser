@@ -1155,6 +1155,20 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testLinkWithReferenceOnAnotherLine
+{
+	NSString *string = @"This is a link to [something][id]\n\n[id]: http://foo.bar\n  \"Optional Title Here\"";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p>This is a link to <a href=\"http://foo.com\">http://foo.com</a></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
 
 - (void)testLinkWithNestedImagesInside
 {

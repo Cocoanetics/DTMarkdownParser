@@ -115,7 +115,7 @@
 	
 	NSUInteger index = [array indexOfRangeContainingLocation:11];
 	
-	STAssertEquals(index, NSNotFound, @"should not work");
+	STAssertEquals(index, (NSUInteger)NSNotFound, @"should not work");
 }
 
 - (void)testInvalidLocation

@@ -18,7 +18,7 @@
 	
 	dispatch_once(&onceToken, ^{
 		NSMutableCharacterSet *tmpSet = [NSMutableCharacterSet whitespaceCharacterSet];
-		[tmpSet addCharactersInString:@")'\"("];
+		[tmpSet addCharactersInString:@")'\"(\n"];
 		hrefTerminatorSet = [tmpSet copy];
 	});
 	
@@ -32,49 +32,63 @@
 		self.scanLocation = startPos;
 		return NO;
 	}
-	
+
 	NSUInteger posAfterHREF = self.scanLocation;
-	
-	NSCharacterSet *quoteChars = [NSCharacterSet characterSetWithCharactersInString:@"'\"("];
-	
-	NSString *quote;
-	NSString *quotedTitle;
 	
 	// optional spaces
 	[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
 	
-	if ([self scanCharactersFromSet:quoteChars intoString:&quote])
+	BOOL titlePossible = YES;
+	
+	if ([self scanString:@"\n" intoString:NULL])
 	{
-		if ([quote hasPrefix:@"'"])
+		if (![self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL])
 		{
-			if ([self scanUpToString:@"'" intoString:&quotedTitle])
+			titlePossible = NO;
+		}
+	}
+	
+	NSString *quotedTitle;
+	
+	if (titlePossible)
+	{
+		NSCharacterSet *quoteChars = [NSCharacterSet characterSetWithCharactersInString:@"'\"("];
+		
+		NSString *quote;
+		
+		if ([self scanCharactersFromSet:quoteChars intoString:&quote])
+		{
+			if ([quote hasPrefix:@"'"])
 			{
-				if (![self scanString:@"'" intoString:NULL])
+				if ([self scanUpToString:@"'" intoString:&quotedTitle])
 				{
-					quotedTitle = nil;
-					self.scanLocation = posAfterHREF;
+					if (![self scanString:@"'" intoString:NULL])
+					{
+						quotedTitle = nil;
+						self.scanLocation = posAfterHREF;
+					}
 				}
 			}
-		}
-		else if ([quote hasPrefix:@"\""])
-		{
-			if ([self scanUpToString:@"\"" intoString:&quotedTitle])
+			else if ([quote hasPrefix:@"\""])
 			{
-				if (![self scanString:@"\"" intoString:NULL])
+				if ([self scanUpToString:@"\"" intoString:&quotedTitle])
 				{
-					quotedTitle = nil;
-					self.scanLocation = posAfterHREF;
+					if (![self scanString:@"\"" intoString:NULL])
+					{
+						quotedTitle = nil;
+						self.scanLocation = posAfterHREF;
+					}
 				}
 			}
-		}
-		else if ([quote hasPrefix:@"("])
-		{
-			if ([self scanUpToString:@")" intoString:&quotedTitle])
+			else if ([quote hasPrefix:@"("])
 			{
-				if (![self scanString:@")" intoString:NULL])
+				if ([self scanUpToString:@")" intoString:&quotedTitle])
 				{
-					quotedTitle = nil;
-					self.scanLocation = posAfterHREF;
+					if (![self scanString:@")" intoString:NULL])
+					{
+						quotedTitle = nil;
+						self.scanLocation = posAfterHREF;
+					}
 				}
 			}
 		}
@@ -280,7 +294,7 @@
 		self.scanLocation = startPos;
 		return NO;
 	}
-
+	
 	self.scanLocation = startPos + [effectiveMarker length];
 	
 	// there cannot be a space after a beginning marker
@@ -289,7 +303,7 @@
 		self.scanLocation = startPos;
 		return NO;
 	}
-
+	
 	if (marker)
 	{
 		*beginMarker = effectiveMarker;
@@ -419,7 +433,7 @@
 	{
 		// skip image
 		NSUInteger posBeforeImage = self.scanLocation;
-
+		
 		NSString *part;
 		
 		if ([self scanUpToCharactersFromSet:stopChars intoString:&part])
@@ -514,7 +528,7 @@
 		{
 			URL = [links[0] URL];
 		}
-
+		
 		if (!URL)
 		{
 			URL = [NSURL URLWithString:enclosedPart];
@@ -596,7 +610,7 @@
 			return NO;
 		}
 	}
-
+	
 	if (attributes)
 	{
 		NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
@@ -634,7 +648,7 @@
 	}
 	
 	NSString *enclosedPart;
-		
+	
 	if (![self scanUpToString:marker intoString:&enclosedPart])
 	{
 		self.scanLocation = startPos;

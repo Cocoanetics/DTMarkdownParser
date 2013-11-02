@@ -198,6 +198,46 @@
 	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
+- (void)testRefWithMultipleLines
+{
+	NSString *string = @"[id]: http://foo.bar\n  \"Optional Title Here\"";
+
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *href;
+	NSString *title;
+	NSString *ref;
+	
+	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
+	
+	STAssertTrue(b, @"Should be able to scan ref");
+	
+	STAssertEqualObjects(href, @"http://foo.bar", @"Wrong href");
+	STAssertEqualObjects(title, @"Optional Title Here", @"Wrong title");
+	STAssertEqualObjects(ref, @"id", @"Wrong id");
+}
+
+- (void)testRefWithMultipleLinesMissingIndent
+{
+	NSString *string = @"[id]: http://foo.bar\n\"Optional Title Here\"";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *href;
+	NSString *title;
+	NSString *ref;
+	
+	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
+	
+	STAssertTrue(b, @"Should be able to scan ref");
+	
+	STAssertEqualObjects(href, @"http://foo.bar", @"Wrong href");
+	STAssertNil(title, @"Optional Title Here", @"Wrong title");
+	STAssertEqualObjects(ref, @"id", @"Wrong id");
+}
+
 #pragma mark - List Prefix
 
 - (void)testScanListPrefixTooManySpaces
