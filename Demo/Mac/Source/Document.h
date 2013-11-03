@@ -8,6 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface Document : NSDocument
+@interface Document : NSDocument <NSTextDelegate>
+
+@property (assign) NSInteger selectedPreviewTabIndex;
+
+- (IBAction)changePreviewTabIndex:(id)sender;
 
 @end

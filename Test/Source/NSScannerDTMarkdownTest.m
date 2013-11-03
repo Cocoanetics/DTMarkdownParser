@@ -26,6 +26,7 @@
 	BOOL b = [scanner scanMarkdownHyperlink:NULL title:NULL];
 	
 	STAssertFalse(b, @"Should not be able to scan hyperlink");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testMissingClosingSingleQuote
@@ -131,6 +132,7 @@
 	STAssertNil(href, @"href should be nil");
 	STAssertNil(title, @"Title should be nil");
 	STAssertNil(ref, @"href should be nil");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testMissingRefClosingBracket
@@ -151,6 +153,7 @@
 	STAssertNil(href, @"href should be nil");
 	STAssertNil(title, @"Title should be nil");
 	STAssertNil(ref, @"href should be nil");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testMissingSpacesAfterID
@@ -171,6 +174,7 @@
 	STAssertNil(href, @"href should be nil");
 	STAssertNil(title, @"Title should be nil");
 	STAssertNil(ref, @"href should be nil");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testRefWithInvalidHyperlink
@@ -191,6 +195,47 @@
 	STAssertNil(href, @"href should be nil");
 	STAssertNil(title, @"Title should be nil");
 	STAssertNil(ref, @"href should be nil");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+}
+
+- (void)testRefWithMultipleLines
+{
+	NSString *string = @"[id]: http://foo.bar\n  \"Optional Title Here\"";
+
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *href;
+	NSString *title;
+	NSString *ref;
+	
+	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
+	
+	STAssertTrue(b, @"Should be able to scan ref");
+	
+	STAssertEqualObjects(href, @"http://foo.bar", @"Wrong href");
+	STAssertEqualObjects(title, @"Optional Title Here", @"Wrong title");
+	STAssertEqualObjects(ref, @"id", @"Wrong id");
+}
+
+- (void)testRefWithMultipleLinesMissingIndent
+{
+	NSString *string = @"[id]: http://foo.bar\n\"Optional Title Here\"";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *href;
+	NSString *title;
+	NSString *ref;
+	
+	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
+	
+	STAssertTrue(b, @"Should be able to scan ref");
+	
+	STAssertEqualObjects(href, @"http://foo.bar", @"Wrong href");
+	STAssertNil(title, @"Optional Title Here", @"Wrong title");
+	STAssertEqualObjects(ref, @"id", @"Wrong id");
 }
 
 #pragma mark - List Prefix
@@ -208,6 +253,7 @@
 	
 	STAssertFalse(b, @"Should not be able to scan list prefix");
 	STAssertNil(prefix, @"prefix should be nil");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanListPrefixMissingWhitespace
@@ -223,6 +269,7 @@
 	
 	STAssertFalse(b, @"Should not be able to scan list prefix");
 	STAssertNil(prefix, @"prefix should be nil");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanListPrefixAsterisk
@@ -283,6 +330,7 @@
 	
 	STAssertFalse(b, @"Should not be able to scan list prefix");
 	STAssertNil(prefix, @"prefix should be nil");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanListPrefixNumber
@@ -313,6 +361,7 @@
 	
 	STAssertFalse(b, @"Should not be able to scan list prefix");
 	STAssertNil(prefix, @"prefix should be nil");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanListPrefixOnlySpaces
@@ -328,6 +377,144 @@
 	
 	STAssertFalse(b, @"Should not be able to scan list prefix");
 	STAssertNil(prefix, @"prefix should be nil");
+	
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+}
+
+#pragma mark - Marked Range Markers
+
+- (void)_testScanMarkedRangeBeginningsInString:(NSString *)string expectedMarker:(NSString *)expectedMarker
+{
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *marker;
+	BOOL b = [scanner scanMarkdownBeginMarker:&marker];
+	
+	STAssertTrue(b, @"Should be able to scan opening marker");
+	STAssertEqualObjects(expectedMarker, marker, @"Incorrect Marker scanned");
+}
+
+- (void)testScanMarkedRanges
+{
+	[self _testScanMarkedRangeBeginningsInString:@"**Bold**" expectedMarker:@"**"];
+	[self _testScanMarkedRangeBeginningsInString:@"*Emphasis*" expectedMarker:@"*"];
+	[self _testScanMarkedRangeBeginningsInString:@"__Bold__" expectedMarker:@"__"];
+	[self _testScanMarkedRangeBeginningsInString:@"_Emphasis_" expectedMarker:@"_"];
+	[self _testScanMarkedRangeBeginningsInString:@"~~Deleted~~" expectedMarker:@"~~"];
+	[self _testScanMarkedRangeBeginningsInString:@"`Code`" expectedMarker:@"`"];
+}
+
+- (void)testMarkdownTextBetweenMarkersWithNewline
+{
+	NSScanner *scanner = [NSScanner scannerWithString:@"*space\nnewline*"];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *marker;
+	NSString *text;
+	BOOL b = [scanner scanMarkdownTextBetweenFormatMarkers:&text outermostMarker:&marker];
+	
+	STAssertFalse(b, @"Should not be able to scan formatted text with newline in it");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+}
+
+#pragma mark - Link Scanning
+
+- (void)testScanImage
+{
+	NSString *string = @"![Alt text](/path/to/img.jpg \"Optional title\")";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
+	
+	STAssertTrue(b, @"Should be able to scan opening marker");
+	STAssertEqualObjects(attributes[@"src"], @"/path/to/img.jpg", @"Incorrect SRC");
+	STAssertEqualObjects(attributes[@"alt"], @"Alt text", @"Incorrect ALT");
+	STAssertEqualObjects(attributes[@"title"], @"Optional title", @"Incorrect TITLE");
+}
+
+- (void)testScanImageNoLink
+{
+	NSString *string = @"![Alt text]()";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
+	
+	STAssertFalse(b, @"Should not be able to scan image");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+}
+
+- (void)testScanImageNoClosingBracketAfterLink
+{
+	NSString *string = @"![Alt text](http://foo.com";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
+	
+	STAssertFalse(b, @"Should not be able to scan image");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+}
+
+- (void)testScanImageEmptyReference
+{
+	NSString *string = @"![Alt][]";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
+	
+	STAssertFalse(b, @"Should not be able to scan image");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+}
+
+- (void)testScanImageExistingReferenceButMissingClosingBracket
+{
+	NSString *string = @"![Alt][";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:@{@"alt":@{@"href": @"http://foo.com"}}];
+	
+	STAssertFalse(b, @"Should not be able to scan image");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+}
+
+- (void)testScanLinkExistingReferenceButMissingClosingBracket
+{
+	NSString *string = @"[Alt][";
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	NSString *enclosed;
+	BOOL b = [scanner scanMarkdownHyperlinkAttributes:&attributes enclosedString:&enclosed references:@{@"alt":@{@"href": @"http://foo.com"}}];
+	
+	STAssertFalse(b, @"Should not be able to scan image");
+	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+}
+- (void)testEmptyLink
+{
+	NSString *string = @"[Link]()";
+
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSDictionary *attributes;
+	NSString *enclosed;
+	BOOL b = [scanner scanMarkdownHyperlinkAttributes:&attributes enclosedString:&enclosed references:nil];
+	
+	STAssertTrue(b, @"Should result in scanned link");
+	
+	STAssertEqualObjects(@"Link", enclosed, @"Wrong enclosed string");
+	STAssertEquals([attributes count], (NSUInteger)0, @"There should be no attributes");
 }
 
 @end

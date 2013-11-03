@@ -6,7 +6,32 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		A78CE53D18267B1200CEF9C7 /* Documentation */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = A78CE53E18267B1200CEF9C7 /* Build configuration list for PBXAggregateTarget "Documentation" */;
+			buildPhases = (
+				A78CE54218267B1D00CEF9C7 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Documentation;
+			productName = Documentation;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
+		3D285247181A9D3E000C44EC /* DTMDistributionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */; };
+		3D4308411819754500B8C024 /* SimpleHTMLGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */; };
+		3DD93598181805DA0010AA87 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DD93597181805DA0010AA87 /* WebKit.framework */; };
+		3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */; };
+		3DFFAE7118184C1A00EE245D /* TagTreeOutlineController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */; };
+		3DFFAE7218184C7E00EE245D /* SimpleTreeGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */; };
+		3DFFAE731818577C00EE245D /* DTMarkdownParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
+		A7248B09181BC5E90021A209 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF250B18112A3B0013D8D7 /* Foundation.framework */; };
+		A7248B0B181BC5E90021A209 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7248B0A181BC5E90021A209 /* CoreGraphics.framework */; };
+		A7248B0C181BC5E90021A209 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7870C401817F6C000E39311 /* UIKit.framework */; };
+		A7248B35181BC62B0021A209 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A7248AFF181BC5D50021A209 /* main.m */; };
 		A765C44A18115855006B252A /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */; };
 		A765C44B1811589D006B252A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
 		A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */; };
@@ -296,6 +321,11 @@
 		A7870DCE1817FF3800E39311 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7870DCB1817FF3800E39311 /* MainMenu.xib */; };
 		A7870DCF1817FF3800E39311 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = A7870DCC1817FF3800E39311 /* Credits.rtf */; };
 		A7870DD61817FFCE00E39311 /* DTMarkdownParser.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
+		A78CE5121823D6D000CEF9C7 /* DTRangesArray.h in Headers */ = {isa = PBXBuildFile; fileRef = A78CE5101823D6D000CEF9C7 /* DTRangesArray.h */; };
+		A78CE5131823D6D000CEF9C7 /* DTRangesArray.m in Sources */ = {isa = PBXBuildFile; fileRef = A78CE5111823D6D000CEF9C7 /* DTRangesArray.m */; };
+		A78CE5141823D6D000CEF9C7 /* DTRangesArray.m in Sources */ = {isa = PBXBuildFile; fileRef = A78CE5111823D6D000CEF9C7 /* DTRangesArray.m */; };
+		A78CE5221823ECF300CEF9C7 /* DTRangesArrayTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A78CE5211823ECF300CEF9C7 /* DTRangesArrayTest.m */; };
+		A78CE5231823ECF300CEF9C7 /* DTRangesArrayTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A78CE5211823ECF300CEF9C7 /* DTRangesArrayTest.m */; };
 		A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */ = {isa = PBXBuildFile; fileRef = A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */; };
 		A78EAACD18151EF800650426 /* NSScanner+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */; };
 		A7ABD3E41811BEEB00494DA5 /* auto_link.html in Resources */ = {isa = PBXBuildFile; fileRef = A7ABD2DC1811BEEB00494DA5 /* auto_link.html */; };
@@ -572,6 +602,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		A7248B36181BC6670021A209 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7BF250018112A3B0013D8D7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A7248B07181BC5E90021A209;
+			remoteInfo = BundleLoaderDummy;
+		};
 		A7870C7A1817F89900E39311 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7BF250018112A3B0013D8D7 /* Project object */;
@@ -646,6 +683,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3D285245181A9D3D000C44EC /* DTMDistributionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTMDistributionDelegate.h; sourceTree = "<group>"; };
+		3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMDistributionDelegate.m; sourceTree = "<group>"; };
+		3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHTMLGenerator.m; sourceTree = "<group>"; };
+		3D4308401819754500B8C024 /* SimpleHTMLGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHTMLGenerator.h; sourceTree = "<group>"; };
+		3DD93597181805DA0010AA87 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleTreeGenerator.h; sourceTree = "<group>"; };
+		3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleTreeGenerator.m; sourceTree = "<group>"; };
+		3DFFAE6F18184C1A00EE245D /* TagTreeOutlineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagTreeOutlineController.h; sourceTree = "<group>"; };
+		3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagTreeOutlineController.m; sourceTree = "<group>"; };
+		A7248AFE181BC5D50021A209 /* BundleLoaderDummy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BundleLoaderDummy-Info.plist"; sourceTree = "<group>"; };
+		A7248AFF181BC5D50021A209 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A7248B08181BC5E90021A209 /* BundleLoaderDummy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BundleLoaderDummy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7248B0A181BC5E90021A209 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTWeakSupport.h; sourceTree = "<group>"; };
 		A765C45D18116AF9006B252A /* NSInvocation+DTFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+DTFoundation.h"; sourceTree = "<group>"; };
 		A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+DTFoundation.m"; sourceTree = "<group>"; };
 		A765C46118117EE5006B252A /* DTInvocationRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTInvocationRecorder.h; sourceTree = "<group>"; };
@@ -669,6 +720,12 @@
 		A7870DCA1817FF3800E39311 /* Document.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Document.xib; sourceTree = "<group>"; };
 		A7870DCB1817FF3800E39311 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		A7870DCC1817FF3800E39311 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
+		A78CE5101823D6D000CEF9C7 /* DTRangesArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRangesArray.h; sourceTree = "<group>"; };
+		A78CE5111823D6D000CEF9C7 /* DTRangesArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRangesArray.m; sourceTree = "<group>"; };
+		A78CE5211823ECF300CEF9C7 /* DTRangesArrayTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRangesArrayTest.m; sourceTree = "<group>"; };
+		A78CE53618267AE700CEF9C7 /* AppledocSettings.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppledocSettings.plist; sourceTree = "<group>"; };
+		A78CE53718267AE700CEF9C7 /* DTMarkdownParser.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = DTMarkdownParser.podspec; sourceTree = "<group>"; };
+		A78CE53818267AE700CEF9C7 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSScanner+DTMarkdown.h"; sourceTree = "<group>"; };
 		A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSScanner+DTMarkdown.m"; sourceTree = "<group>"; };
 		A7ABD2DC1811BEEB00494DA5 /* auto_link.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = auto_link.html; sourceTree = "<group>"; };
@@ -956,6 +1013,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A7248B05181BC5E90021A209 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7248B0B181BC5E90021A209 /* CoreGraphics.framework in Frameworks */,
+				A7248B0C181BC5E90021A209 /* UIKit.framework in Frameworks */,
+				A7248B09181BC5E90021A209 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7870C2C1817F6C000E39311 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -979,7 +1046,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DD93598181805DA0010AA87 /* WebKit.framework in Frameworks */,
 				A7870D8A1817FDEC00E39311 /* Cocoa.framework in Frameworks */,
+				3DFFAE731818577C00EE245D /* DTMarkdownParser.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1004,6 +1073,37 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3DD93599181805F70010AA87 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3DD93597181805DA0010AA87 /* WebKit.framework */,
+			);
+			name = Frameworks;
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		3DFFAE6E18183AFD00EE245D /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				3D285245181A9D3D000C44EC /* DTMDistributionDelegate.h */,
+				3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */,
+				3D4308401819754500B8C024 /* SimpleHTMLGenerator.h */,
+				3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */,
+				3DFFAE6618183AF400EE245D /* SimpleTreeGenerator.h */,
+				3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		A7248AFD181BC5D50021A209 /* BundleLoaderDummy */ = {
+			isa = PBXGroup;
+			children = (
+				A7248AFE181BC5D50021A209 /* BundleLoaderDummy-Info.plist */,
+				A7248AFF181BC5D50021A209 /* main.m */,
+			);
+			path = BundleLoaderDummy;
+			sourceTree = "<group>";
+		};
 		A7870D8B1817FDEC00E39311 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1018,6 +1118,7 @@
 			isa = PBXGroup;
 			children = (
 				A7870DC01817FE4900E39311 /* Mac */,
+				3DFFAE6E18183AFD00EE245D /* Common */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -1029,6 +1130,7 @@
 				A7870DC71817FEC900E39311 /* Demo-Prefix.pch */,
 				A7870DC11817FE7F00E39311 /* Resources */,
 				A7870DC21817FE7F00E39311 /* Source */,
+				3DD93599181805F70010AA87 /* Frameworks */,
 			);
 			path = Mac;
 			sourceTree = "<group>";
@@ -1049,6 +1151,8 @@
 				A7870DC31817FE8D00E39311 /* Document.h */,
 				A7870DC41817FE8D00E39311 /* Document.m */,
 				A7870DC81817FED400E39311 /* main.m */,
+				3DFFAE6F18184C1A00EE245D /* TagTreeOutlineController.h */,
+				3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1360,6 +1464,7 @@
 				A7870C2F1817F6C000E39311 /* libDTMarkdownParser_iOS.a */,
 				A7870C601817F7BB00E39311 /* UnitTests_iOS.octest */,
 				A7870D891817FDEC00E39311 /* DTMarkdown Demo.app */,
+				A7248B08181BC5E90021A209 /* BundleLoaderDummy.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1372,6 +1477,7 @@
 				A7BF25D5181138320013D8D7 /* Cocoa.framework */,
 				A7870C3D1817F6C000E39311 /* XCTest.framework */,
 				A7870C401817F6C000E39311 /* UIKit.framework */,
+				A7248B0A181BC5E90021A209 /* CoreGraphics.framework */,
 				A7870D8B1817FDEC00E39311 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -1403,6 +1509,9 @@
 				A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */,
 				A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */,
 				A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */,
+				A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */,
+				A78CE5101823D6D000CEF9C7 /* DTRangesArray.h */,
+				A78CE5111823D6D000CEF9C7 /* DTRangesArray.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1410,6 +1519,7 @@
 		A7BF253318112C8B0013D8D7 /* Test */ = {
 			isa = PBXGroup;
 			children = (
+				A7248AFD181BC5D50021A209 /* BundleLoaderDummy */,
 				A7ABD2DB1811BEEB00494DA5 /* Resources */,
 				A7BF253418112C8B0013D8D7 /* Source */,
 				A7BF253618112C8B0013D8D7 /* UnitTests-Info.plist */,
@@ -1424,6 +1534,7 @@
 				A7A244CE1817BE5C00FDB3FC /* Utilities */,
 				A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */,
 				A7D7DF261815740000F4377D /* NSScannerDTMarkdownTest.m */,
+				A78CE5211823ECF300CEF9C7 /* DTRangesArrayTest.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1451,6 +1562,9 @@
 		A7D7DF2418156DE700F4377D /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
+				A78CE53618267AE700CEF9C7 /* AppledocSettings.plist */,
+				A78CE53718267AE700CEF9C7 /* DTMarkdownParser.podspec */,
+				A78CE53818267AE700CEF9C7 /* LICENSE */,
 				A7D7DF2518156DF600F4377D /* README.md */,
 			);
 			name = Documentation;
@@ -1463,6 +1577,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A78CE5121823D6D000CEF9C7 /* DTRangesArray.h in Headers */,
+				3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */,
 				A7BF26001811385A0013D8D7 /* DTMarkdownParser.h in Headers */,
 				A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */,
 			);
@@ -1471,6 +1587,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		A7248B07181BC5E90021A209 /* BundleLoaderDummy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7248B2D181BC5E90021A209 /* Build configuration list for PBXNativeTarget "BundleLoaderDummy" */;
+			buildPhases = (
+				A7248B04181BC5E90021A209 /* Sources */,
+				A7248B05181BC5E90021A209 /* Frameworks */,
+				A7248B06181BC5E90021A209 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BundleLoaderDummy;
+			productName = BundleLoaderDummy;
+			productReference = A7248B08181BC5E90021A209 /* BundleLoaderDummy.app */;
+			productType = "com.apple.product-type.application";
+		};
 		A7870C2E1817F6C000E39311 /* DTMarkdownParser (iOS) */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A7870C571817F6C000E39311 /* Build configuration list for PBXNativeTarget "DTMarkdownParser (iOS)" */;
@@ -1499,6 +1632,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A7248B37181BC6670021A209 /* PBXTargetDependency */,
 				A7870C7B1817F89900E39311 /* PBXTargetDependency */,
 			);
 			name = "UnitTests (iOS)";
@@ -1602,6 +1736,8 @@
 				A7870C5F1817F7BB00E39311 /* UnitTests (iOS) */,
 				A7BF251C18112A8F0013D8D7 /* UnitTests (Mac) */,
 				A7870D881817FDEC00E39311 /* Demo (Mac) */,
+				A7248B07181BC5E90021A209 /* BundleLoaderDummy */,
+				A78CE53D18267B1200CEF9C7 /* Documentation */,
 			);
 		};
 /* End PBXProject section */
@@ -1638,6 +1774,13 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A7248B06181BC5E90021A209 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7870C5E1817F7BB00E39311 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2199,13 +2342,39 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		A78CE54218267B1D00CEF9C7 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/appledoc --print-settings --output \"${BUILD_DIR}/Documentation/\" \"${PROJECT_DIR}\"\necho \"Documentation Output directory: ${BUILD_DIR}/Documentation/\"";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		A7248B04181BC5E90021A209 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7248B35181BC62B0021A209 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7870C2B1817F6C000E39311 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				A7870C5A1817F70700E39311 /* NSScanner+DTMarkdown.m in Sources */,
 				A7870C591817F70700E39311 /* DTMarkdownParser.m in Sources */,
+				A78CE5141823D6D000CEF9C7 /* DTRangesArray.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2213,6 +2382,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A78CE5221823ECF300CEF9C7 /* DTRangesArrayTest.m in Sources */,
 				A7870C761817F7D800E39311 /* NSString+DTMarkdown.m in Sources */,
 				A7870C771817F7D800E39311 /* DTMarkdownParserTest.m in Sources */,
 				A7870C741817F7D800E39311 /* DTInvocationTestFunctions.m in Sources */,
@@ -2228,6 +2398,10 @@
 			files = (
 				A7870DC51817FE8D00E39311 /* Document.m in Sources */,
 				A7870DC91817FED400E39311 /* main.m in Sources */,
+				3D4308411819754500B8C024 /* SimpleHTMLGenerator.m in Sources */,
+				3DFFAE7218184C7E00EE245D /* SimpleTreeGenerator.m in Sources */,
+				3D285247181A9D3E000C44EC /* DTMDistributionDelegate.m in Sources */,
+				3DFFAE7118184C1A00EE245D /* TagTreeOutlineController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2235,6 +2409,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A78CE5231823ECF300CEF9C7 /* DTRangesArrayTest.m in Sources */,
 				A7D7DF2318155ED300F4377D /* NSString+DTMarkdown.m in Sources */,
 				A765C4691811906B006B252A /* DTInvocationTestFunctions.m in Sources */,
 				A7D7DF271815740000F4377D /* NSScannerDTMarkdownTest.m in Sources */,
@@ -2250,12 +2425,18 @@
 			files = (
 				A78EAACD18151EF800650426 /* NSScanner+DTMarkdown.m in Sources */,
 				A7BF26011811385A0013D8D7 /* DTMarkdownParser.m in Sources */,
+				A78CE5131823D6D000CEF9C7 /* DTRangesArray.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A7248B37181BC6670021A209 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A7248B07181BC5E90021A209 /* BundleLoaderDummy */;
+			targetProxy = A7248B36181BC6670021A209 /* PBXContainerItemProxy */;
+		};
 		A7870C7B1817F89900E39311 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A7870C2E1817F6C000E39311 /* DTMarkdownParser (iOS) */;
@@ -2274,6 +2455,76 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		A7248B2E181BC5E90021A209 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Test/BundleLoaderDummy/BundleLoaderDummy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = NO;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A7248B2F181BC5E90021A209 /* Coverage */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INFOPLIST_FILE = "Test/BundleLoaderDummy/BundleLoaderDummy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = NO;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Coverage;
+		};
+		A7248B30181BC5E90021A209 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INFOPLIST_FILE = "Test/BundleLoaderDummy/BundleLoaderDummy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = NO;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
 		A7870C4D1817F6C000E39311 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2329,6 +2580,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/BundleLoaderDummy.app/BundleLoaderDummy";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -2345,6 +2597,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = UnitTests_iOS;
 				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -2353,6 +2606,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/BundleLoaderDummy.app/BundleLoaderDummy";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -2365,6 +2619,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = UnitTests_iOS;
 				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = octest;
 			};
@@ -2374,6 +2629,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/BundleLoaderDummy.app/BundleLoaderDummy";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -2386,6 +2642,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = UnitTests_iOS;
 				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = octest;
 			};
@@ -2403,6 +2660,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2416,6 +2674,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2429,8 +2688,30 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Mac/Demo-Prefix.pch";
 				INFOPLIST_FILE = "Demo/Mac/Demo-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "DTMarkdown Demo";
 				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		A78CE53F18267B1200CEF9C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A78CE54018267B1200CEF9C7 /* Coverage */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Coverage;
+		};
+		A78CE54118267B1200CEF9C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -2517,6 +2798,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Core/Framework-Mac-Info.plist";
+				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = DTMarkdownParser;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
@@ -2660,6 +2942,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Core/Framework-Mac-Info.plist";
+				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = DTMarkdownParser;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
@@ -2677,6 +2960,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/Framework-Mac-Prefix.pch";
 				INFOPLIST_FILE = "Core/Framework-Mac-Info.plist";
+				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = DTMarkdownParser;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
@@ -2686,6 +2970,16 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A7248B2D181BC5E90021A209 /* Build configuration list for PBXNativeTarget "BundleLoaderDummy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7248B2E181BC5E90021A209 /* Debug */,
+				A7248B2F181BC5E90021A209 /* Coverage */,
+				A7248B30181BC5E90021A209 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A7870C571817F6C000E39311 /* Build configuration list for PBXNativeTarget "DTMarkdownParser (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2715,6 +3009,15 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		A78CE53E18267B1200CEF9C7 /* Build configuration list for PBXAggregateTarget "Documentation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A78CE53F18267B1200CEF9C7 /* Debug */,
+				A78CE54018267B1200CEF9C7 /* Coverage */,
+				A78CE54118267B1200CEF9C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		A7BF250318112A3B0013D8D7 /* Build configuration list for PBXProject "DTMarkdownParser" */ = {
 			isa = XCConfigurationList;
