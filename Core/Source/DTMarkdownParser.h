@@ -53,6 +53,9 @@
 
 @end
 
+/**
+ Parsing options for DTMarkdownParser
+ */
 typedef NS_ENUM(NSUInteger, DTMarkdownParserOptions)
 {
 	/**
@@ -61,6 +64,9 @@ typedef NS_ENUM(NSUInteger, DTMarkdownParserOptions)
 	DTMarkdownParserOptionGitHubLineBreaks = 1<<0
 };
 
+/**
+ DTMarkdownParser is an event-based parser for Markdown. It is modeled after `NSXMLParser` and events can be used to generate HTML or other structured output formats.
+ */
 
 @interface DTMarkdownParser : NSObject
 
