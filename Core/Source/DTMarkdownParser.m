@@ -98,7 +98,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 
 - (void)_reportEndOfTag:(NSString *)tag
 {
-	if (_delegateFlags.supportsStartTag)
+	if (_delegateFlags.supportsEndTag)
 	{
 		[_delegate parser:self didEndElement:tag];
 	}
