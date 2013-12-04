@@ -28,6 +28,16 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A7BF251C18112A8F0013D8D7"
+               BuildableName = "UnitTests_Mac.octest"
+               BlueprintName = "UnitTests (Mac)"
+               ReferencedContainer = "container:DTMarkdownParser.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
