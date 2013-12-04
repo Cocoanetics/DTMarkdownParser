@@ -4,6 +4,13 @@
 //  The contents of this file are implicitly included at the beginning of every source file.
 //
 
+#import <Availability.h>
+
 #ifdef __OBJC__
 	#import <Foundation/Foundation.h>
+
+#if TARGET_OS_MAC && !TARGET_OS_IPHONE
+	#import <Cocoa/Cocoa.h>
+#endif
+
 #endif
