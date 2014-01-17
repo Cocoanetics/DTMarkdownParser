@@ -1367,6 +1367,23 @@
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+// issue 14: link inside emphasis
+- (void)testLinkInEmphasis
+{
+	NSString *string = @"_You can follow me on [Twitter](http://twitter.com/me)._";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	STAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p><em>You can follow me on [Twitter](<a href=\"http://twitter.com/me\">http://twitter.com/me</a>).</em></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	STAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+
 #pragma mark - Images
 
 - (void)testInlineImage
