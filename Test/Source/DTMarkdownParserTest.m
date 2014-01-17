@@ -1377,7 +1377,7 @@
 	BOOL result = [parser parse];
 	STAssertTrue(result, @"Parser should return YES");
 	
-	NSString *expected = @"<p><em>You can follow me on [Twitter](<a href=\"http://twitter.com/me\">http://twitter.com/me</a>).</em></p>\n";
+	NSString *expected = @"<p><em>You can follow me on <a href=\"http://twitter.com/me\">Twitter</a>.</em></p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	STAssertEqualObjects(actual, expected, @"Expected result did not match");
