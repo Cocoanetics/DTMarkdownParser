@@ -716,7 +716,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 #pragma mark - Parsing
 
 // process the text between the [] of a hyperlink, this is similar to the parse loop, but with several key differences
-- (void)_processHyperlinkEnclosedText:(NSString *)text withIndex:(NSUInteger)lineIndex allowAutoDetection:(BOOL)allowAutoDetection
+- (void)_processHyperlinkEnclosedText:(NSString *)text allowAutoDetection:(BOOL)allowAutoDetection
 {
 	NSScanner *scanner = [NSScanner scannerWithString:text];
 	scanner.charactersToBeSkipped = nil;
@@ -944,12 +944,12 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 }
 
 // hyperlink
-- (void)_handleLinkText:(NSString *)linkText attributes:(NSDictionary *)attributes inRange:(NSRange)range lineIndex:(NSUInteger)lineIndex
+- (void)_handleLinkText:(NSString *)linkText attributes:(NSDictionary *)attributes inRange:(NSRange)range
 {
 	[self _pushTag:@"a" attributes:attributes];
 	
 	// might contain further markdown/images
-	[self _processHyperlinkEnclosedText:linkText withIndex:lineIndex allowAutoDetection:NO];
+	[self _processHyperlinkEnclosedText:linkText allowAutoDetection:NO];
 	
 	[self _popTag];
 }
