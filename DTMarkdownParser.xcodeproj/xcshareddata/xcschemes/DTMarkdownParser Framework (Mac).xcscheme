@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A7BF25D3181138320013D8D7"
                BuildableName = "DTMarkdownParser.framework"
-               BlueprintName = "DTMarkdownParser (Mac)"
+               BlueprintName = "DTMarkdownParser Framework (Mac)"
                ReferencedContainer = "container:DTMarkdownParser.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

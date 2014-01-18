@@ -28,6 +28,11 @@
 		3DFFAE7118184C1A00EE245D /* TagTreeOutlineController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */; };
 		3DFFAE7218184C7E00EE245D /* SimpleTreeGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */; };
 		3DFFAE731818577C00EE245D /* DTMarkdownParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */; };
+		A7194DB1184F683500EEFD2B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
+		A7194DD3184F695200EEFD2B /* DTMarkdownParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */; };
+		A7194DD4184F695200EEFD2B /* NSScanner+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */; };
+		A7194DD5184F695200EEFD2B /* DTRangesArray.m in Sources */ = {isa = PBXBuildFile; fileRef = A78CE5111823D6D000CEF9C7 /* DTRangesArray.m */; };
+		A7194DD6184F69AE00EEFD2B /* DTWeakSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */; };
 		A7248B09181BC5E90021A209 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF250B18112A3B0013D8D7 /* Foundation.framework */; };
 		A7248B0B181BC5E90021A209 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7248B0A181BC5E90021A209 /* CoreGraphics.framework */; };
 		A7248B0C181BC5E90021A209 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7870C401817F6C000E39311 /* UIKit.framework */; };
@@ -692,6 +697,7 @@
 		3DFFAE6718183AF500EE245D /* SimpleTreeGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleTreeGenerator.m; sourceTree = "<group>"; };
 		3DFFAE6F18184C1A00EE245D /* TagTreeOutlineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagTreeOutlineController.h; sourceTree = "<group>"; };
 		3DFFAE7018184C1A00EE245D /* TagTreeOutlineController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagTreeOutlineController.m; sourceTree = "<group>"; };
+		A7194DB0184F683500EEFD2B /* libDTMarkdownParser_Mac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDTMarkdownParser_Mac.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7248AFE181BC5D50021A209 /* BundleLoaderDummy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BundleLoaderDummy-Info.plist"; sourceTree = "<group>"; };
 		A7248AFF181BC5D50021A209 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A7248B08181BC5E90021A209 /* BundleLoaderDummy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BundleLoaderDummy.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1005,7 +1011,6 @@
 		A7BF25FE1811385A0013D8D7 /* DTMarkdownParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTMarkdownParser.h; sourceTree = "<group>"; };
 		A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMarkdownParser.m; sourceTree = "<group>"; };
 		A7BF2602181138B50013D8D7 /* Framework-Mac-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Framework-Mac-Info.plist"; sourceTree = "<group>"; };
-		A7BF2604181138F50013D8D7 /* Framework-Mac-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Framework-Mac-Prefix.pch"; sourceTree = "<group>"; };
 		A7D7DF2118155ED300F4377D /* NSString+DTMarkdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+DTMarkdown.h"; sourceTree = "<group>"; };
 		A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+DTMarkdown.m"; sourceTree = "<group>"; };
 		A7D7DF2518156DF600F4377D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
@@ -1013,6 +1018,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A7194DAD184F683500EEFD2B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7194DB1184F683500EEFD2B /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7248B05181BC5E90021A209 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1465,6 +1478,7 @@
 				A7870C601817F7BB00E39311 /* UnitTests_iOS.octest */,
 				A7870D891817FDEC00E39311 /* DTMarkdown Demo.app */,
 				A7248B08181BC5E90021A209 /* BundleLoaderDummy.app */,
+				A7194DB0184F683500EEFD2B /* libDTMarkdownParser_Mac.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1487,7 +1501,6 @@
 			isa = PBXGroup;
 			children = (
 				A7870C5B1817F73900E39311 /* DTMarkdownParser-Prefix.pch */,
-				A7BF2604181138F50013D8D7 /* Framework-Mac-Prefix.pch */,
 				A7BF2602181138B50013D8D7 /* Framework-Mac-Info.plist */,
 				A7BF253118112C8B0013D8D7 /* Resources */,
 				A7BF253218112C8B0013D8D7 /* Source */,
@@ -1573,6 +1586,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		A7194DAE184F683500EEFD2B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7BF25D1181138320013D8D7 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1581,12 +1601,30 @@
 				3DFFAE6818183AF500EE245D /* SimpleTreeGenerator.h in Headers */,
 				A7BF26001811385A0013D8D7 /* DTMarkdownParser.h in Headers */,
 				A78EAACC18151EF800650426 /* NSScanner+DTMarkdown.h in Headers */,
+				A7194DD6184F69AE00EEFD2B /* DTWeakSupport.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		A7194DAF184F683500EEFD2B /* DTMarkdownParser (Mac) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7194DCA184F683500EEFD2B /* Build configuration list for PBXNativeTarget "DTMarkdownParser (Mac)" */;
+			buildPhases = (
+				A7194DAC184F683500EEFD2B /* Sources */,
+				A7194DAD184F683500EEFD2B /* Frameworks */,
+				A7194DAE184F683500EEFD2B /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "DTMarkdownParser (Mac)";
+			productName = "DTMarkdownParser (Mac)";
+			productReference = A7194DB0184F683500EEFD2B /* libDTMarkdownParser_Mac.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		A7248B07181BC5E90021A209 /* BundleLoaderDummy */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A7248B2D181BC5E90021A209 /* Build configuration list for PBXNativeTarget "BundleLoaderDummy" */;
@@ -1677,9 +1715,9 @@
 			productReference = A7BF251D18112A8F0013D8D7 /* UnitTests_Mac.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
-		A7BF25D3181138320013D8D7 /* DTMarkdownParser (Mac) */ = {
+		A7BF25D3181138320013D8D7 /* DTMarkdownParser Framework (Mac) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A7BF25F8181138320013D8D7 /* Build configuration list for PBXNativeTarget "DTMarkdownParser (Mac)" */;
+			buildConfigurationList = A7BF25F8181138320013D8D7 /* Build configuration list for PBXNativeTarget "DTMarkdownParser Framework (Mac)" */;
 			buildPhases = (
 				A7BF25CF181138320013D8D7 /* Sources */,
 				A7BF25D0181138320013D8D7 /* Frameworks */,
@@ -1690,7 +1728,7 @@
 			);
 			dependencies = (
 			);
-			name = "DTMarkdownParser (Mac)";
+			name = "DTMarkdownParser Framework (Mac)";
 			productName = "Mac Framework";
 			productReference = A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */;
 			productType = "com.apple.product-type.framework";
@@ -1731,8 +1769,9 @@
 			);
 			projectRoot = "";
 			targets = (
-				A7BF25D3181138320013D8D7 /* DTMarkdownParser (Mac) */,
+				A7BF25D3181138320013D8D7 /* DTMarkdownParser Framework (Mac) */,
 				A7870C2E1817F6C000E39311 /* DTMarkdownParser (iOS) */,
+				A7194DAF184F683500EEFD2B /* DTMarkdownParser (Mac) */,
 				A7870C5F1817F7BB00E39311 /* UnitTests (iOS) */,
 				A7BF251C18112A8F0013D8D7 /* UnitTests (Mac) */,
 				A7870D881817FDEC00E39311 /* Demo (Mac) */,
@@ -2360,6 +2399,16 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A7194DAC184F683500EEFD2B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7194DD4184F695200EEFD2B /* NSScanner+DTMarkdown.m in Sources */,
+				A7194DD5184F695200EEFD2B /* DTRangesArray.m in Sources */,
+				A7194DD3184F695200EEFD2B /* DTMarkdownParser.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A7248B04181BC5E90021A209 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2444,17 +2493,51 @@
 		};
 		A7870DD41817FFA700E39311 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A7BF25D3181138320013D8D7 /* DTMarkdownParser (Mac) */;
+			target = A7BF25D3181138320013D8D7 /* DTMarkdownParser Framework (Mac) */;
 			targetProxy = A7870DD31817FFA700E39311 /* PBXContainerItemProxy */;
 		};
 		A7BF2606181150FC0013D8D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A7BF25D3181138320013D8D7 /* DTMarkdownParser (Mac) */;
+			target = A7BF25D3181138320013D8D7 /* DTMarkdownParser Framework (Mac) */;
 			targetProxy = A7BF2605181150FC0013D8D7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		A7194DCB184F683500EEFD2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = DTMarkdownParser_Mac;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		A7194DCC184F683500EEFD2B /* Coverage */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
+				PRODUCT_NAME = DTMarkdownParser_Mac;
+				SKIP_INSTALL = YES;
+			};
+			name = Coverage;
+		};
+		A7194DCD184F683500EEFD2B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
+				PRODUCT_NAME = DTMarkdownParser_Mac;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		A7248B2E181BC5E90021A209 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2792,7 +2875,7 @@
 				FRAMEWORK_SEARCH_PATHS = "Externals/**";
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Core/Framework-Mac-Prefix.pch";
+				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -2936,7 +3019,7 @@
 				FRAMEWORK_SEARCH_PATHS = "Externals/**";
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Core/Framework-Mac-Prefix.pch";
+				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -2958,7 +3041,7 @@
 				FRAMEWORK_SEARCH_PATHS = "Externals/**";
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Core/Framework-Mac-Prefix.pch";
+				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
 				INFOPLIST_FILE = "Core/Framework-Mac-Info.plist";
 				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = DTMarkdownParser;
@@ -2970,6 +3053,16 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A7194DCA184F683500EEFD2B /* Build configuration list for PBXNativeTarget "DTMarkdownParser (Mac)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7194DCB184F683500EEFD2B /* Debug */,
+				A7194DCC184F683500EEFD2B /* Coverage */,
+				A7194DCD184F683500EEFD2B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A7248B2D181BC5E90021A209 /* Build configuration list for PBXNativeTarget "BundleLoaderDummy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -3039,7 +3132,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A7BF25F8181138320013D8D7 /* Build configuration list for PBXNativeTarget "DTMarkdownParser (Mac)" */ = {
+		A7BF25F8181138320013D8D7 /* Build configuration list for PBXNativeTarget "DTMarkdownParser Framework (Mac)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A7BF25F9181138320013D8D7 /* Debug */,
