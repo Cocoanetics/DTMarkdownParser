@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = 'DTMarkdownParser'
-  spec.version      = '0.2.0'
+  spec.version      = '0.2.1'
   spec.platform     = :ios, '4.3'
   spec.platform     = :osx, '10.8'
   spec.license      = 'BSD'
