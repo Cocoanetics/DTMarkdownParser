@@ -831,10 +831,56 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	}
 }
 
-// text without format markers
+// text without format markers, but possibly with link inside
 - (void)_handleText:(NSString *)text inRange:(NSRange)range  allowAutodetection:(BOOL)allowAutodetection
 {
-	[self _processCharacters:text inRange:range allowAutodetection:allowAutodetection];
+	if ([text rangeOfString:@"["].location == NSNotFound)
+	{
+		// shortcut if text contains no hyperlink
+		[self _processCharacters:text inRange:range allowAutodetection:allowAutodetection];
+	}
+	else
+	{
+		NSScanner *subScanner = [NSScanner scannerWithString:text];
+		subScanner.charactersToBeSkipped = nil;
+		
+		NSUInteger positionBeforeScan;
+		
+		while (![subScanner isAtEnd])
+		{
+			NSString *substring;
+			
+			positionBeforeScan = subScanner.scanLocation;
+			
+			if ([subScanner scanUpToString:@"[" intoString:&substring])
+			{
+				// part before a link
+				NSRange substringRange = NSMakeRange(range.location, [substring length]);
+				
+				[self _processCharacters:substring inRange:substringRange allowAutodetection:allowAutodetection];
+			}
+			
+			NSDictionary *linkAttributes;
+			NSString *enclosedString;
+			positionBeforeScan = subScanner.scanLocation;
+			
+			if ([subScanner scanMarkdownHyperlinkAttributes:&linkAttributes enclosedString:&enclosedString references:_references])
+			{
+				NSRange subRange = NSMakeRange(positionBeforeScan, subScanner.scanLocation - positionBeforeScan);
+				[self _handleLinkText:enclosedString attributes:linkAttributes inRange:subRange];
+				
+				continue;
+			}
+			else
+			{
+				if ([subScanner scanString:@"[" intoString:NULL])
+				{
+					NSRange subRange = NSMakeRange(positionBeforeScan, 1);
+					[self _processCharacters:@"[" inRange:subRange allowAutodetection:NO];
+				}
+			}
+		}
+	}
 }
 
 // process text with the additional info that we are at the beginning of a line
