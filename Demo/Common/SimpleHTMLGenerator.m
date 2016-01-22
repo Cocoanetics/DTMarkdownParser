@@ -11,6 +11,7 @@
 
 NSString * const kHTMLHeaderFormat = @""
 "<!doctype html>\n"
+"<html>\n"
 "<head>\n"
 "	<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
 
