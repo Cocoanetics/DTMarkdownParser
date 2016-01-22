@@ -13,12 +13,11 @@ BOOL DTInvocationRecorderContainsCallWithParameter(DTInvocationRecorder *recorde
 
 #define DTAssertInvocationRecorderContainsCallWithParameter(recorder, selector, parameter) \
 do { \
-BOOL _evaluatedExpression = !!(DTInvocationRecorderContainsCallWithParameter(recorder, selector, parameter));\
-if (!_evaluatedExpression) {\
-[self failWithException:([NSException failureInCondition:[NSString stringWithFormat:@"Assertion that a call to %@ with parameter '%@' exists", NSStringFromSelector(selector), parameter] \
-isTrue:NO \
-inFile:[NSString stringWithUTF8String:__FILE__] \
-atLine:__LINE__ \
-withDescription:[NSString stringWithFormat:@"No such call was recorded"]])]; \
-} \
+	BOOL _evaluatedExpression = !!(DTInvocationRecorderContainsCallWithParameter(recorder, selector, parameter));\
+	if (!_evaluatedExpression) {\
+		[self recordFailureWithDescription:[NSString stringWithFormat:@"No call to %@ with parameter '%@' was recorded", NSStringFromSelector(selector), parameter] \
+									inFile:[NSString stringWithUTF8String:__FILE__] \
+									atLine:__LINE__ \
+								  expected:YES]; \
+	} \
 } while (0)

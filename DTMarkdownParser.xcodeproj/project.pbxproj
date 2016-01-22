@@ -37,7 +37,6 @@
 		A7248B0B181BC5E90021A209 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7248B0A181BC5E90021A209 /* CoreGraphics.framework */; };
 		A7248B0C181BC5E90021A209 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7870C401817F6C000E39311 /* UIKit.framework */; };
 		A7248B35181BC62B0021A209 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A7248AFF181BC5D50021A209 /* main.m */; };
-		A765C44A18115855006B252A /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */; };
 		A765C44B1811589D006B252A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF25D5181138320013D8D7 /* Cocoa.framework */; };
 		A765C45F18116AF9006B252A /* NSInvocation+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */; };
 		A765C46318117EE5006B252A /* DTInvocationRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C46218117EE5006B252A /* DTInvocationRecorder.m */; };
@@ -45,7 +44,6 @@
 		A7870C301817F6C000E39311 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF250B18112A3B0013D8D7 /* Foundation.framework */; };
 		A7870C591817F70700E39311 /* DTMarkdownParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */; };
 		A7870C5A1817F70700E39311 /* NSScanner+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */; };
-		A7870C611817F7BB00E39311 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */; };
 		A7870C621817F7BB00E39311 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF250B18112A3B0013D8D7 /* Foundation.framework */; };
 		A7870C631817F7BB00E39311 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7870C401817F6C000E39311 /* UIKit.framework */; };
 		A7870C731817F7D800E39311 /* DTInvocationRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = A765C46218117EE5006B252A /* DTInvocationRecorder.m */; };
@@ -688,6 +686,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3D10B5761C528C3A005ADEBE /* XCTAssertEqualStructsJX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCTAssertEqualStructsJX.h; sourceTree = "<group>"; };
 		3D285245181A9D3D000C44EC /* DTMDistributionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTMDistributionDelegate.h; sourceTree = "<group>"; };
 		3D285246181A9D3D000C44EC /* DTMDistributionDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMDistributionDelegate.m; sourceTree = "<group>"; };
 		3D43083F1819754500B8C024 /* SimpleHTMLGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHTMLGenerator.m; sourceTree = "<group>"; };
@@ -999,8 +998,7 @@
 		A7ABD3E21811BEEB00494DA5 /* xss_quotes.tags */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = xss_quotes.tags; sourceTree = "<group>"; };
 		A7ABD3E31811BEEB00494DA5 /* xss_quotes.text */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = xss_quotes.text; sourceTree = "<group>"; };
 		A7BF250B18112A3B0013D8D7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		A7BF251D18112A8F0013D8D7 /* UnitTests_Mac.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests_Mac.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		A7BF251D18112A8F0013D8D7 /* UnitTests_Mac.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests_Mac.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7BF253618112C8B0013D8D7 /* UnitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UnitTests-Info.plist"; sourceTree = "<group>"; };
 		A7BF253718112C8B0013D8D7 /* UnitTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UnitTests-Prefix.pch"; sourceTree = "<group>"; };
 		A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMarkdownParserTest.m; sourceTree = "<group>"; };
@@ -1049,7 +1047,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7870C7C1817F89D00E39311 /* libDTMarkdownParser_iOS.a in Frameworks */,
-				A7870C611817F7BB00E39311 /* SenTestingKit.framework in Frameworks */,
 				A7870C631817F7BB00E39311 /* UIKit.framework in Frameworks */,
 				A7870C621817F7BB00E39311 /* Foundation.framework in Frameworks */,
 			);
@@ -1070,7 +1067,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A765C44B1811589D006B252A /* Cocoa.framework in Frameworks */,
-				A765C44A18115855006B252A /* SenTestingKit.framework in Frameworks */,
 				A7BF2608181151450013D8D7 /* DTMarkdownParser.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1181,6 +1177,7 @@
 				A765C45E18116AF9006B252A /* NSInvocation+DTFoundation.m */,
 				A7D7DF2118155ED300F4377D /* NSString+DTMarkdown.h */,
 				A7D7DF2218155ED300F4377D /* NSString+DTMarkdown.m */,
+				3D10B5761C528C3A005ADEBE /* XCTAssertEqualStructsJX.h */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -1472,7 +1469,7 @@
 		A7BF250918112A3B0013D8D7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A7BF251D18112A8F0013D8D7 /* UnitTests_Mac.octest */,
+				A7BF251D18112A8F0013D8D7 /* UnitTests_Mac.xctest */,
 				A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */,
 				A7870C2F1817F6C000E39311 /* libDTMarkdownParser_iOS.a */,
 				A7870C601817F7BB00E39311 /* UnitTests_iOS.octest */,
@@ -1487,7 +1484,6 @@
 			isa = PBXGroup;
 			children = (
 				A7BF250B18112A3B0013D8D7 /* Foundation.framework */,
-				A7BF251E18112A8F0013D8D7 /* SenTestingKit.framework */,
 				A7BF25D5181138320013D8D7 /* Cocoa.framework */,
 				A7870C3D1817F6C000E39311 /* XCTest.framework */,
 				A7870C401817F6C000E39311 /* UIKit.framework */,
@@ -1676,7 +1672,7 @@
 			name = "UnitTests (iOS)";
 			productName = "UnitTests (iOS)";
 			productReference = A7870C601817F7BB00E39311 /* UnitTests_iOS.octest */;
-			productType = "com.apple.product-type.bundle";
+			productType = "com.apple.product-type.bundle.ocunit-test";
 		};
 		A7870D881817FDEC00E39311 /* Demo (Mac) */ = {
 			isa = PBXNativeTarget;
@@ -1712,8 +1708,8 @@
 			);
 			name = "UnitTests (Mac)";
 			productName = UnitTests;
-			productReference = A7BF251D18112A8F0013D8D7 /* UnitTests_Mac.octest */;
-			productType = "com.apple.product-type.bundle";
+			productReference = A7BF251D18112A8F0013D8D7 /* UnitTests_Mac.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		A7BF25D3181138320013D8D7 /* DTMarkdownParser Framework (Mac) */ = {
 			isa = PBXNativeTarget;
@@ -1739,6 +1735,7 @@
 		A7BF250018112A3B0013D8D7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastTestingUpgradeCheck = 0720;
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = Cocoanetics;
 				TargetAttributes = {
@@ -2862,7 +2859,6 @@
 				INFOPLIST_FILE = "Test/UnitTests-Info.plist";
 				PRODUCT_NAME = UnitTests_Mac;
 				USER_HEADER_SEARCH_PATHS = "${PROJECT_DIR}/**";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Coverage;
 		};
@@ -2983,7 +2979,6 @@
 				INFOPLIST_FILE = "Test/UnitTests-Info.plist";
 				PRODUCT_NAME = UnitTests_Mac;
 				USER_HEADER_SEARCH_PATHS = "${PROJECT_DIR}/**";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
@@ -3006,7 +3001,6 @@
 				INFOPLIST_FILE = "Test/UnitTests-Info.plist";
 				PRODUCT_NAME = UnitTests_Mac;
 				USER_HEADER_SEARCH_PATHS = "${PROJECT_DIR}/**";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};
@@ -3111,6 +3105,7 @@
 				A78CE54118267B1200CEF9C7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A7BF250318112A3B0013D8D7 /* Build configuration list for PBXProject "DTMarkdownParser" */ = {
 			isa = XCConfigurationList;
