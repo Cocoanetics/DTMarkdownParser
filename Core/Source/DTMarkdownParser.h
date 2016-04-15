@@ -86,6 +86,11 @@ typedef NS_ENUM(NSUInteger, DTMarkdownParserOptions)
 @property (nonatomic, DT_WEAK_PROPERTY) id <DTMarkdownParserDelegate> delegate;
 
 /**
+ Turns automatic URL/link detection on or off. Default value is YES.
+ */
+@property (nonatomic, assign) BOOL detectURLs;
+
+/**
  Starts the event-driven parsing operation.
  @returns `YES` if parsing is successful and `NO` in there is an error or if the parsing operation is aborted.
  */
