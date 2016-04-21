@@ -65,6 +65,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		
 		// default detector
 		_dataDetector = [NSDataDetector dataDetectorWithTypes:(NSTextCheckingTypes)NSTextCheckingTypeLink error:NULL];
+        _detectURLs = YES;
 	}
 	
 	return self;
@@ -777,7 +778,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 // process characters and optionally auto-detect links
 - (void)_processCharacters:(NSString *)string inRange:(NSRange)range allowAutodetection:(BOOL)allowAutodetection
 {
-	if (!allowAutodetection || !_dataDetector)
+	if (!allowAutodetection || !_dataDetector || !self.detectURLs)
 	{
 		[self _reportCharacters:string];
 		return;
