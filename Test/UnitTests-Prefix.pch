@@ -6,7 +6,7 @@
 
 #ifdef __OBJC__
 	#import <Foundation/Foundation.h>
-	#import <SenTestingKit/SenTestingKit.h>
+	#import <XCTest/XCTest.h>
 
 #if TARGET_OS_IPHONE
 	#import <UIKit/UIKit.h>

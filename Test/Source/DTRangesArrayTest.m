@@ -8,7 +8,10 @@
 
 #import "DTRangesArray.h"
 
-@interface DTRangesArrayTest : SenTestCase
+#import "XCTAssertEqualStructsJX.h"
+
+//
+@interface DTRangesArrayTest : XCTestCase
 
 @end
 
@@ -46,7 +49,7 @@
 {
 	DTRangesArray *array = [[DTRangesArray alloc] init];
 	
-	STAssertNotNil(array, @"No array created");
+	XCTAssertNotNil(array, @"No array created");
 }
 
 - (void)testAdd
@@ -57,7 +60,7 @@
 	[array addRange:range1];
 	
 	NSRange range2 = [array rangeAtIndex:0];
-	STAssertEquals(range1, range2, @"Ranges should be equal");
+	XCTAssertTrue(NSEqualRanges(range1, range2), @"Ranges should be equal");
 }
 
 - (void)testAddMore
@@ -68,9 +71,9 @@
 	[array addRange:NSMakeRange(10, 10)];
 	[array addRange:NSMakeRange(20, 10)];
 	
-	STAssertEquals(NSMakeRange(0, 10),  [array rangeAtIndex:0], @"Ranges should be equal");
-	STAssertEquals(NSMakeRange(10, 10),  [array rangeAtIndex:1], @"Ranges should be equal");
-	STAssertEquals(NSMakeRange(20, 10),  [array rangeAtIndex:2], @"Ranges should be equal");
+	XCTAssertEqualStructsJX(NSMakeRange(0, 10),  [array rangeAtIndex:0], @"Ranges should be equal");
+	XCTAssertEqualStructsJX(NSMakeRange(10, 10), [array rangeAtIndex:1], @"Ranges should be equal");
+	XCTAssertEqualStructsJX(NSMakeRange(20, 10), [array rangeAtIndex:2], @"Ranges should be equal");
 }
 
 - (void)testSearchIndex
@@ -88,22 +91,22 @@
 	
 	
 	NSUInteger index1 = [array indexOfRangeContainingLocation:21];
-	STAssertEquals((NSUInteger)2, index1, @"Wrong index");
+	XCTAssertEqual((NSUInteger)2, index1, @"Wrong index");
 	
 	NSRange found1 = [array rangeContainingLocation:21];
-	STAssertEquals(found1, range3, @"Wrong range");
+	XCTAssertEqualStructsJX(found1, range3, @"Wrong range");
 	
 	NSUInteger index2 = [array indexOfRangeContainingLocation:11];
-	STAssertEquals((NSUInteger)1, index2, @"Wrong index");
+	XCTAssertEqual((NSUInteger)1, index2, @"Wrong index");
 
 	NSRange found2 = [array rangeContainingLocation:11];
-	STAssertEquals(found2, range2, @"Wrong range");
+	XCTAssertEqualStructsJX(found2, range2, @"Wrong range");
 	
 	NSUInteger index3 = [array indexOfRangeContainingLocation:3];
-	STAssertEquals((NSUInteger)0, index3, @"Wrong index");
+	XCTAssertEqual((NSUInteger)0, index3, @"Wrong index");
 	
 	NSRange found3 = [array rangeContainingLocation:3];
-	STAssertEquals(found3, range1, @"Wrong range");
+	XCTAssertEqualStructsJX(found3, range1, @"Wrong range");
 }
 
 - (void)testInvalidRange
@@ -115,7 +118,7 @@
 	
 	NSUInteger index = [array indexOfRangeContainingLocation:11];
 	
-	STAssertEquals(index, (NSUInteger)NSNotFound, @"should not work");
+	XCTAssertEqual(index, (NSUInteger)NSNotFound, @"should not work");
 }
 
 - (void)testInvalidLocation
@@ -127,7 +130,7 @@
 	
 	NSRange range = [array rangeContainingLocation:11];
 	
-	STAssertEquals(range, NSMakeRange(NSNotFound, 0), @"should not work");
+	XCTAssertEqualStructsJX(range, NSMakeRange(NSNotFound, 0), @"should not work");
 }
 
 - (void)testCapacityExtensionTransfer
@@ -142,7 +145,7 @@
 	
 	NSRange firstRangeAfterExtend = [array rangeAtIndex:0];
 	
-	STAssertEquals(firstRange, firstRangeAfterExtend, @"Values were not transferred");
+	XCTAssertEqualStructsJX(firstRange, firstRangeAfterExtend, @"Values were not transferred");
 }
 
 - (void)testEnumeration
@@ -154,11 +157,11 @@
 
 		NSRange testRange = [array rangeAtIndex:idx];
 		
-		STAssertEquals(testRange, range, @"Range not equal");
+		XCTAssertEqualStructsJX(testRange, range, @"Range not equal");
 		count++;
 	}];
 	
-	STAssertEquals(count, (NSUInteger)110, @"Wrong count");
+	XCTAssertEqual(count, (NSUInteger)110, @"Wrong count");
 }
 
 - (void)testEnumerationStop
@@ -170,7 +173,7 @@
 		
 		NSRange testRange = [array rangeAtIndex:idx];
 		
-		STAssertEquals(testRange, range, @"Range not equal");
+		XCTAssertEqualStructsJX(testRange, range, @"Range not equal");
 		count++;
 		
 		if (idx==9)
@@ -179,7 +182,7 @@
 		}
 	}];
 	
-	STAssertEquals(count, (NSUInteger)10, @"Wrong count");
+	XCTAssertEqual(count, (NSUInteger)10, @"Wrong count");
 }
 
 @end
