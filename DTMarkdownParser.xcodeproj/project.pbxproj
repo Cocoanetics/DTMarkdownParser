@@ -2855,7 +2855,6 @@
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)/**",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"${PROJECT_DIR}/**",
 				);
@@ -2977,7 +2976,6 @@
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)/**",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"${PROJECT_DIR}/**",
 				);
@@ -3001,7 +2999,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Test/UnitTests-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)/**",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"${PROJECT_DIR}/**",
 				);

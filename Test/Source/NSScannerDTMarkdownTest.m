@@ -234,7 +234,7 @@
 	XCTAssertTrue(b, @"Should be able to scan ref");
 	
 	XCTAssertEqualObjects(href, @"http://foo.bar", @"Wrong href");
-	XCTAssertNil(title, @"Optional Title Here", @"Wrong title");
+	XCTAssertNil(title, @"Wrong title");
 	XCTAssertEqualObjects(ref, @"id", @"Wrong id");
 }
 
