@@ -8,7 +8,7 @@
 
 #import "NSScanner+DTMarkdown.h"
 
-@interface NSScannerDTMarkdownTest : SenTestCase
+@interface NSScannerDTMarkdownTest : XCTestCase
 
 @end
 
@@ -25,8 +25,8 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlink:NULL title:NULL];
 	
-	STAssertFalse(b, @"Should not be able to scan hyperlink");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan hyperlink");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testMissingClosingSingleQuote
@@ -41,13 +41,13 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlink:&href title:&title];
 
-	STAssertTrue(b, @"Should be able to scan hyperlink");
+	XCTAssertTrue(b, @"Should be able to scan hyperlink");
 
-	STAssertEqualObjects(href, @"http://foo.com", @"incorrect href");
+	XCTAssertEqualObjects(href, @"http://foo.com", @"incorrect href");
 	
-	STAssertNil(title, @"Title should be nil");
+	XCTAssertNil(title, @"Title should be nil");
 	
-	STAssertEquals([scanner scanLocation], (NSUInteger)14, @"Scan position should be after href");
+	XCTAssertEqual([scanner scanLocation], (NSUInteger)14, @"Scan position should be after href");
 }
 
 - (void)testMissingClosingDoubleQuote
@@ -62,13 +62,13 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlink:&href title:&title];
 	
-	STAssertTrue(b, @"Should be able to scan hyperlink");
+	XCTAssertTrue(b, @"Should be able to scan hyperlink");
 	
-	STAssertEqualObjects(href, @"http://foo.com", @"incorrect href");
+	XCTAssertEqualObjects(href, @"http://foo.com", @"incorrect href");
 	
-	STAssertNil(title, @"Title should be nil");
+	XCTAssertNil(title, @"Title should be nil");
 	
-	STAssertEquals([scanner scanLocation], (NSUInteger)14, @"Scan position should be after href");
+	XCTAssertEqual([scanner scanLocation], (NSUInteger)14, @"Scan position should be after href");
 }
 
 - (void)testMissingClosingRoundBracket
@@ -83,13 +83,13 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlink:&href title:&title];
 	
-	STAssertTrue(b, @"Should be able to scan hyperlink");
+	XCTAssertTrue(b, @"Should be able to scan hyperlink");
 	
-	STAssertEqualObjects(href, @"http://foo.com", @"incorrect href");
+	XCTAssertEqualObjects(href, @"http://foo.com", @"incorrect href");
 	
-	STAssertNil(title, @"Title should be nil");
+	XCTAssertNil(title, @"Title should be nil");
 	
-	STAssertEquals([scanner scanLocation], (NSUInteger)14, @"Scan position should be after href");
+	XCTAssertEqual([scanner scanLocation], (NSUInteger)14, @"Scan position should be after href");
 }
 
 #pragma mark - Ref Line Scanning
@@ -107,11 +107,11 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
 	
-	STAssertTrue(b, @"Should be able to scan hyperlink");
+	XCTAssertTrue(b, @"Should be able to scan hyperlink");
 	
-	STAssertEqualObjects(ref, @"foo", @"incorrect ref");
-	STAssertEqualObjects(href, @"http://foo.com", @"incorrect href");
-	STAssertEqualObjects(title, @"Title", @"incorrect title");
+	XCTAssertEqualObjects(ref, @"foo", @"incorrect ref");
+	XCTAssertEqualObjects(href, @"http://foo.com", @"incorrect href");
+	XCTAssertEqualObjects(title, @"Title", @"incorrect title");
 }
 
 - (void)testMissingRefEmptyID
@@ -127,12 +127,12 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
 	
-	STAssertFalse(b, @"Should not be able to scan hyperlink");
+	XCTAssertFalse(b, @"Should not be able to scan hyperlink");
 	
-	STAssertNil(href, @"href should be nil");
-	STAssertNil(title, @"Title should be nil");
-	STAssertNil(ref, @"href should be nil");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertNil(href, @"href should be nil");
+	XCTAssertNil(title, @"Title should be nil");
+	XCTAssertNil(ref, @"href should be nil");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testMissingRefClosingBracket
@@ -148,12 +148,12 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
 	
-	STAssertFalse(b, @"Should not be able to scan hyperlink");
+	XCTAssertFalse(b, @"Should not be able to scan hyperlink");
 	
-	STAssertNil(href, @"href should be nil");
-	STAssertNil(title, @"Title should be nil");
-	STAssertNil(ref, @"href should be nil");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertNil(href, @"href should be nil");
+	XCTAssertNil(title, @"Title should be nil");
+	XCTAssertNil(ref, @"href should be nil");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testMissingSpacesAfterID
@@ -169,12 +169,12 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
 	
-	STAssertFalse(b, @"Should not be able to scan hyperlink");
+	XCTAssertFalse(b, @"Should not be able to scan hyperlink");
 	
-	STAssertNil(href, @"href should be nil");
-	STAssertNil(title, @"Title should be nil");
-	STAssertNil(ref, @"href should be nil");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertNil(href, @"href should be nil");
+	XCTAssertNil(title, @"Title should be nil");
+	XCTAssertNil(ref, @"href should be nil");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testRefWithInvalidHyperlink
@@ -190,12 +190,12 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
 	
-	STAssertFalse(b, @"Should not be able to scan hyperlink");
+	XCTAssertFalse(b, @"Should not be able to scan hyperlink");
 	
-	STAssertNil(href, @"href should be nil");
-	STAssertNil(title, @"Title should be nil");
-	STAssertNil(ref, @"href should be nil");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertNil(href, @"href should be nil");
+	XCTAssertNil(title, @"Title should be nil");
+	XCTAssertNil(ref, @"href should be nil");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testRefWithMultipleLines
@@ -211,11 +211,11 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
 	
-	STAssertTrue(b, @"Should be able to scan ref");
+	XCTAssertTrue(b, @"Should be able to scan ref");
 	
-	STAssertEqualObjects(href, @"http://foo.bar", @"Wrong href");
-	STAssertEqualObjects(title, @"Optional Title Here", @"Wrong title");
-	STAssertEqualObjects(ref, @"id", @"Wrong id");
+	XCTAssertEqualObjects(href, @"http://foo.bar", @"Wrong href");
+	XCTAssertEqualObjects(title, @"Optional Title Here", @"Wrong title");
+	XCTAssertEqualObjects(ref, @"id", @"Wrong id");
 }
 
 - (void)testRefWithMultipleLinesMissingIndent
@@ -231,11 +231,11 @@
 	
 	BOOL b = [scanner scanMarkdownHyperlinkReferenceLine:&ref URLString:&href title:&title];
 	
-	STAssertTrue(b, @"Should be able to scan ref");
+	XCTAssertTrue(b, @"Should be able to scan ref");
 	
-	STAssertEqualObjects(href, @"http://foo.bar", @"Wrong href");
-	STAssertNil(title, @"Optional Title Here", @"Wrong title");
-	STAssertEqualObjects(ref, @"id", @"Wrong id");
+	XCTAssertEqualObjects(href, @"http://foo.bar", @"Wrong href");
+	XCTAssertNil(title, @"Optional Title Here", @"Wrong title");
+	XCTAssertEqualObjects(ref, @"id", @"Wrong id");
 }
 
 #pragma mark - List Prefix
@@ -251,9 +251,9 @@
 	
 	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
 	
-	STAssertFalse(b, @"Should not be able to scan list prefix");
-	STAssertNil(prefix, @"prefix should be nil");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan list prefix");
+	XCTAssertNil(prefix, @"prefix should be nil");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanListPrefixMissingWhitespace
@@ -267,9 +267,9 @@
 	
 	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
 	
-	STAssertFalse(b, @"Should not be able to scan list prefix");
-	STAssertNil(prefix, @"prefix should be nil");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan list prefix");
+	XCTAssertNil(prefix, @"prefix should be nil");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanListPrefixAsterisk
@@ -283,8 +283,8 @@
 	
 	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
 	
-	STAssertTrue(b, @"Should be able to scan list prefix");
-	STAssertEqualObjects(prefix, @"*", @"prefix incorrect");
+	XCTAssertTrue(b, @"Should be able to scan list prefix");
+	XCTAssertEqualObjects(prefix, @"*", @"prefix incorrect");
 }
 
 - (void)testScanListPrefixPlus
@@ -298,8 +298,8 @@
 	
 	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
 	
-	STAssertTrue(b, @"Should be able to scan list prefix");
-	STAssertEqualObjects(prefix, @"+", @"prefix incorrect");
+	XCTAssertTrue(b, @"Should be able to scan list prefix");
+	XCTAssertEqualObjects(prefix, @"+", @"prefix incorrect");
 }
 
 - (void)testScanListPrefixMinus
@@ -313,8 +313,8 @@
 	
 	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
 	
-	STAssertTrue(b, @"Should be able to scan list prefix");
-	STAssertEqualObjects(prefix, @"+", @"prefix incorrect");
+	XCTAssertTrue(b, @"Should be able to scan list prefix");
+	XCTAssertEqualObjects(prefix, @"+", @"prefix incorrect");
 }
 
 - (void)testScanListPrefixInvalid
@@ -328,9 +328,9 @@
 	
 	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
 	
-	STAssertFalse(b, @"Should not be able to scan list prefix");
-	STAssertNil(prefix, @"prefix should be nil");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan list prefix");
+	XCTAssertNil(prefix, @"prefix should be nil");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanListPrefixNumber
@@ -344,8 +344,8 @@
 	
 	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
 	
-	STAssertTrue(b, @"Should be able to scan list prefix");
-	STAssertEqualObjects(prefix, @"1.", @"prefix incorrect");
+	XCTAssertTrue(b, @"Should be able to scan list prefix");
+	XCTAssertEqualObjects(prefix, @"1.", @"prefix incorrect");
 }
 
 - (void)testScanListPrefixInvalidNumber
@@ -359,9 +359,9 @@
 	
 	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
 	
-	STAssertFalse(b, @"Should not be able to scan list prefix");
-	STAssertNil(prefix, @"prefix should be nil");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan list prefix");
+	XCTAssertNil(prefix, @"prefix should be nil");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanListPrefixOnlySpaces
@@ -375,10 +375,10 @@
 	
 	BOOL b = [scanner scanMarkdownLineListPrefix:&prefix];
 	
-	STAssertFalse(b, @"Should not be able to scan list prefix");
-	STAssertNil(prefix, @"prefix should be nil");
+	XCTAssertFalse(b, @"Should not be able to scan list prefix");
+	XCTAssertNil(prefix, @"prefix should be nil");
 	
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 #pragma mark - Marked Range Markers
@@ -391,8 +391,8 @@
 	NSString *marker;
 	BOOL b = [scanner scanMarkdownBeginMarker:&marker];
 	
-	STAssertTrue(b, @"Should be able to scan opening marker");
-	STAssertEqualObjects(expectedMarker, marker, @"Incorrect Marker scanned");
+	XCTAssertTrue(b, @"Should be able to scan opening marker");
+	XCTAssertEqualObjects(expectedMarker, marker, @"Incorrect Marker scanned");
 }
 
 - (void)testScanMarkedRanges
@@ -414,8 +414,8 @@
 	NSString *text;
 	BOOL b = [scanner scanMarkdownTextBetweenFormatMarkers:&text outermostMarker:&marker];
 	
-	STAssertFalse(b, @"Should not be able to scan formatted text with newline in it");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan formatted text with newline in it");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 #pragma mark - Link Scanning
@@ -429,10 +429,10 @@
 	NSDictionary *attributes;
 	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
 	
-	STAssertTrue(b, @"Should be able to scan opening marker");
-	STAssertEqualObjects(attributes[@"src"], @"/path/to/img.jpg", @"Incorrect SRC");
-	STAssertEqualObjects(attributes[@"alt"], @"Alt text", @"Incorrect ALT");
-	STAssertEqualObjects(attributes[@"title"], @"Optional title", @"Incorrect TITLE");
+	XCTAssertTrue(b, @"Should be able to scan opening marker");
+	XCTAssertEqualObjects(attributes[@"src"], @"/path/to/img.jpg", @"Incorrect SRC");
+	XCTAssertEqualObjects(attributes[@"alt"], @"Alt text", @"Incorrect ALT");
+	XCTAssertEqualObjects(attributes[@"title"], @"Optional title", @"Incorrect TITLE");
 }
 
 - (void)testScanImageNoLink
@@ -444,8 +444,8 @@
 	NSDictionary *attributes;
 	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
 	
-	STAssertFalse(b, @"Should not be able to scan image");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan image");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanImageNoClosingBracketAfterLink
@@ -457,8 +457,8 @@
 	NSDictionary *attributes;
 	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
 	
-	STAssertFalse(b, @"Should not be able to scan image");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan image");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanImageEmptyReference
@@ -470,8 +470,8 @@
 	NSDictionary *attributes;
 	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:nil];
 	
-	STAssertFalse(b, @"Should not be able to scan image");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan image");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanImageExistingReferenceButMissingClosingBracket
@@ -483,8 +483,8 @@
 	NSDictionary *attributes;
 	BOOL b = [scanner scanMarkdownImageAttributes:&attributes references:@{@"alt":@{@"href": @"http://foo.com"}}];
 	
-	STAssertFalse(b, @"Should not be able to scan image");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan image");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 
 - (void)testScanLinkExistingReferenceButMissingClosingBracket
@@ -497,8 +497,8 @@
 	NSString *enclosed;
 	BOOL b = [scanner scanMarkdownHyperlinkAttributes:&attributes enclosedString:&enclosed references:@{@"alt":@{@"href": @"http://foo.com"}}];
 	
-	STAssertFalse(b, @"Should not be able to scan image");
-	STAssertEquals(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
+	XCTAssertFalse(b, @"Should not be able to scan image");
+	XCTAssertEqual(scanner.scanLocation, (NSUInteger)0, @"Scan location should not be moved");
 }
 - (void)testEmptyLink
 {
@@ -511,10 +511,10 @@
 	NSString *enclosed;
 	BOOL b = [scanner scanMarkdownHyperlinkAttributes:&attributes enclosedString:&enclosed references:nil];
 	
-	STAssertTrue(b, @"Should result in scanned link");
+	XCTAssertTrue(b, @"Should result in scanned link");
 	
-	STAssertEqualObjects(@"Link", enclosed, @"Wrong enclosed string");
-	STAssertEquals([attributes count], (NSUInteger)0, @"There should be no attributes");
+	XCTAssertEqualObjects(@"Link", enclosed, @"Wrong enclosed string");
+	XCTAssertEqual([attributes count], (NSUInteger)0, @"There should be no attributes");
 }
 
 @end
