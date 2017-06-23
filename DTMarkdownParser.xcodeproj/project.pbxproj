@@ -1514,17 +1514,9 @@
 			children = (
 				A7870C5B1817F73900E39311 /* DTMarkdownParser-Prefix.pch */,
 				A7BF2602181138B50013D8D7 /* Framework-Info.plist */,
-				A7BF253118112C8B0013D8D7 /* Resources */,
 				A7BF253218112C8B0013D8D7 /* Source */,
 			);
 			path = Core;
-			sourceTree = "<group>";
-		};
-		A7BF253118112C8B0013D8D7 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 		A7BF253218112C8B0013D8D7 /* Source */ = {
