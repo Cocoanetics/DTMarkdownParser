@@ -275,35 +275,42 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			{
 				specialOfLineBefore = _specialLines[@(lineIndex-1)];
 				
-				unichar firstChar = [line characterAtIndex:0];
-				
-				if (firstChar=='-' || firstChar=='=')
+				if (specialOfLineBefore == DTMarkdownParserSpecialFencedPreStart || specialOfLineBefore == DTMarkdownParserSpecialFencedPreCode)
 				{
-					line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-					NSUInteger lineLen = [line length];
+					// ignore, cannot start a list
+				}
+				else
+				{
+					unichar firstChar = [line characterAtIndex:0];
 					
-					NSUInteger idx=0;
-					while (idx<lineLen && [line characterAtIndex:idx] == firstChar)
+					if (firstChar=='-' || firstChar=='=')
 					{
-						idx++;
-					}
-					
-					if (idx>=lineLen)
-					{
-						if (![_ignoredLines containsIndex:lineIndex-1])
+						line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+						NSUInteger lineLen = [line length];
+						
+						NSUInteger idx=0;
+						while (idx<lineLen && [line characterAtIndex:idx] == firstChar)
 						{
-							// full line is this character
-							[_ignoredLines addIndex:lineIndex];
-							
-							if (firstChar=='=')
+							idx++;
+						}
+						
+						if (idx>=lineLen)
+						{
+							if (![_ignoredLines containsIndex:lineIndex-1])
 							{
-								_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH1;
-								didFindSpecial = YES;
-							}
-							else if (firstChar=='-')
-							{
-								_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH2;
-								didFindSpecial = YES;
+								// full line is this character
+								[_ignoredLines addIndex:lineIndex];
+								
+								if (firstChar=='=')
+								{
+									_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH1;
+									didFindSpecial = YES;
+								}
+								else if (firstChar=='-')
+								{
+									_specialLines[@(lineIndex-1)] = DTMarkdownParserSpecialTagH2;
+									didFindSpecial = YES;
+								}
 							}
 						}
 					}
@@ -359,6 +366,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				if (specialOfLineBefore == DTMarkdownParserSpecialFencedPreCode || specialOfLineBefore == DTMarkdownParserSpecialFencedPreStart)
 				{
 					_specialLines[@(lineIndex)] = DTMarkdownParserSpecialFencedPreCode;
+					didFindSpecial = YES;
 				}
 			}
 			
