@@ -32,7 +32,7 @@
 		A7194DD3184F695200EEFD2B /* DTMarkdownParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */; };
 		A7194DD4184F695200EEFD2B /* NSScanner+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */; };
 		A7194DD5184F695200EEFD2B /* DTRangesArray.m in Sources */ = {isa = PBXBuildFile; fileRef = A78CE5111823D6D000CEF9C7 /* DTRangesArray.m */; };
-		A7194DD6184F69AE00EEFD2B /* DTWeakSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */; };
+		A7194DD6184F69AE00EEFD2B /* DTWeakSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7248B09181BC5E90021A209 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF250B18112A3B0013D8D7 /* Foundation.framework */; };
 		A7248B0B181BC5E90021A209 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7248B0A181BC5E90021A209 /* CoreGraphics.framework */; };
 		A7248B0C181BC5E90021A209 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7870C401817F6C000E39311 /* UIKit.framework */; };
@@ -45,7 +45,7 @@
 		A76EA6341EFD0DC200A17DAA /* DTMarkdownParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BF25FF1811385A0013D8D7 /* DTMarkdownParser.m */; };
 		A76EA6351EFD0DC200A17DAA /* NSScanner+DTMarkdown.h in Headers */ = {isa = PBXBuildFile; fileRef = A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */; };
 		A76EA6361EFD0DC200A17DAA /* NSScanner+DTMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */; };
-		A76EA6371EFD0DC200A17DAA /* DTWeakSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */; };
+		A76EA6371EFD0DC200A17DAA /* DTWeakSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = A72CCA2D181A6A4600F1C4CE /* DTWeakSupport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A76EA6381EFD0DC200A17DAA /* DTRangesArray.h in Headers */ = {isa = PBXBuildFile; fileRef = A78CE5101823D6D000CEF9C7 /* DTRangesArray.h */; };
 		A76EA6391EFD0DC200A17DAA /* DTRangesArray.m in Sources */ = {isa = PBXBuildFile; fileRef = A78CE5111823D6D000CEF9C7 /* DTRangesArray.m */; };
 		A7870C301817F6C000E39311 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7BF250B18112A3B0013D8D7 /* Foundation.framework */; };
@@ -2688,7 +2688,10 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "Core/Framework-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -2728,7 +2731,10 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "Core/Framework-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -2768,7 +2774,10 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "Core/Framework-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -3058,6 +3067,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = "Externals/**";
 				FRAMEWORK_VERSION = A;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3212,6 +3222,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = "Externals/**";
 				FRAMEWORK_VERSION = A;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3235,6 +3246,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = "Externals/**";
 				FRAMEWORK_VERSION = A;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/DTMarkdownParser-Prefix.pch";
 				INFOPLIST_FILE = "Core/Framework-Info.plist";
@@ -3277,6 +3289,7 @@
 				A76EA6311EFD0D8B00A17DAA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A7870C571817F6C000E39311 /* Build configuration list for PBXNativeTarget "DTMarkdownParser (iOS)" */ = {
 			isa = XCConfigurationList;
