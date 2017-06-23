@@ -23,20 +23,20 @@
  Sent by the parser object to the delegate when it begins parsing a document.
  @param A parser object.
  */
-- (void)parserDidStartDocument:(DTMarkdownParser *)parser;
+- (void)parserDidStartDocument:(DTMarkdownParser * _Nonnull)parser;
 
 /*
  Sent by the parser object to the delegate when it has successfully completed parsing.
  @param A parser object.
  */
-- (void)parserDidEndDocument:(DTMarkdownParser *)parser;
+- (void)parserDidEndDocument:(DTMarkdownParser * _Nonnull)parser;
 
 /*
  Sent by a parser object to provide its delegate with a string representing all or part of the characters of the current element.
  @param parser A parser object.
  @param string Found string content
  */
-- (void)parser:(DTMarkdownParser *)parser foundCharacters:(NSString *)string;
+- (void)parser:(DTMarkdownParser * _Nonnull)parser foundCharacters:(NSString * _Nonnull)string;
 
 /*
  Sent by a parser object to its delegate when it encounters a start tag for a given element.
@@ -44,14 +44,14 @@
  @param elementName A string that is the name of an element (in its start tag).
  @param attributeDict A dictionary that contains any attributes associated with the element. Keys are the names of attributes, and values are attribute values.
  */
-- (void)parser:(DTMarkdownParser *)parser didStartElement:(NSString *)elementName attributes:(NSDictionary *)attributeDict;
+- (void)parser:(DTMarkdownParser * _Nonnull)parser didStartElement:(NSString * _Nonnull)elementName attributes:(NSDictionary<NSString *, id> * _Nullable)attributeDict;
 
 /*
  Sent by a parser object to its delegate when it encounters a start tag for a given element.
  @param parser A parser object.
  @param elementName A string that is the name of an element (in its end tag).
  */
-- (void)parser:(DTMarkdownParser *)parser didEndElement:(NSString *)elementName;
+- (void)parser:(DTMarkdownParser * _Nonnull)parser didEndElement:(NSString * _Nonnull)elementName;
 
 @end
 
@@ -76,7 +76,7 @@ typedef NS_OPTIONS(NSUInteger, DTMarkdownParserOptions)
  @name Creating a Parser
  */
 
-- (instancetype)initWithString:(NSString *)string options:(DTMarkdownParserOptions)options;
+- (instancetype _Nonnull)initWithString:(NSString * _Nonnull)string options:(DTMarkdownParserOptions)options;
 
 /**
  @name Parsing
@@ -85,7 +85,7 @@ typedef NS_OPTIONS(NSUInteger, DTMarkdownParserOptions)
 /**
  Parsing Delegate
  */
-@property (nonatomic, DT_WEAK_PROPERTY) id <DTMarkdownParserDelegate> delegate;
+@property (nonatomic, DT_WEAK_PROPERTY) id<DTMarkdownParserDelegate> _Nullable delegate;
 
 /**
  Turns automatic URL/link detection on or off. Default value is YES.
