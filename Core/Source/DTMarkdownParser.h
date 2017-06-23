@@ -58,7 +58,7 @@
 /**
  Parsing options for DTMarkdownParser
  */
-typedef NS_ENUM(NSUInteger, DTMarkdownParserOptions)
+typedef NS_OPTIONS(NSUInteger, DTMarkdownParserOptions)
 {
 	/**
 	 Use GitHub-style for line breaks, one is a BR, two is a P
