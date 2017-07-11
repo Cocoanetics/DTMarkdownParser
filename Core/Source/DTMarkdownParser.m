@@ -1137,7 +1137,20 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 		[self _pushTag:@"p" attributes:nil];
 	}
 	
-	[self _handleText:line inRange:lineRange allowAutodetection:YES];
+	NSScanner *scanner = [NSScanner scannerWithString:line];
+	scanner.charactersToBeSkipped = nil;
+	NSString *effectiveOpeningMarker;
+	NSString *enclosedString;
+	
+	if ([scanner scanMarkdownTextBetweenFormatMarkers:&enclosedString outermostMarker:&effectiveOpeningMarker])
+	{
+		NSRange range = NSMakeRange(0, scanner.scanLocation);
+		[self _handleMarkedText:enclosedString marker:effectiveOpeningMarker inRange:range];
+	}
+	else
+	{
+		[self _handleText:line inRange:lineRange allowAutodetection:YES];
+	}
 }
 
 - (void)_handleListItemPrefix:(NSString *)prefix inRange:(NSRange)range lineIndex:(NSUInteger)lineIndex

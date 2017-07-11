@@ -347,6 +347,20 @@
 	XCTAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testBlockquoteBold
+{
+	NSString *string = @"> **Blockquote in Bold**";
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	XCTAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<blockquote><p><strong>Blockquote in Bold</strong></p>\n</blockquote>";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	XCTAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 /*
 - (void)testBlockquoteStacked
 {
@@ -1901,5 +1915,7 @@
 	
 	XCTAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
+
+
 
 @end
