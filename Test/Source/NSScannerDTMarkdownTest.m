@@ -71,6 +71,27 @@
 	XCTAssertEqual([scanner scanLocation], (NSUInteger)14, @"Scan position should be after href");
 }
 
+- (void)testTitle
+{
+	NSString *string = @"[apple](http://foo.com)";
+	
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+	scanner.charactersToBeSkipped = nil;
+	
+	NSString *href;
+	NSString *title;
+	
+	BOOL b = [scanner scanMarkdownHyperlink:&href title:&title];
+	
+	XCTAssertTrue(b, @"Should be able to scan hyperlink");
+	
+	XCTAssertEqualObjects(href, @"http://foo.com", @"incorrect href");
+	
+	XCTAssertEqualObjects(title, @"apple");
+	
+	XCTAssertEqual([scanner scanLocation], (NSUInteger)22, @"Scan position should be after href");
+}
+
 - (void)testMissingClosingRoundBracket
 {
 	NSString *string = @"http://foo.com     (Title";

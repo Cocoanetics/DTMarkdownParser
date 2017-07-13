@@ -48,7 +48,43 @@
 		}
 	}
 	
+	
+	
+	
 	NSString *quotedTitle;
+	
+	NSUInteger oldPosition = self.scanLocation;
+	
+	if ([self.string hasPrefix:@"["])
+	{
+		NSCharacterSet *angleBracket = [NSCharacterSet characterSetWithCharactersInString:@"[("];
+		
+		NSCharacterSet *parantheses = [NSCharacterSet characterSetWithCharactersInString:@"("];
+
+
+		NSString *quote;
+
+		self.scanLocation = startPos;
+
+		if ([self scanCharactersFromSet:angleBracket intoString:&quote])
+		{
+			[self scanUpToString:@"(" intoString:nil];
+			[self scanString:@"(" intoString:nil];
+				if ([self scanUpToString:@"]" intoString:&quotedTitle])
+				{
+				}
+			
+			
+			[self scanUpToString:@"(" intoString:nil];
+			[self scanString:@"(" intoString:nil];
+			
+			if ([self scanUpToString:@")" intoString:&hrefString])
+			{
+				titlePossible = NO;
+			}
+		}
+	}
+	
 	
 	if (titlePossible)
 	{
@@ -56,9 +92,11 @@
 		
 		NSString *quote;
 		
+		self.scanLocation = oldPosition;
+		
 		if ([self scanCharactersFromSet:quoteChars intoString:&quote])
 		{
-			if ([quote hasPrefix:@"'"])
+			 if ([quote hasPrefix:@"'"])
 			{
 				if ([self scanUpToString:@"'" intoString:&quotedTitle])
 				{
