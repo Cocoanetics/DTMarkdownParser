@@ -486,6 +486,9 @@
 		detector = [NSDataDetector dataDetectorWithTypes:(NSTextCheckingTypes)NSTextCheckingTypeLink error:NULL];
 	});
 	
+	NSString *hrefString;
+	NSString *title;
+	
 	if ([self scanString:@"<" intoString:NULL])
 	{
 		isSimpleHREF = YES;
@@ -501,15 +504,17 @@
 		
 		// scan enclosed part, can contain images
 		[self _scanMarkdownTextEnclosedByHyperlink:&enclosedPart];
+		
+		if (enclosedPart != nil)
+		{
+			// Store title
+			title = enclosedPart;
+		}
 	}
 	else
 	{
 		return NO;
 	}
-	
-	NSString *hrefString;
-	NSString *title;
-	
 	
 	// expect closing marker
 	if (![self scanString:closingMarker intoString:NULL])
@@ -554,8 +559,15 @@
 		if ([self scanString:@"(" intoString:NULL])
 		{
 			// we allow empty href and title
-			[self scanMarkdownHyperlink:&hrefString title:&title];
-			
+			if (title != nil)
+			{
+				[self scanMarkdownHyperlink:&hrefString title:nil];
+			}
+			else
+			{
+				[self scanMarkdownHyperlink:&hrefString title:&title];
+			}
+				
 			// skip whitespace
 			[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
 			
