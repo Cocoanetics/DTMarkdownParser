@@ -361,15 +361,15 @@
 	XCTAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
-- (void)testBlockQuoteTooLong
+- (void)testBlockQuoteNotTerminatedByEmptyLine
 {
-	NSString *string = @"> **BOLD**\n\nOUTSIDE";
+	NSString *string = @"> INSIDE\n\nOUTSIDE";
 	DTMarkdownParser *parser = [self _parserForString:string options:0];
 	
 	BOOL result = [parser parse];
 	XCTAssertTrue(result, @"Parser should return YES");
 	
-	NSString *expected = @"<blockquote><p><strong>BOLD</strong></p>\n</blockquote><p>OUTSIDE</p>";
+	NSString *expected = @"<blockquote><p>INSIDE</p>\n</blockquote><p>OUTSIDE</p>\n";
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	XCTAssertEqualObjects(actual, expected, @"Expected result did not match");

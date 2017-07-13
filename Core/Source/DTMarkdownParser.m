@@ -1332,8 +1332,13 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				if (lineIsIgnored)
 				{
 					// empty line, terminates a multi-P in LI
-					
 					while ([_tagStack containsObject:@"p"])
+					{
+						[self _popTag];
+					}
+					
+					// an empty line also terminates a blockquote
+					if ([_tagStack containsObject:@"blockquote"])
 					{
 						[self _popTag];
 					}
