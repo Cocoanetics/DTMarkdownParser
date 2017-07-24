@@ -1429,6 +1429,22 @@
 	XCTAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testInlineImageWithSize
+{
+	NSString *string = @"![Alt text](/path/to/img.jpg=1000x2000)";
+	
+	DTMarkdownParser *parser = [self _parserForString:string options:0];
+	
+	BOOL result = [parser parse];
+	XCTAssertTrue(result, @"Parser should return YES");
+	
+	NSString *expected = @"<p><img alt=\"Alt text\" height=\"2000\" src=\"/path/to/img.jpg\" width=\"1000\" /></p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	XCTAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
+
 - (void)testInlineImageMissingCloseingSquareBracket
 {
 	NSString *string = @"![Alt text (/path/to/img.jpg)";

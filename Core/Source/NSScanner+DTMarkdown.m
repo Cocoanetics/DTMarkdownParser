@@ -18,7 +18,7 @@
 	
 	dispatch_once(&onceToken, ^{
 		NSMutableCharacterSet *tmpSet = [NSMutableCharacterSet whitespaceCharacterSet];
-		[tmpSet addCharactersInString:@")'\"(\n"];
+		[tmpSet addCharactersInString:@")'\"(\n="];
 		hrefTerminatorSet = [tmpSet copy];
 	});
 	
@@ -343,6 +343,8 @@
 	NSString *hrefString;
 	NSString *title;
 	
+	CGSize size;
+	
 	// expect opening round or square bracket
 	if ([self scanString:@"(" intoString:NULL])
 	{
@@ -356,6 +358,26 @@
 		
 		// skip whitespace
 		[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
+		
+		// check for size
+		if ([self scanString:@"=" intoString:NULL])
+		{
+			NSInteger width = 0;
+			NSInteger height = 0;
+			
+			if ([self scanInteger:&width] && [self scanString:@"x" intoString:NULL] && [self scanInteger:&height])
+			{
+				// got a correct size
+				size.width = width;
+				size.height = height;
+			}
+			else
+			{
+				// failure
+				self.scanLocation = startPos;
+				return NO;
+			}
+		}
 		
 		// expect closing round bracket
 		if (![self scanString:@")" intoString:NULL])
@@ -412,6 +434,16 @@
 		if (altText)
 		{
 			tmpDict[@"alt"] = altText;
+		}
+		
+		if (size.width > 0)
+		{
+			tmpDict[@"width"] = @(size.width);
+		}
+		
+		if (size.height > 0)
+		{
+			tmpDict[@"height"] = @(size.height);
 		}
 		
 		*attributes = [tmpDict copy];
