@@ -343,7 +343,8 @@
 	NSString *hrefString;
 	NSString *title;
 	
-	CGSize size;
+	NSInteger width = 0;
+	NSInteger height = 0;
 	
 	// expect opening round or square bracket
 	if ([self scanString:@"(" intoString:NULL])
@@ -362,14 +363,9 @@
 		// check for size
 		if ([self scanString:@"=" intoString:NULL])
 		{
-			NSInteger width = 0;
-			NSInteger height = 0;
-			
 			if ([self scanInteger:&width] && [self scanString:@"x" intoString:NULL] && [self scanInteger:&height])
 			{
 				// got a correct size
-				size.width = width;
-				size.height = height;
 			}
 			else
 			{
@@ -436,14 +432,14 @@
 			tmpDict[@"alt"] = altText;
 		}
 		
-		if (size.width > 0)
+		if (width > 0)
 		{
-			tmpDict[@"width"] = @(size.width);
+			tmpDict[@"width"] = @(width);
 		}
 		
-		if (size.height > 0)
+		if (height > 0)
 		{
-			tmpDict[@"height"] = @(size.height);
+			tmpDict[@"height"] = @(height);
 		}
 		
 		*attributes = [tmpDict copy];
