@@ -63,7 +63,12 @@ typedef NS_OPTIONS(NSUInteger, DTMarkdownParserOptions)
 	/**
 	 Use GitHub-style for line breaks, one is a BR, two is a P
 	 */
-	DTMarkdownParserOptionGitHubLineBreaks = 1<<0
+	DTMarkdownParserOptionGitHubLineBreaks = 1<<0,
+	
+	/**
+	 With this option an underscore becomes a U. Otherwise it becomes an EM
+	 */
+	DTMarkdownParserOptionUnderscoreIsUnderline = 1<<1
 };
 
 /**

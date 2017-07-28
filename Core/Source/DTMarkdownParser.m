@@ -943,7 +943,18 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	BOOL allowAutodetection = YES;
 	
 	// open the tag for this marker
-	if ([marker isEqualToString:@"*"] || [marker isEqualToString:@"_"])
+	if ([marker isEqualToString:@"_"])
+	{
+		if (_options & DTMarkdownParserOptionUnderscoreIsUnderline)
+		{
+			[self _pushTag:@"u" attributes:nil];
+		}
+		else
+		{
+			[self _pushTag:@"em" attributes:nil];
+		}
+	}
+	else if ([marker isEqualToString:@"*"])
 	{
 		[self _pushTag:@"em" attributes:nil];
 	}
@@ -1399,7 +1410,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 			if ([scanner scanString:@"\n" intoString:NULL])
 			{
 				// part has newline
-				if (_options && DTMarkdownParserOptionGitHubLineBreaks)
+				if (_options & DTMarkdownParserOptionGitHubLineBreaks)
 				{
 					lineBreakRange.length = 1;
 				}

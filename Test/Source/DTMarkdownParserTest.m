@@ -453,6 +453,35 @@
 	XCTAssertEqualObjects(actual, expected, @"Expected result did not match");
 }
 
+- (void)testUtagUnderlineSpecialParserOption
+{
+	NSString *string = @"Normal _Italic Words_ _Incomplete\nand _ on next line";
+	DTMarkdownParser *parser = [self _parserForString:string options:DTMarkdownParserOptionUnderscoreIsUnderline];
+	
+	BOOL result = [parser parse];
+	XCTAssertTrue(result, @"Parser should return YES");
+	
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didStartElement:attributes:), @"u");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:didEndElement:), @"u");
+	
+	// there should be only one em starting
+	NSArray *emStarts = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingOpeningTag:@"u"]];
+	XCTAssertTrue([emStarts count] == 1, @"There should be one tag start");
+	
+	// there should be only one em closing
+	NSArray *emEnds = [_recorder.invocations filteredArrayUsingPredicate:[self _predicateForFindingClosingTag:@"u"]];
+	XCTAssertTrue([emEnds count] == 1, @"There should be one tag end");
+	
+	// test trimming off of blockquote prefix
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Italic Words");
+	DTAssertInvocationRecorderContainsCallWithParameter(_recorder, @selector(parser:foundCharacters:), @"Incomplete\n");
+	
+	NSString *expected = @"<p>Normal <u>Italic Words</u> _Incomplete\nand _ on next line</p>\n";
+	NSString *actual = [self _HTMLFromInvocations];
+	
+	XCTAssertEqualObjects(actual, expected, @"Expected result did not match");
+}
+
 - (void)testStrongAsterisk
 {
 	NSString *string = @"Normal **Strong Words** **Incomplete\nand ** on next line";
