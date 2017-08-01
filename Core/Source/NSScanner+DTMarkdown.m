@@ -18,7 +18,7 @@
 	
 	dispatch_once(&onceToken, ^{
 		NSMutableCharacterSet *tmpSet = [NSMutableCharacterSet whitespaceCharacterSet];
-		[tmpSet addCharactersInString:@")'\"(\n="];
+		[tmpSet addCharactersInString:@")'\"(\n"];
 		hrefTerminatorSet = [tmpSet copy];
 	});
 	
@@ -316,6 +316,14 @@
 
 - (BOOL)scanMarkdownImageAttributes:(NSDictionary **)attributes references:(NSDictionary *)references
 {
+	static NSRegularExpression *imageSizeRegex = nil;
+	
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		imageSizeRegex = [NSRegularExpression regularExpressionWithPattern:@"=([0-9]+)x([0-9]+)$" options:NSRegularExpressionAnchorsMatchLines error:NULL];
+	});
+	
 	NSUInteger startPos = self.scanLocation;
 	
 	if (![self scanString:@"![" intoString:NULL])
@@ -360,19 +368,21 @@
 		// skip whitespace
 		[self scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
 		
-		// check for size
-		if ([self scanString:@"=" intoString:NULL])
+		// get potential image size from URL
+		NSRange range = NSMakeRange(0, hrefString.length);
+		NSTextCheckingResult *match = [imageSizeRegex firstMatchInString:hrefString options:0 range:range];
+		
+		// if we have a match with correct number of ranges ...
+		if (match && match.numberOfRanges==3)
 		{
-			if ([self scanInteger:&width] && [self scanString:@"x" intoString:NULL] && [self scanInteger:&height])
-			{
-				// got a correct size
-			}
-			else
-			{
-				// failure
-				self.scanLocation = startPos;
-				return NO;
-			}
+			NSString *widthStr = [hrefString substringWithRange:[match rangeAtIndex:1]];
+			NSString *heightStr = [hrefString substringWithRange:[match rangeAtIndex:2]];
+			
+			// cut off the size part from the URL
+			hrefString = [hrefString substringToIndex:match.range.location];
+			
+			width = [widthStr integerValue];
+			height = [heightStr integerValue];
 		}
 		
 		// expect closing round bracket
