@@ -182,7 +182,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	NSRange entireString = NSMakeRange(0, [_string length]);
 	[_string enumerateSubstringsInRange:entireString options:NSStringEnumerationByLines usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
 		
-		[_lineRanges addRange:enclosingRange];
+		[self->_lineRanges addRange:enclosingRange];
 	}];
 }
 
