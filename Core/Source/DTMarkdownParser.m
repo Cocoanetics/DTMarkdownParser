@@ -473,7 +473,7 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	
 	[_lineRanges enumerateLineRangesUsingBlock:^(NSRange range, NSUInteger idx, BOOL *stop) {
 		
-		if ([_ignoredLines containsIndex:idx])
+		if ([self->_ignoredLines containsIndex:idx])
 		{
 			return;
 		}
@@ -498,13 +498,13 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 				[tmpDict setObject:title forKey:@"title"];
 			}
 			
-			[_references setObject:tmpDict forKey:ref];
+			[self->_references setObject:tmpDict forKey:ref];
 			
-			[_ignoredLines addIndex:idx];
+			[self->_ignoredLines addIndex:idx];
 			
 			if (scanner.scanLocation>NSMaxRange(range))
 			{
-				[_ignoredLines addIndex:idx+1];
+				[self->_ignoredLines addIndex:idx+1];
 			}
 		}
 	}];
