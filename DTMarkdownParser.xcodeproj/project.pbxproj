@@ -1791,7 +1791,7 @@
 			};
 			buildConfigurationList = A7BF250318112A3B0013D8D7 /* Build configuration list for PBXProject "DTMarkdownParser" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
