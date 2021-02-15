@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "DTWeakSupport.h"
+#import <DTMarkdownParser/DTWeakSupport.h>
 
 @class DTMarkdownParser;
 
