@@ -633,34 +633,6 @@
 			remoteGlobalIDString = A7BF25D3181138320013D8D7;
 			remoteInfo = "DTMarkdownParser (Mac)";
 		};
-		A7BF25BD1811354B0013D8D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7BF258C1811352D0013D8D7 /* OCMockito.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 08BDD5A91350C59C00E5A443;
-			remoteInfo = OCMockito;
-		};
-		A7BF25BF1811354B0013D8D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7BF258C1811352D0013D8D7 /* OCMockito.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 08BDD5BE1350C59C00E5A443;
-			remoteInfo = OCMockitoTests;
-		};
-		A7BF25C11811354B0013D8D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7BF258C1811352D0013D8D7 /* OCMockito.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 085D2FF51351254000EBBE91;
-			remoteInfo = libocmockito;
-		};
-		A7BF25C31811354B0013D8D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7BF258C1811352D0013D8D7 /* OCMockito.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 085D2FFF1351254000EBBE91;
-			remoteInfo = libocmockitoTests;
-		};
 		A7BF2605181150FC0013D8D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7BF250018112A3B0013D8D7 /* Project object */;
@@ -741,6 +713,7 @@
 		A78CE53818267AE700CEF9C7 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		A78EAACA18151EF800650426 /* NSScanner+DTMarkdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSScanner+DTMarkdown.h"; sourceTree = "<group>"; };
 		A78EAACB18151EF800650426 /* NSScanner+DTMarkdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSScanner+DTMarkdown.m"; sourceTree = "<group>"; };
+		A7971546287DF55F00AB6D16 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		A7ABD2DC1811BEEB00494DA5 /* auto_link.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = auto_link.html; sourceTree = "<group>"; };
 		A7ABD2DD1811BEEB00494DA5 /* auto_link.text */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = auto_link.text; sourceTree = "<group>"; };
 		A7ABD2DE1811BEEB00494DA5 /* auto_link_email_with_underscore.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = auto_link_email_with_underscore.html; sourceTree = "<group>"; };
@@ -1010,8 +983,6 @@
 		A7BF253618112C8B0013D8D7 /* UnitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UnitTests-Info.plist"; sourceTree = "<group>"; };
 		A7BF253718112C8B0013D8D7 /* UnitTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UnitTests-Prefix.pch"; sourceTree = "<group>"; };
 		A7BF253C181131A70013D8D7 /* DTMarkdownParserTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTMarkdownParserTest.m; sourceTree = "<group>"; };
-		A7BF258C1811352D0013D8D7 /* OCMockito.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OCMockito.xcodeproj; path = OCMockito/Source/OCMockito.xcodeproj; sourceTree = "<group>"; };
-		A7BF25CB181137CF0013D8D7 /* OCHamcrest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OCHamcrest.framework; path = "OCMockito/Frameworks/OCHamcrest-3.0.0/OCHamcrest.framework"; sourceTree = "<group>"; };
 		A7BF25D4181138320013D8D7 /* DTMarkdownParser.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DTMarkdownParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7BF25D5181138320013D8D7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		A7BF25FE1811385A0013D8D7 /* DTMarkdownParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTMarkdownParser.h; sourceTree = "<group>"; };
@@ -1471,10 +1442,10 @@
 		A7BF24FF18112A3B0013D8D7 = {
 			isa = PBXGroup;
 			children = (
+				A7971546287DF55F00AB6D16 /* Package.swift */,
 				A7BF253018112C8B0013D8D7 /* Core */,
 				A7870DBF1817FE4900E39311 /* Demo */,
 				A7D7DF2418156DE700F4377D /* Documentation */,
-				A7BF253E1811352D0013D8D7 /* Externals */,
 				A7BF253318112C8B0013D8D7 /* Test */,
 				A7BF250A18112A3B0013D8D7 /* Frameworks */,
 				A7BF250918112A3B0013D8D7 /* Products */,
@@ -1554,26 +1525,6 @@
 				A78CE5211823ECF300CEF9C7 /* DTRangesArrayTest.m */,
 			);
 			path = Source;
-			sourceTree = "<group>";
-		};
-		A7BF253E1811352D0013D8D7 /* Externals */ = {
-			isa = PBXGroup;
-			children = (
-				A7BF25CB181137CF0013D8D7 /* OCHamcrest.framework */,
-				A7BF258C1811352D0013D8D7 /* OCMockito.xcodeproj */,
-			);
-			path = Externals;
-			sourceTree = "<group>";
-		};
-		A7BF25B71811354B0013D8D7 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A7BF25BE1811354B0013D8D7 /* OCMockito.framework */,
-				A7BF25C01811354B0013D8D7 /* OCMockitoTests.octest */,
-				A7BF25C21811354B0013D8D7 /* libocmockito.a */,
-				A7BF25C41811354B0013D8D7 /* libocmockitoTests.octest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		A7D7DF2418156DE700F4377D /* Documentation */ = {
@@ -1800,12 +1751,6 @@
 			mainGroup = A7BF24FF18112A3B0013D8D7;
 			productRefGroup = A7BF250918112A3B0013D8D7 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = A7BF25B71811354B0013D8D7 /* Products */;
-					ProjectRef = A7BF258C1811352D0013D8D7 /* OCMockito.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				A76EA6291EFD0D8A00A17DAA /* DTMarkdownParser Framework (iOS) */,
@@ -1820,37 +1765,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		A7BF25BE1811354B0013D8D7 /* OCMockito.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = OCMockito.framework;
-			remoteRef = A7BF25BD1811354B0013D8D7 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A7BF25C01811354B0013D8D7 /* OCMockitoTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = OCMockitoTests.octest;
-			remoteRef = A7BF25BF1811354B0013D8D7 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A7BF25C21811354B0013D8D7 /* libocmockito.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libocmockito.a;
-			remoteRef = A7BF25C11811354B0013D8D7 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A7BF25C41811354B0013D8D7 /* libocmockitoTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = libocmockitoTests.octest;
-			remoteRef = A7BF25C31811354B0013D8D7 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A7248B06181BC5E90021A209 /* Resources */ = {
@@ -3037,7 +2951,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -3143,7 +3057,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -3190,7 +3104,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				SDKROOT = macosx;
 			};
 			name = Release;
