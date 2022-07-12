@@ -1150,17 +1150,54 @@ NSString * const DTMarkdownParserSpecialTagBlockquote = @"BLOCKQUOTE";
 	
 	NSScanner *scanner = [NSScanner scannerWithString:line];
 	scanner.charactersToBeSkipped = nil;
-	NSString *effectiveOpeningMarker;
-	NSString *enclosedString;
 	
-	if ([scanner scanMarkdownTextBetweenFormatMarkers:&enclosedString outermostMarker:&effectiveOpeningMarker])
+	NSCharacterSet *specialChars = [NSCharacterSet characterSetWithCharactersInString:@"*_~[!`<\n"];
+	
+	while (![scanner isAtEnd])
 	{
-		NSRange range = NSMakeRange(0, scanner.scanLocation);
-		[self _handleMarkedText:enclosedString marker:effectiveOpeningMarker inRange:range];
-	}
-	else
-	{
-		[self _handleText:line inRange:lineRange allowAutodetection:YES];
+		NSString *part;
+		NSUInteger positionBeforeScan = scanner.scanLocation;
+		
+		// scan part until next special character
+		if ([scanner scanUpToCharactersFromSet:specialChars intoString:&part])
+		{
+			// output part before markers
+			[self _processCharacters:part inRange:NSMakeRange(positionBeforeScan, positionBeforeScan-scanner.scanLocation) allowAutodetection:YES];
+		}
+		
+		// stop scanning if done
+		if ([scanner isAtEnd])
+		{
+			break;
+		}
+		
+		// scan marker
+		NSString *effectiveOpeningMarker;
+		NSDictionary *linkAttributes;
+		positionBeforeScan = scanner.scanLocation;
+		
+		if ([scanner scanMarkdownImageAttributes:&linkAttributes references:_references])
+		{
+			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
+			[self _handleImageAttributes:linkAttributes inRange:range];
+			
+			continue;
+		}
+		
+		if ([scanner scanMarkdownTextBetweenFormatMarkers:&part outermostMarker:&effectiveOpeningMarker])
+		{
+			NSRange range = NSMakeRange(positionBeforeScan, scanner.scanLocation - positionBeforeScan);
+			[self _handleMarkedText:part marker:effectiveOpeningMarker inRange:range];
+			
+			continue;
+		}
+		
+		// single special character, just output
+		NSRange range = NSMakeRange(scanner.scanLocation, 1);
+		NSString *specialChar = [scanner.string substringWithRange:NSMakeRange(scanner.scanLocation, 1)];
+		scanner.scanLocation ++;
+		
+		[self _handleText:specialChar inRange:range allowAutodetection:NO];
 	}
 }
 
