@@ -6,7 +6,8 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
-#import "DTRangesArray.h"
+@import XCTest;
+@import DTMarkdownParser;
 
 #import "XCTAssertEqualStructsJX.h"
 

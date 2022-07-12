@@ -6,7 +6,8 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
-#import "NSScanner+DTMarkdown.h"
+@import XCTest;
+@import DTMarkdownParser;
 
 @interface NSScannerDTMarkdownTest : XCTestCase
 

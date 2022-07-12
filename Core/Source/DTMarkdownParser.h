@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 
 #import <DTMarkdownParser/DTWeakSupport.h>
+#import <DTMarkdownParser/DTRangesArray.h>
+#import <DTMarkdownParser/NSScanner+DTMarkdown.h>
 
 @class DTMarkdownParser;
 

@@ -6,7 +6,9 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
-#import "DTMarkdownParser.h"
+@import XCTest;
+@import DTMarkdownParser;
+
 #import "DTInvocationRecorder.h"
 #import "DTInvocationTestFunctions.h"
 #import "NSInvocation+DTFoundation.h"
@@ -128,6 +130,7 @@
 
 - (DTMarkdownParser *)_parserForString:(NSString *)string options:(DTMarkdownParserOptions)options
 {
+	NSLog(@"%@", string);
 	DTMarkdownParser *parser = [[DTMarkdownParser alloc] initWithString:string options:options];
 	XCTAssertNotNil(parser, @"Should be able to create parser");
 	
@@ -141,15 +144,33 @@
 
 - (DTMarkdownParser *)_parserForFile:(NSString *)file options:(DTMarkdownParserOptions)options
 {
-	NSString * filePath = [[NSBundle bundleForClass:[self class]] pathForResource:file ofType:@"text"];
+	NSString *filePath = [self pathForTestResource:file ofType:@"text"];
 	NSString *string = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
+	
+	NSLog(@"input: %@", string);
+
 	
 	return [self _parserForString:string options:options];
 }
 
+- (NSString *)pathForTestResource:(nullable NSString *)name ofType:(nullable NSString *)ext
+{
+	NSBundle *testBundle = [NSBundle bundleForClass:[self class]];
+
+#if SWIFT_PACKAGE
+	NSURL *url = [[[testBundle bundleURL] URLByDeletingLastPathComponent] URLByAppendingPathComponent:@"DTFoundation_DTFoundationTests.bundle"];
+	NSBundle *resourceBundle = [NSBundle bundleWithURL:url];
+	NSString *finalPath = [resourceBundle pathForResource:name ofType:ext];
+#else
+	NSString *finalPath = [testBundle pathForResource:name ofType:ext];
+#endif
+	
+	return finalPath;
+}
+
 - (NSString *)_resultStringForFile:(NSString *)file
 {
-	NSString *filePath = [[NSBundle bundleForClass:[self class]] pathForResource:file ofType:@"html"];
+	NSString *filePath = [self pathForTestResource:file ofType:@"html"];
 	NSString *rawString = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
 	
 	rawString = [rawString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
@@ -1914,6 +1935,9 @@
 	XCTAssertTrue(result, @"Parser should return YES");
 	
 	NSString *expected = [self _resultStringForFile:@"emphasis"];
+	
+	NSLog(@"expected: %@", expected);
+	
 	NSString *actual = [self _HTMLFromInvocations];
 	
 	XCTAssertEqualObjects(actual, expected, @"Expected result did not match");
